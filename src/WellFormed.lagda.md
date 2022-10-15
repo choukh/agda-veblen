@@ -26,9 +26,10 @@ open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Nat.Properties as ℕ using (m≤n⇒m<n∨m≡n)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
+open import Data.Product.Properties using (Σ-≡,≡→≡; ×-≡,≡→≡)
 open import Relation.Binary.PropositionalEquality as Eq
   using (_≡_; _≢_; refl; sym; cong; subst)
-open import Function using (_↔_)
+open import Function using (_↩_)
 ```
 
 ## 良构
@@ -148,17 +149,16 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 ⌜⌝-surjective {lim f} <ω (_ , mono) = ⊥-elim (<⇒≱ <ω (ω≤l mono))
 ```
 
-这说明小于 `ω` 的良构序数与自然数同构.
+这说明小于 `ω` 的良构序数与自然数等价.
 
 ```agda
-∃[<ω]wf↔ℕ : (∃[ α ] α < ω × wellFormed α) ↔ ℕ
-∃[<ω]wf↔ℕ = record
+∃[<ω]wf↩ℕ : (∃[ α ] α < ω × wellFormed α) ↩ ℕ
+∃[<ω]wf↩ℕ = record
   { to        = λ (α , <ω , wf) → proj₁ (⌜⌝-surjective <ω wf)
   ; from      = λ n → ⌜ n ⌝ , n<ω , ⌜ n ⌝-wellFormed
   ; to-cong   = λ{ refl → refl }
   ; from-cong = λ{ refl → refl }
-  ; inverse   = (λ n → ⌜⌝-injective (sym (proj₂ (⌜⌝-surjective n<ω ⌜ n ⌝-wellFormed))))
-              , (λ (α , <ω , wf) → {!   !})
+  ; inverseˡ   = λ n → ⌜⌝-injective (sym (proj₂ (⌜⌝-surjective n<ω ⌜ n ⌝-wellFormed)))
   }
 ```
 
@@ -255,4 +255,3 @@ s<l mono < with ∃[n]<fn mono <
 ...                  | inj₁ <ω = ⊥-elim (≤⇒≯ ω≤s (s<ω <ω))
 ...                  | inj₂ ≥ω = ≥ω
 ```
-    
