@@ -1,6 +1,7 @@
 ---
 title: Agda大序数(2) 良构序数
 zhihu-tags: Agda, 序数, 大数数学
+zhihu-url: https://zhuanlan.zhihu.com/p/573846653
 ---
 
 # Agda大序数(2) 良构序数
@@ -26,7 +27,6 @@ open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Nat.Properties as ℕ using (m≤n⇒m<n∨m≡n)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
-open import Data.Product.Properties using (Σ-≡,≡→≡; ×-≡,≡→≡)
 open import Relation.Binary.PropositionalEquality as Eq
   using (_≡_; _≢_; refl; sym; cong; subst)
 open import Function using (_↩_)
@@ -129,7 +129,7 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 ω≤l mono = l≤ (λ n → ≤→≤l (⌜n⌝≤fn mono))
 ```
 
-### 同构
+### 等价性
 
 `⌜_⌝` 是自然数到良构序数的单射.
 
