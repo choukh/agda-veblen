@@ -27,7 +27,8 @@ open import Data.Nat.Properties as ℕ using (m≤n⇒m<n∨m≡n)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
 open import Relation.Binary.PropositionalEquality as Eq
-  using (_≡_; _≢_; refl; cong; subst)
+  using (_≡_; _≢_; refl; sym; cong; subst)
+open import Function using (_↔_)
 ```
 
 ## 良构
@@ -140,14 +141,26 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 小于 `ω` 的良构序数被 `⌜_⌝` 满射.
 
 ```agda
-⌜⌝-surjective : ∀ {α} → wellFormed α → α < ω → ∃[ n ] α ≡ ⌜ n ⌝
-⌜⌝-surjective {zero} _ _ = 0 , refl
-⌜⌝-surjective {suc α} wf <ω with ⌜⌝-surjective wf (<-trans <s <ω)
-... | n , ≡⌜n⌝ = (suc n) , cong suc ≡⌜n⌝
-⌜⌝-surjective {lim f} (_ , mono) <ω = ⊥-elim (<⇒≱ <ω (ω≤l mono))
+⌜⌝-surjective : ∀ {α} → α < ω → wellFormed α → ∃[ n ] α ≡ ⌜ n ⌝
+⌜⌝-surjective {zero}  _  _          = 0 , refl
+⌜⌝-surjective {suc α} <ω wf with ⌜⌝-surjective (<-trans <s <ω) wf
+... | n , ≡⌜n⌝                      = (suc n) , cong suc ≡⌜n⌝
+⌜⌝-surjective {lim f} <ω (_ , mono) = ⊥-elim (<⇒≱ <ω (ω≤l mono))
 ```
 
 这说明小于 `ω` 的良构序数与自然数同构.
+
+```agda
+∃[<ω]wf↔ℕ : (∃[ α ] α < ω × wellFormed α) ↔ ℕ
+∃[<ω]wf↔ℕ = record
+  { to        = λ (α , <ω , wf) → proj₁ (⌜⌝-surjective <ω wf)
+  ; from      = λ n → ⌜ n ⌝ , n<ω , ⌜ n ⌝-wellFormed
+  ; to-cong   = λ{ refl → refl }
+  ; from-cong = λ{ refl → refl }
+  ; inverse   = (λ n → ⌜⌝-injective (sym (proj₂ (⌜⌝-surjective n<ω ⌜ n ⌝-wellFormed))))
+              , (λ (α , <ω , wf) → {!   !})
+  }
+```
 
 ## 递增极限序数的性质
 
@@ -158,7 +171,7 @@ z<l : ∀ {f} → increasing f → zero < lim f
 z<l mono = <→≤→< z<ω (ω≤l mono)
 ```
 
-`f<l` 是上一章 [`f≤l`](Ordinal.html#7443) 的 `_<_` 版, 它要求 `f` 递增.
+`f<l` 是上一章 [`f≤l`](Ordinal.html#7621) 的 `_<_` 版, 它要求 `f` 递增.
 
 ```agda
 f<l : ∀ {f n} → increasing f → f n < lim f
@@ -242,4 +255,4 @@ s<l mono < with ∃[n]<fn mono <
 ...                  | inj₁ <ω = ⊥-elim (≤⇒≯ ω≤s (s<ω <ω))
 ...                  | inj₂ ≥ω = ≥ω
 ```
-  
+    
