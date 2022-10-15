@@ -7,14 +7,14 @@ zhihu-url: https://zhuanlan.zhihu.com/p/573846653
 # Agda大序数(2) 良构序数
 
 > 交流Q群: 893531731  
-> 本文源码: [WellFormed.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/WellFormed.lagda.md)  
-> GitHub Pages: [WellFormed.html](https://choukh.github.io/agda-lvo/WellFormed.html)  
+> 本文源码: [Ordinal/WellFormed.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/WellFormed.lagda.md)  
+> GitHub Pages: [Ordinal.WellFormed.html](https://choukh.github.io/agda-lvo/Ordinal.WellFormed.html)  
 > 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
 {-# OPTIONS --without-K --safe #-}
 
-module WellFormed where
+module Ordinal.WellFormed where
 ```
 
 我们导入第一章的内容和标准库的常规模块. 注意 Agda 有构造子重载, `ℕ` 的 `zero` 和 `suc` 与 `Ord` 的同名, 但只要类型明确就没有问题.

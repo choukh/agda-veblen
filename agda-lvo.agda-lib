@@ -1,0 +1,3 @@
+name: agda-lvo
+depend: standard-library
+include: src
