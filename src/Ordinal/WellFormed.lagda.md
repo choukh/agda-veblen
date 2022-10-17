@@ -169,14 +169,14 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 
 ```agda
 z<l : ∀ {f} → increasing f → zero < lim f
-z<l mono = <→≤→< z<ω (ω≤l mono)
+z<l mono = <-≤-trans z<ω (ω≤l mono)
 ```
 
-`f<l` 是上一章 [`f≤l`](Ordinal.html#7621) 的 `_<_` 版, 它要求 `f` 递增.
+`f<l` 是上一章 [`f≤l`](Ordinal.html#7623) 的 `_<_` 版, 它要求 `f` 递增.
 
 ```agda
 f<l : ∀ {f n} → increasing f → f n < lim f
-f<l mono = <→≤→< (fn<fsn mono) f≤l
+f<l mono = <-≤-trans (fn<fsn mono) f≤l
 ```
 
 递增序列在其极限内有任意大的项.
@@ -187,9 +187,9 @@ f<l mono = <→≤→< (fn<fsn mono) f≤l
 
 ```agda
 ∃[n]<fn : ∀ {α f} → increasing f → α < lim f → ∃[ n ] α < f n
-∃[n]<fn {zero}  mono _ = 1 , (≤→<→< z≤ (fn<fsn mono))
+∃[n]<fn {zero}  mono _ = 1 , (≤-<-trans z≤ (fn<fsn mono))
 ∃[n]<fn {suc α} mono s<l with ∃[n]<fn mono (<-trans <s s<l)
-... | n , <f = (suc n) , (≤→<→< (<→s≤ <f) (fn<fsn mono))
+... | n , <f = (suc n) , (≤-<-trans (<→s≤ <f) (fn<fsn mono))
 ∃[n]<fn {lim g} mono ((n , d) , l<f) = n , d , l<f
 ```
 
@@ -198,7 +198,7 @@ f<l mono = <→≤→< (fn<fsn mono) f≤l
 ```agda
 s<l : ∀ {α f} → increasing f → α < lim f → suc α < lim f
 s<l mono < with ∃[n]<fn mono <
-... | n , <f = ≤→<→< (<→s≤ <f) (f<l mono)
+... | n , <f = ≤-<-trans (<→s≤ <f) (f<l mono)
 ```
 
 ## 良构序数的性质

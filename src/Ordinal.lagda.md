@@ -53,10 +53,10 @@ open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
 ```
 
-我们导入了 `Setoid` 用于构造序数广集 `OrdSetoid`, 但本章暂时用不到它, 只是为后续章节做准备. `Rel` 用于定义序数上的序关系. 我们将证明这些序关系的性质, 如自反性, 对称性, 等等, 因此导入了相应的定义和引理. 虽然大部分情况下我们都使用 `OrdSetoid` 中的等价关系 `_≈_`, 但我们会尽量尝试建立内涵相等 `_≡_`, 它蕴含我们的 `_≈_`.
+`Rel` 用于定义序数上的序关系. 我们将证明这些序关系的性质, 如自反性, 对称性, 等等, 因此导入了相应的定义和引理. 虽然大部分情况下我们都使用 `OrdSetoid` 中的等价关系 `_≈_`, 但我们会尽量尝试建立内涵相等 `_≡_`, 它蕴含我们的 `_≈_`.
 
 ```agda
-open import Relation.Binary using (Setoid; Rel; _⇒_)
+open import Relation.Binary using (Rel; _⇒_)
 open import Relation.Binary.Definitions
   using (Reflexive; Symmetric; Transitive; Irreflexive; Asymmetric)
 open import Relation.Binary.Consequences using (trans∧irr⇒asym)
@@ -254,10 +254,13 @@ f≤l = ≤→≤l ≤-refl
 `≤-refl` 和 `≤-trans` 说明 `_≤_` 是预序. 我们期望 `_≤_` 是偏序, 现在只缺反对称性, 但我们无法证明 `_≤_` 对内涵等词 `_≡_` 反对称. 实际上, 我们从 `_≤_` 直接定义出满足反对称的 `_≈_`, 我们称之为*序列外延相等*.
 
 ```agda
-infix 4 _≈_
+infix 4 _≈_ _≉_
 
 _≈_ : Rel Ord 0ℓ
 α ≈ β = α ≤ β × β ≤ α
+
+_≉_ : Rel Ord 0ℓ
+α ≉ β = ¬ α ≈ β
 ```
 
 `_≈_` 的自反性和传递性由 `_≤_` 的相应性质得到, 对称性依定义只需调换两个 `_≤_` 式的先后顺序即可.
@@ -271,21 +274,6 @@ _≈_ : Rel Ord 0ℓ
 
 ≈-trans : Transitive _≈_
 ≈-trans = λ { (α≤β , β≤α) (β≤γ , γ≤β) → ≤-trans α≤β β≤γ , ≤-trans γ≤β β≤α }
-```
-
-由此可以构造序数广集, 它相当于是 `Ord` 在 `_≈_` 上的商集, 合并了传统理论中同一序数在我们这里的多种基本序列表示.
-
-```agda
-OrdSetoid : Setoid 0ℓ 0ℓ
-OrdSetoid = record
-  { Carrier = Ord
-  ; _≈_ = _≈_
-  ; isEquivalence = record
-    { refl  = ≈-refl
-    ; sym   = ≈-sym
-    ; trans = ≈-trans
-    }
-  }
 ```
 
 再证一些关于 `_≈_` 的引理. 由 `≈-refl` 立即可知 `_≡_` 蕴含 `_≈_`.
@@ -337,25 +325,25 @@ s≰ {suc α} ≤ = s≰ (s≤s→≤ ≤)
 s≰ {lim f} (s≤ {d = n , d} (l≤ f≤)) = s≰ (s≤ (f≤ n))
 ```
 
-如果 `α` 小于等于 `β`, 那么 `β` 不小于等于 `α` 的任意前驱. 这是证明过程最复杂的否定性结果了, 只要搞定了它那么后面 `_<_` 和 `_≤_` 的相互转化都好办了.
+如果 `α` 小于等于 `β`, 那么 `α` 的任意前驱不可能大于等于 `β`. 这是证明过程最复杂的否定性结果了, 只要搞定了它那么后面 `_<_` 和 `_≤_` 的相互转化都好办了.
 
 ```agda
-≤→≰∸ : ∀ {α β d} → α ≤ β → β ≰ α ∸ d
-≤→≰∸ {suc α} {d = inj₁ tt} sα≤β    β≤α   = s≰ (≤-trans sα≤β β≤α)
-≤→≰∸ {suc α} {d = inj₂ d}  sα≤β    β≤α∸d = ≤→≰∸ (s≤→≤ sα≤β) β≤α∸d
-≤→≰∸ {lim f} {d = n , d}   (l≤ f≤) β≤f∸d = ≤→≰∸ (f≤ n) β≤f∸d
+≤→∸≱ : ∀ {α β d} → α ≤ β → α ∸ d ≱ β
+≤→∸≱ {suc α} {d = inj₁ tt} sα≤β    β≤α   = s≰ (≤-trans sα≤β β≤α)
+≤→∸≱ {suc α} {d = inj₂ d}  sα≤β    β≤α∸d = ≤→∸≱ (s≤→≤ sα≤β) β≤α∸d
+≤→∸≱ {lim f} {d = n , d}   (l≤ f≤) β≤f∸d = ≤→∸≱ (f≤ n) β≤f∸d
 ```
 
 任何序数都不小于等于自身的任意前驱. 这是上一条的特化.
 
 ```agda
 ≰∸ : ∀ {α d} → α ≰ α ∸ d
-≰∸ = ≤→≰∸ ≤-refl
+≰∸ = ≤→∸≱ ≤-refl
 ```
 
 ## 严格序
 
-`α` 小于 `β` 定义为 `α` 小于等于 `β` 的某个前驱.
+我们将 `α` 小于 `β` 定义为 `α` 小于等于 `β` 的某个前驱. 注意这里不采用 `α ≤ β × α ≉ β`, 即 `α ≤ β × α ≱ β` 的定义. 因为由我们的 `∃[ d ] α ≤ β ∸ d` 和前述引理 `≤→∸≱` 即可得到 `α ≱ β`, 但反之则不行. 因为在缺少排中律的情况下无法从否定式得到存在性命题. 也就是说, 在构造主义中, 我们的定义严格强于 `α ≤ β × α ≉ β`. 采用这种定义的好处是表述更加直接且符合构造主义, 因为不涉及否定式. 坏处是无法使用标准库的 [NonStrictToStrict](https://agda.github.io/agda-stdlib/Relation.Binary.Construct.NonStrictToStrict.html) 框架, 我们得自己证一遍相关引理. 主要是涉及 `<` 与 `≤` 相互转化的引理, 好在它们都不难证明.
 
 ```agda
 infix 4 _<_ _>_ _≮_ _≯_
@@ -383,14 +371,14 @@ z<s α = inj₁ tt , z≤
 <s = (inj₁ tt) , ≤-refl
 ```
 
-由上一小节证明的否定式可以证明 `_<_` 反自反且传递. 其中反自反分两个版本: `_≡_` 版用 refl 反演后即引理 `≰∸`; `_≈_` 版用引理 `≤→≰∸` 不难证明.
+由上一小节证明的否定式可以证明 `_<_` 反自反且传递. 其中反自反分两个版本: `_≡_` 版用 refl 反演后即引理 `≰∸`; `_≈_` 版用引理 `≤→∸≱` 不难证明.
 
 ```agda
 <-irrefl-≡ : Irreflexive _≡_ _<_
 <-irrefl-≡ refl (d , α≤α∸d) = ≰∸ α≤α∸d
 
 <-irrefl-≈ : Irreflexive _≈_ _<_
-<-irrefl-≈ (α≤β , β≤α) (d , α≤β∸d) = ≤→≰∸ β≤α α≤β∸d
+<-irrefl-≈ (α≤β , β≤α) (d , α≤β∸d) = ≤→∸≱ β≤α α≤β∸d
 ```
 
 `_<_` 的传递性由 `_≤_` 的传递性而来. 非对称性是反自反和传递性的推论.
@@ -407,24 +395,24 @@ z<s α = inj₁ tt , z≤
 
 ## `<` 与 `≤` 的相互转化
 
-最后一小节考察 `<` 与 `≤` 的相互转化规律. 首先, 显然地, `_<_` 蕴含 `_≤_`.
+我们顺着 [NonStrictToStrict](https://agda.github.io/agda-stdlib/Relation.Binary.Construct.NonStrictToStrict.html) 补上所需引理. 首先, 显然地, `_<_` 蕴含 `_≤_`.
 
 ```agda
 <⇒≤ : _<_ ⇒ _≤_
 <⇒≤ (d , α≤β∸d) = ∸→≤ α≤β∸d
 ```
 
-以下两条的逆命题依赖于排中律.
+然后是以下两条, 它们的逆命题依赖于 `_≤_` 的线序性和 `_≈_` 的可判定性, 本构筑中都不涉及.
 
 ```agda
 <⇒≱ : _<_ ⇒ _≱_
-<⇒≱ (d , α≤β∸d) β≤α = ≤→≰∸ β≤α α≤β∸d
+<⇒≱ (d , α≤β∸d) β≤α = ≤→∸≱ β≤α α≤β∸d
 
 ≤⇒≯ : _≤_ ⇒ _≯_
-≤⇒≯ α≤β (d , β≤α∸d) = ≤→≰∸ α≤β β≤α∸d
+≤⇒≯ α≤β (d , β≤α∸d) = ≤→∸≱ α≤β β≤α∸d
 ```
 
-接下来是两组等价式.
+接着是涉及 `suc` 的两组等价式.
 
 ```agda
 <→s≤ : ∀ {α β} → α < β → suc α ≤ β
@@ -465,20 +453,14 @@ s<s→< : ∀ {α β} → suc α < suc β → α < β
 s<s→< = _⟨$⟩_ (Equivalence.from <⇔s<s)
 ```
 
-以下四条是传递性的变体.
+由此可得传递性的变体.
 
 ```agda
-<→≤→< : ∀ {α β γ} → α < β → β ≤ γ → α < γ
-<→≤→< α<β β≤γ = s≤→< (≤-trans (<→s≤ α<β) β≤γ)
+<-≤-trans : ∀ {α β γ} → α < β → β ≤ γ → α < γ
+<-≤-trans α<β β≤γ = s≤→< (≤-trans (<→s≤ α<β) β≤γ)
 
-≤→<→< : ∀ {α β γ} → α ≤ β → β < γ → α < γ
-≤→<→< α≤β β<γ = s≤→< (≤-trans (s≤s α≤β) (<→s≤ β<γ))
-
-<→≈→< : ∀ {α β γ} → α < β → β ≈ γ → α < γ
-<→≈→< α<β (β≤γ , _) = <→≤→< α<β β≤γ
-
-≈→<→< : ∀ {α β γ} → α ≈ β → β < γ → α < γ
-≈→<→< (α≤β , _) β<γ = ≤→<→< α≤β β<γ
+≤-<-trans : ∀ {α β γ} → α ≤ β → β < γ → α < γ
+≤-<-trans α≤β β<γ = s≤→< (≤-trans (s≤s α≤β) (<→s≤ β<γ))
 ```
 
 最后是 `_<_` 版本的 `l≤→≤` 和 `≤→≤l`.
@@ -489,4 +471,69 @@ l<→< {n = n} (d , l≤ g≤) = d , g≤ n
 
 <→<l : ∀ {α f n} → α < f n → α < lim f
 <→<l α<fn = s≤→< (≤→≤l (<→s≤ α<fn))
+```
+
+## 序结构
+
+本小节总结了本章的主要结论. 我们用 `_≈_` 实例化了序结构模块并证明了 `_≤_` 是偏序且 `_<_` 是严格偏序.
+
+```agda
+open import Relation.Binary.Structures (_≈_)
+  using (IsEquivalence; IsPreorder; IsPartialOrder; IsStrictPartialOrder)
+
+≈-isEquivalence : IsEquivalence
+≈-isEquivalence = record
+  { refl  = ≈-refl
+  ; sym   = ≈-sym
+  ; trans = ≈-trans
+  }
+
+≤-isPreorder : IsPreorder _≤_
+≤-isPreorder = record
+  { isEquivalence = ≈-isEquivalence
+  ; reflexive = proj₁
+  ; trans = ≤-trans
+  }
+
+≤-isPartialOrder : IsPartialOrder _≤_
+≤-isPartialOrder = record
+  { isPreorder = ≤-isPreorder
+  ; antisym = λ ≤ ≥ → ≤ , ≥
+  }
+
+<-isStrictPartialOrder : IsStrictPartialOrder _<_
+<-isStrictPartialOrder = record
+  { isEquivalence = ≈-isEquivalence
+  ; irrefl = <-irrefl-≈
+  ; trans = <-trans
+  ; <-resp-≈ = (λ (β≤γ , _) α<β → <-≤-trans α<β β≤γ) ,
+                λ (_ , α≤β) β<γ → ≤-<-trans α≤β β<γ
+  }
+```
+
+由此可得 `_≤_` 和 `_<_` 都尊重 `_≈_`.
+
+```agda
+≤-respʳ-≈ = IsPartialOrder.≤-respʳ-≈ ≤-isPartialOrder
+≤-respˡ-≈ = IsPartialOrder.≤-respˡ-≈ ≤-isPartialOrder
+≤-resp-≈ = IsPartialOrder.≤-resp-≈ ≤-isPartialOrder
+
+<-respʳ-≈ = IsStrictPartialOrder.<-respʳ-≈ <-isStrictPartialOrder
+<-respˡ-≈ = IsStrictPartialOrder.<-respˡ-≈ <-isStrictPartialOrder
+<-resp-≈ = IsStrictPartialOrder.<-resp-≈ <-isStrictPartialOrder
+```
+
+## 序数广集
+
+由 `≈-isEquivalence` 可以构造序数广集, 它相当于是 `Ord` 在 `_≈_` 上的商集, 合并了传统理论中同一序数在我们这里的多种基本序列表示.
+
+```agda
+open Relation.Binary using (Setoid)
+
+OrdSetoid : Setoid 0ℓ 0ℓ
+OrdSetoid = record
+  { Carrier = Ord
+  ; _≈_ = _≈_
+  ; isEquivalence = ≈-isEquivalence
+  }
 ```

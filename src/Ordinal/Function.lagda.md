@@ -16,9 +16,39 @@ zhihu-tags: Agda, 序数, 大数数学
 
 module Ordinal.Function where
 
-open import Ordinal using (Ord; zero; suc; lim; _∸_; _≤_; _<_; _≈_)
+open import Ordinal
 open import Ordinal.WellFormed using (wellFormed)
+open import Data.Nat using (ℕ)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
+open import Relation.Binary using (_Respects_)
+open import Relation.Binary.Reasoning.Setoid (OrdSetoid)
+  using (begin_; step-≈; step-≈˘; _∎)
+```
+
+```agda
+wf-preserving : (Ord → Ord) → Set
+wf-preserving F = ∀ {α} → wellFormed α → wellFormed (F α)
+```
+
+```agda
+≤-enlarging : (Ord → Ord) → Set
+≤-enlarging F = ∀ α → α ≤ F α
+
+<-enlarging : (Ord → Ord) → Set
+<-enlarging F = ∀ α → α < F α
+```
+
+```agda
+<→≤-enlarging : ∀ {F} → <-enlarging F → ≤-enlarging F
+<→≤-enlarging <-elg = λ α → <⇒≤ (<-elg α)
+```
+
+```agda
+zero-enlarging : (Ord → Ord) → Set
+zero-enlarging F = zero < F zero
+
+suc-enlarging : (Ord → Ord) → Set
+suc-enlarging F = ∀ {α} → wellFormed α → suc α < F (suc α)
 ```
 
 ```agda
@@ -32,25 +62,11 @@ open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 ```agda
 suc-increasing : (Ord → Ord) → Set
 suc-increasing F = ∀ α → F α < F (suc α)
-
-∸-increasing : (Ord → Ord) → Set
-∸-increasing F = ∀ α d → F (suc (α ∸ d)) ≤ F α
 ```
 
 ```agda
-≤-enlarging : (Ord → Ord) → Set
-≤-enlarging F = ∀ α → α ≤ F α
-
-<-enlarging : (Ord → Ord) → Set
-<-enlarging F = ∀ α → α < F α
-```
-
-```agda
-zero-enlarging : (Ord → Ord) → Set
-zero-enlarging F = zero < F zero
-
-suc-enlarging : (Ord → Ord) → Set
-suc-enlarging F = ∀ {α} → wellFormed α → suc α < F (suc α)
+<→suc-increasing : ∀ {F} → <-increasing F → suc-increasing F
+<→suc-increasing <-inc = λ α → <-inc <s
 ```
 
 ```agda
@@ -64,8 +80,28 @@ normal F = ≤-increasing F × <-increasing F × lim-continuous F
 ```
 
 ```agda
-wf-preserving : (Ord → Ord) → Set
-wf-preserving F = ∀ α → wellFormed α → wellFormed (F α)
+normal→≤-enlarging : ∀ {F} → normal F → ≤-enlarging F
+normal→≤-enlarging nml@(_ , <-inc , lim-ct) =
+  λ { zero    → z≤
+    ; (suc α) → ≤-trans (s≤s (normal→≤-enlarging nml α)) (<→s≤ (<-inc <s))
+    ; (lim f) → l≤ (λ n → ≤-respʳ-≈
+        (≈-sym (lim-ct f))
+        (≤→≤l (normal→≤-enlarging nml (f n)))
+      )
+    }
 ```
 
-
+```agda
+normal-resp-≈ : normal Respects (λ F G → ∀ {α} → F α ≈ G α)
+normal-resp-≈ {F} {G} ext (≤-elg , <-elg , lim-ct) =
+    (λ α≤β → ≤-respˡ-≈ ext (≤-respʳ-≈ ext (≤-elg α≤β)))
+  , (λ α<β → <-≤-trans (<-respˡ-≈ ext (<-elg α<β)) (proj₁ ext))
+  , (λ f → begin
+      G (lim f)           ≈˘⟨ ext ⟩
+      F (lim f)           ≈⟨ lim-ct f ⟩
+      lim (λ n → F (f n)) ≈⟨ helper f ⟩
+      lim (λ n → G (f n)) ∎
+    )
+    where helper = λ f → l≤ (λ n → ≤→≤l (proj₁ ext))
+                       , l≤ (λ n → ≤→≤l (proj₂ ext))
+```
