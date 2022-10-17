@@ -2,7 +2,7 @@
 
 ## Features
 
-- Solely rely on agda-stdlib 1.7.1
+- Solely relies on agda-stdlib 1.7.1
 - --without-K and --safe
 - Up to large veblen ordinal
 - Ready for googology function such as fast growing hierarchy
@@ -13,51 +13,53 @@
 ### [Ordinal.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal.lagda.md)
 
 - Inductive definition of Brouwer ordinal
-- Inductive definition of non-strict order "≤"
-- Equality "≈" and strict order "<" are defined by "≤"
-- Partial ordering of "≤" and strict ordering of "<" are proved
+- Inductive definition of non-strict order `_≤_`
+- Equality `_≈_` and strict order `_<_` are defined by `_≤_`
+- Partial ordering of `_≤_` and strict ordering of `_<_` is proved
 - No total ordering, but that's fine
 
-### WellFormed.lagda.md
+### [Ordinal.WellFormed.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/WellFormed.lagda.md)
+
+- Well formed (WF) ordinals are those constructed hereditarily by strictly increasing sequence
+- WF of finite ordinals and `ω` is proved
+
+### [Ordinal.Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/Function.lagda.md)
+
+- Common properties of ordinal functions are defined
+- Definition of normal function is adapted for constructive setup
+
+### Ordinal.Recursion.lagda.md
 
 (TODO)
 
-### Operation.lagda.md
+### Ordinal.Arithmetic.lagda.md
 
 (TODO)
 
-### Recursion.lagda.md
+### Ordinal.Tetration.lagda.md
 
 (TODO)
 
-### Arithmetic.lagda.md
+### Veblen.Fixpoint.lagda.md
 
 (TODO)
 
-### Tetration.lagda.md
+### Veblen.EpsilonNumbers.lagda.md
 
 (TODO)
 
-### Iteration.lagda.md
+### Veblen.Function.lagda.md
 
 (TODO)
 
-### EpsilonNumbers.lagda.md
+### Veblen.Extended.lagda.md
 
 (TODO)
 
-### VeblenFunction.lagda.md
+### Veblen.OmegaAry.lagda.md
 
 (TODO)
 
-### ExtendedVeblenFunction.lagda.md
-
-(TODO)
-
-### OmegaAryVeblenFunction.lagda.md
-
-(TODO)
-
-### TransfiniteVeblenFunction.lagda.md
+### Veblen.Transfinite.lagda.md
 
 (TODO)

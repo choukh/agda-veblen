@@ -7,8 +7,9 @@ zhihu-url: https://zhuanlan.zhihu.com/p/573846653
 # Agda大序数(2) 良构序数
 
 > 交流Q群: 893531731  
+> 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
 > 本文源码: [Ordinal/WellFormed.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/WellFormed.lagda.md)  
-> GitHub Pages: [Ordinal.WellFormed.html](https://choukh.github.io/agda-lvo/Ordinal.WellFormed.html)  
+> 高亮渲染: [Ordinal.WellFormed.html](https://choukh.github.io/agda-lvo/Ordinal.WellFormed.html)  
 > 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
