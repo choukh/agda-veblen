@@ -112,22 +112,22 @@ n<ω {suc n} = s<ω n<ω
 
 ```agda
 fn<fsn : ∀ {f n} → increasing f → f n < f (suc n)
-fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
+fn<fsn inc = inc (ℕ.s≤s ℕ.≤-refl)
 ```
 
 递增序列的第 `n` 项不会小于 `n` 自身.
 
 ```agda
 ⌜n⌝≤fn : ∀ {f n} → increasing f → ⌜ n ⌝ ≤ f n
-⌜n⌝≤fn {n = zero}  mono = z≤
-⌜n⌝≤fn {n = suc n} mono = ≤-trans (s≤s (⌜n⌝≤fn mono)) (<→s≤ (fn<fsn mono))
+⌜n⌝≤fn {n = zero}  inc = z≤
+⌜n⌝≤fn {n = suc n} inc = ≤-trans (s≤s (⌜n⌝≤fn inc)) (<→s≤ (fn<fsn inc))
 ```
 
 我们称递增序列的极限为递增极限序数, 它比良构极限序数更宽泛, 但足以证明一些良好的性质. 如, `ω` 是最小的递增极限序数.
 
 ```agda
 ω≤l : ∀ {f} → increasing f → ω ≤ lim f
-ω≤l mono = l≤ (λ n → ≤→≤l (⌜n⌝≤fn mono))
+ω≤l inc = l≤ (λ n → ≤→≤l (⌜n⌝≤fn inc))
 ```
 
 ### 等价性
@@ -147,7 +147,7 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 ⌜⌝-surjective {zero}  _  _          = 0 , refl
 ⌜⌝-surjective {suc α} <ω wf with ⌜⌝-surjective (<-trans <s <ω) wf
 ... | n , ≡⌜n⌝                      = (suc n) , cong suc ≡⌜n⌝
-⌜⌝-surjective {lim f} <ω (_ , mono) = ⊥-elim (<⇒≱ <ω (ω≤l mono))
+⌜⌝-surjective {lim f} <ω (_ , inc) = ⊥-elim (<⇒≱ <ω (ω≤l inc))
 ```
 
 这说明小于 `ω` 的良构序数与自然数等价.
@@ -169,14 +169,14 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 
 ```agda
 z<l : ∀ {f} → increasing f → zero < lim f
-z<l mono = <-≤-trans z<ω (ω≤l mono)
+z<l inc = <-≤-trans z<ω (ω≤l inc)
 ```
 
 `f<l` 是上一章 [`f≤l`](Ordinal.html#7623) 的 `_<_` 版, 它要求 `f` 递增.
 
 ```agda
 f<l : ∀ {f n} → increasing f → f n < lim f
-f<l mono = <-≤-trans (fn<fsn mono) f≤l
+f<l inc = <-≤-trans (fn<fsn inc) f≤l
 ```
 
 递增序列在其极限内有任意大的项.
@@ -187,18 +187,18 @@ f<l mono = <-≤-trans (fn<fsn mono) f≤l
 
 ```agda
 ∃[n]<fn : ∀ {α f} → increasing f → α < lim f → ∃[ n ] α < f n
-∃[n]<fn {zero}  mono _ = 1 , (≤-<-trans z≤ (fn<fsn mono))
-∃[n]<fn {suc α} mono s<l with ∃[n]<fn mono (<-trans <s s<l)
-... | n , <f = (suc n) , (≤-<-trans (<→s≤ <f) (fn<fsn mono))
-∃[n]<fn {lim g} mono ((n , d) , l<f) = n , d , l<f
+∃[n]<fn {zero}  inc _ = 1 , (≤-<-trans z≤ (fn<fsn inc))
+∃[n]<fn {suc α} inc s<l with ∃[n]<fn inc (<-trans <s s<l)
+... | n , <f = (suc n) , (≤-<-trans (<→s≤ <f) (fn<fsn inc))
+∃[n]<fn {lim g} inc ((n , d) , l<f) = n , d , l<f
 ```
 
 `s<l` 将 `s<ω` 的结论一般化到任意递增极限序数. 由上一条, 存在 `n` 使得 `α < f n`, 即 `suc α ≤ f n`, 又 `f n < f (suc n) < lim f`, 由传递性即证.
 
 ```agda
 s<l : ∀ {α f} → increasing f → α < lim f → suc α < lim f
-s<l mono < with ∃[n]<fn mono <
-... | n , <f = ≤-<-trans (<→s≤ <f) (f<l mono)
+s<l inc < with ∃[n]<fn inc <
+... | n , <f = ≤-<-trans (<→s≤ <f) (f<l inc)
 ```
 
 ## 良构序数的性质
@@ -207,18 +207,18 @@ s<l mono < with ∃[n]<fn mono <
 
 ```agda
 ≢z→>z : ∀ {α} → wellFormed α → α ≢ zero → α > zero
-≢z→>z {zero}  _          z≢z = ⊥-elim (z≢z refl)
-≢z→>z {suc α} _          _   = (inj₁ tt) , z≤
-≢z→>z {lim f} (_ , mono) _   = z<l mono
+≢z→>z {zero}  _         z≢z = ⊥-elim (z≢z refl)
+≢z→>z {suc α} _         _   = (inj₁ tt) , z≤
+≢z→>z {lim f} (_ , inc) _   = z<l inc
 ```
 
 外延等于零的良构序数就是零.
 
 ```agda
 ≈z→≡z : ∀ {α} → wellFormed α → α ≈ zero → α ≡ zero
-≈z→≡z {zero}  _          _         = refl
-≈z→≡z {suc α} _          (s≤z , _) = ⊥-elim (s≰z s≤z)
-≈z→≡z {lim f} (_ , mono) (l≤z , _) = ⊥-elim (<⇒≱ (z<l mono) l≤z)
+≈z→≡z {zero}  _         _         = refl
+≈z→≡z {suc α} _         (s≤z , _) = ⊥-elim (s≰z s≤z)
+≈z→≡z {lim f} (_ , inc) (l≤z , _) = ⊥-elim (<⇒≱ (z<l inc) l≤z)
 ```
 
 小于等于零的良构序数就是零.
@@ -232,9 +232,9 @@ s<l mono < with ∃[n]<fn mono <
 
 ```agda
 ≡z⊎>z : ∀ {α} → wellFormed α → α ≡ zero ⊎ α > zero
-≡z⊎>z {zero}  _          = inj₁ refl
-≡z⊎>z {suc α} _          = inj₂ (z<s α)
-≡z⊎>z {lim f} (_ , mono) = inj₂ (z<l mono)
+≡z⊎>z {zero}  _         = inj₁ refl
+≡z⊎>z {suc α} _         = inj₂ (z<s α)
+≡z⊎>z {lim f} (_ , inc) = inj₂ (z<l inc)
 ```
 
 良构序数要么有限, 要么无限.
@@ -245,14 +245,14 @@ s<l mono < with ∃[n]<fn mono <
 <ω⊎≥ω {suc α} wf with <ω⊎≥ω wf
 ...                 | inj₁ <ω = inj₁ (s<ω <ω)
 ...                 | inj₂ ≥ω = inj₂ (≤-trans ≥ω ≤s)
-<ω⊎≥ω {lim f} (_ , mono)      = inj₂ (ω≤l mono)
+<ω⊎≥ω {lim f} (_ , inc)       = inj₂ (ω≤l inc)
 ```
 
 良构无限后继序数的直接前驱也是无限序数. 这是上一条的简单推论.
 
 ```agda
 ω≤s→ω≤ : ∀ {α} → wellFormed α → ω ≤ suc α → ω ≤ α
-ω≤s→ω≤ {α} wf ω≤s with <ω⊎≥ω wf
+ω≤s→ω≤ wf ω≤s with <ω⊎≥ω wf
 ...                  | inj₁ <ω = ⊥-elim (≤⇒≯ ω≤s (s<ω <ω))
 ...                  | inj₂ ≥ω = ≥ω
 ```
