@@ -104,7 +104,7 @@ s<ω : ∀ {α} → α < ω → suc α < ω
 s<ω ((n , d) , ≤) = (suc n , inj₁ tt) , ≤-trans (s≤s ≤) s∸≤
 
 n<ω : ∀ {n} → ⌜ n ⌝ < ω
-n<ω {zero } = z<ω
+n<ω {zero}  = z<ω
 n<ω {suc n} = s<ω n<ω
 ```
 
@@ -172,7 +172,7 @@ z<l : ∀ {f} → increasing f → zero < lim f
 z<l inc = <-≤-trans z<ω (ω≤l inc)
 ```
 
-`f<l` 是上一章 [`f≤l`](Ordinal.html#7623) 的 `_<_` 版, 它要求 `f` 递增.
+`f<l` 是上一章 [`f≤l`](Ordinal.html#7646) 的 `_<_` 版, 它要求 `f` 递增.
 
 ```agda
 f<l : ∀ {f n} → increasing f → f n < lim f
@@ -256,3 +256,7 @@ s<l inc < with ∃[n]<fn inc <
 ...                  | inj₁ <ω = ⊥-elim (≤⇒≯ ω≤s (s<ω <ω))
 ...                  | inj₂ ≥ω = ≥ω
 ```
+
+## 经典序数
+
+在良构序数的基础上加入排中律可以得到经典序数, 可证 `_≤_` 的线序性. 这部分内容与主线无关, 且非 `--safe`, 我们把它放在了一个[独立的模块](Ordinal.Classic.html).

@@ -11,6 +11,8 @@ zhihu-tags: Agda, 序数, 大数数学
 > 高亮渲染: [Ordinal.Function.html](https://choukh.github.io/agda-lvo/Ordinal.Function.html)  
 > 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
+**(本章施工中)**
+
 ```agda
 {-# OPTIONS --without-K --safe #-}
 
