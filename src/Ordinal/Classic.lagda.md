@@ -1,6 +1,7 @@
 ---
 title: Agda大序数(2*) 经典序数
 zhihu-tags: Agda, 序数, 大数数学
+zhihu-url: https://zhuanlan.zhihu.com/p/575362583
 ---
 
 # Agda大序数(2*) 经典序数
@@ -29,7 +30,6 @@ open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Unit using (⊤; tt)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
-open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 ```
 
 ## 经典逻辑
@@ -78,7 +78,7 @@ postulate
 ≤-split : ∀ {α β} → wellFormed α → wellFormed β → α ≤ β → α < β ⊎ α ≈ β
 ```
 
-我们先证 `≤-total`, 总共分了七种情况. 两边有任何一边是零的时候都是显然的.
+我们先证 `≤-total`, 有七种情况. 两边有任何一边是零的时候都是显然的.
 
 ```agda
 ≤-total {zero}  {β}    _ _ = inj₁ z≤
@@ -230,7 +230,7 @@ l≤s→l≤ wfα wfβ l≤s with <l⊎≥l wfα wfβ
 
 ```agda
 ≤-split {lim f} {lim g} wfα wfβ f≤g with LEM {P = ∀ n → g n ≤ lim f}
-... | _ because ofʸ gn≤l = inj₂ (f≤g , (l≤ gn≤l))
+... | _ because ofʸ gn≤l = inj₂ (f≤g , l≤ gn≤l)
 ... | _ because ofⁿ gn≰l with ¬∀→∃¬ gn≰l
 ...                         | (n , gn≰l) = inj₁ (≤-<-trans
                               (≰⇒≥ (proj₁ wfβ) wfα gn≰l)
