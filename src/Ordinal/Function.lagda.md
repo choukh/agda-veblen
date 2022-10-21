@@ -1,6 +1,7 @@
 ---
 title: Agda大序数(3) 序数函数
 zhihu-tags: Agda, 序数, 大数数学
+zhihu-url: https://zhuanlan.zhihu.com/p/575766146
 ---
 
 # Agda大序数(3) 序数函数
@@ -39,7 +40,7 @@ open import Relation.Binary.Reasoning.Setoid (OrdSetoid)
 我们称 F : Ord → Ord 为序数函数, 它是我们的主要研究对象.
 
 ```agda
-variable
+private variable
   {F} : Ord → Ord
 ```
 
@@ -63,11 +64,11 @@ wf-preserving F = ∀ {α} → wellFormed α → wellFormed (F α)
 显然, 强放大蕴含弱放大.
 
 ```agda
-<→≤-enlarging : <-enlarging F → ≤-enlarging F
-<→≤-enlarging <-elg = λ α → <⇒≤ (<-elg α)
+_ : <-enlarging F → ≤-enlarging F
+_ = λ <-elg α → <⇒≤ (<-elg α)
 ```
 
-下面是两种特殊的放大性, 分别叫做**零处强放大**和**良构后继处强放大**. 在 Veblen 不动点理论中要用到它们. 显然, 强放大蕴含这两者.
+下面是两种特殊的放大性, 分别叫做**零放大**和**良构后继放大**. 在 Veblen 不动点理论中要用到它们. 显然, 强放大蕴含这两者.
 
 ```agda
 zero-enlarging : (Ord → Ord) → Set
@@ -87,17 +88,23 @@ suc-enlarging F = ∀ {α} → wellFormed α → suc α < F (suc α)
 <-increasing F = ∀ {α β} → α < β → F α < F β
 ```
 
-下面是一种特殊的放大性, 称为后继处强递增. 显然, 强递增蕴含后继处强递增.
+下面是两种特殊的递增性, 分别叫做**后继递增**和**前驱递增**. 显然, 强递增蕴含这两者.
 
 ```agda
 suc-increasing : (Ord → Ord) → Set
 suc-increasing F = ∀ α → F α < F (suc α)
 
+∸-increasing : (Ord → Ord) → Set
+∸-increasing F = ∀ α d → F (α ∸ d) < F α
+
 _ : <-increasing F → suc-increasing F
 _ = λ <-inc _ → <-inc <s
+
+_ : <-increasing F → ∸-increasing F
+_ = λ <-inc α d → <-inc (s≤→< s∸≤)
 ```
 
-如果可以交换 `F` 和 `lim` 的顺序, 我们就说 `F` 在**极限处连续**, 简称连续.
+如果可以交换 `F` 和 `lim` 的顺序, 我们就说 `F` 在**极限连续**, 简称连续.
 
 ```agda
 lim-continuous : (Ord → Ord) → Set
@@ -118,8 +125,8 @@ normal F = ≤-increasing F × <-increasing F × lim-continuous F
 - 零的情况显然成立.
 
 ```agda
-normal→≤-enlarging : normal F → ≤-enlarging F
-normal→≤-enlarging nml@(_ , <-inc , lim-ct) =
+normal→≤-enl : normal F → ≤-enlarging F
+normal→≤-enl nml@(_ , <-inc , lim-ct) =
   λ { zero    → z≤
 ```
 
@@ -127,7 +134,7 @@ normal→≤-enlarging nml@(_ , <-inc , lim-ct) =
 
 ```agda
     ; (suc α) → ≤-trans
-        (s≤s (normal→≤-enlarging nml α)) {- suc α ≤ suc (F α) -}
+        (s≤s (normal→≤-enl nml α)) {- suc α ≤ suc (F α) -}
         (<→s≤ (<-inc <s))                {- suc (F α) ≤ F (suc α) -}
 ```
 
@@ -136,7 +143,7 @@ normal→≤-enlarging nml@(_ , <-inc , lim-ct) =
 ```agda
     ; (lim f) → l≤ (λ n → ≤-respʳ-≈
         (≈-sym (lim-ct f))                    {- F (lim f) ≈ lim (F ∘ f) -}
-        (≤→≤l (normal→≤-enlarging nml (f n))) {- f n ≤ lim (F ∘ f) -}
+        (≤→≤l (normal→≤-enl nml (f n))) {- f n ≤ lim (F ∘ f) -}
       )
     }
 ```
@@ -179,13 +186,13 @@ normal-resp-≈ {F} {G} ext (≤-inc , <-inc , lim-ct)
 
 ## 与传统定义的等价性
 
-在传统文献中序数嵌入定义为在后继处递增且极限处连续的序数函数. 两种定义对比如下.
+在传统文献中序数嵌入定义为在后继递增且极限连续的序数函数. 两种定义对比如下.
 
-| 本构筑    | 传统      |
-| ----     | ----     |
-| 弱递增    | -        |
-| 强递增    | 后继处递增 |
-| 极限处连续 | 极限处连续 |
+| 本构筑    | 传统     |
+| ----     | ----    |
+| 弱递增    | -       |
+| 强递增    | 后继递增 |
+| 极限连续  | 极限连续 |
 
 第三点是一样的, 我们分别解释前两点.
 
@@ -209,7 +216,7 @@ open import Function.Definitions (_≈_) (_≈_) using (Congruent)
 
 ### 强递增
 
-我们用强递增取代后继处递增是为了省去良构条件. 若不然, 需要将相关性质都限制成良构版如下[^1].
+我们用强递增取代后继递增是为了省去良构条件. 若不然, 需要将相关性质都限制成良构版如下[^1].
 
 [^1]: _ 当然我们也可以用一个 record 类型封装良构条件, 但还是没有上面的处理简单.
 
@@ -246,3 +253,4 @@ wf-nml→<-inc nml@(_ , _ , lim-ct) {β = lim f} wfα wfβ@(wfn , inc) α<l
 也就是说, 限定在良构序数的情况下[^2], 传统定义蕴含我们的定义. 另一方面, 显然地, 由 `<-increasing` 蕴含 `suc-increasing`, 我们的定义也蕴含传统定义. 这就说明了两者的等价性.
 
 [^2]: _ 且忽略上一小节所述由构造主义和内涵类型论所造成的微妙区别
+ 
