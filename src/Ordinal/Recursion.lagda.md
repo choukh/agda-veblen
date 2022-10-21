@@ -26,6 +26,11 @@ open import Ordinal.Function
 ```
 
 ```agda
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
+```
+
+```agda
 private variable
   {F} : Ord → Ord
 ```
@@ -52,8 +57,22 @@ rec-by-≤-enl α₀ ≤-inc <-enl (lim f) = l≤ (λ n → ≤→≤l (rec-by-�
 ```
 
 ```agda
---rec-from-≤-inc : ∀ α₀ → ≤-increasing F → ≤-enlarging F → ≤-increasing (rec F from α₀ by_)
---rec-from-≤-inc α₀ ≤-inc ≤-enl {α} {β} z≤      = rec-from-≤-enl β ≤-enl α₀
---rec-from-≤-inc α₀ ≤-inc ≤-enl {α} {β} (s≤ ≤∸) = {!   !}
---rec-from-≤-inc α₀ ≤-inc ≤-enl {α} {β} (l≤ f≤) = l≤ λ n → rec-from-≤-inc α₀ ≤-inc ≤-enl (f≤ n)
+∸-increasing : (Ord → Ord) → Set
+∸-increasing F = ∀ α d → F (suc (α ∸ d)) ≤ F α
+```
+
+```agda
+rec-by-∸-inc : ∀ α₀ → ≤-enlarging F → ∸-increasing (rec F from α₀ by_)
+rec-by-∸-inc α₀ ≤-enl (suc α) (inj₁ tt) = ≤-refl
+rec-by-∸-inc α₀ ≤-enl (suc α) (inj₂ d)  = ≤-trans (rec-by-∸-inc α₀ ≤-enl α d) (≤-enl _)
+rec-by-∸-inc α₀ ≤-enl (lim f) (n , d)   = ≤-trans (rec-by-∸-inc α₀ ≤-enl (f n) d) (≤→≤l ≤-refl)
+```
+
+```agda
+rec-by-≤-inc : ∀ α₀ → ≤-increasing F → ≤-enlarging F → ≤-increasing (rec F from α₀ by_)
+rec-by-≤-inc α₀ ≤-inc ≤-enl {α} {β} z≤      = rec-from-≤-enl β ≤-enl α₀
+rec-by-≤-inc α₀ ≤-inc ≤-enl {α} {β} (s≤ ≤∸) = ≤-trans
+  (≤-inc (rec-by-≤-inc α₀ ≤-inc ≤-enl ≤∸))
+  (rec-by-∸-inc α₀ ≤-enl β _)
+rec-by-≤-inc α₀ ≤-inc ≤-enl {α} {β} (l≤ f≤) = l≤ λ n → rec-by-≤-inc α₀ ≤-inc ≤-enl (f≤ n)
 ```

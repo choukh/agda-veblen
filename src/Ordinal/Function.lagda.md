@@ -88,20 +88,14 @@ suc-enlarging F = ∀ {α} → wellFormed α → suc α < F (suc α)
 <-increasing F = ∀ {α β} → α < β → F α < F β
 ```
 
-下面是两种特殊的递增性, 分别叫做**后继递增**和**前驱递增**. 显然, 强递增蕴含这两者.
+下面是一种特殊的递增性, 称为**后继递增**. 显然, 强递增蕴含后继递增.
 
 ```agda
 suc-increasing : (Ord → Ord) → Set
 suc-increasing F = ∀ α → F α < F (suc α)
 
-∸-increasing : (Ord → Ord) → Set
-∸-increasing F = ∀ α d → F (α ∸ d) < F α
-
 _ : <-increasing F → suc-increasing F
 _ = λ <-inc _ → <-inc <s
-
-_ : <-increasing F → ∸-increasing F
-_ = λ <-inc α d → <-inc (s≤→< s∸≤)
 ```
 
 如果可以交换 `F` 和 `lim` 的顺序, 我们就说 `F` 在**极限连续**, 简称连续.
