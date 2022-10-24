@@ -32,9 +32,10 @@
 
 - General form of ordianl recursive function is defined and its properties are proved
 
-### Ordinal.Arithmetic.lagda.md
+### [Ordinal.Arithmetic.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/Arithmetic.lagda.md)
 
-(TODO)
+- `_+_`, `_*_` and `_^_` are defined by recursion and their WF preserving properties are proved
+- Association law, distribution law, etc
 
 ### Ordinal.Tetration.lagda.md
 

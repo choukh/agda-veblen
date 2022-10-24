@@ -45,3 +45,10 @@ open import Ordinal.Recursion public
 ```
 
 - 定义了一般形式的序数递归函数 (超限递归), 并证明了它的一般性质.
+
+```agda
+open import Ordinal.Arithmetic public
+```
+
+- 由超限递归定义了 `_+_`, `_*_` 和 `_^_` 并证明了它们的保良构性.
+- 结合律, 分配率, 等等

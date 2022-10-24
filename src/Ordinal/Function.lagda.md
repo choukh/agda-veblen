@@ -131,16 +131,16 @@ normal→≤-enl nml@(_ , <-inc , lim-ct) =
 
 ```agda
     ; (suc α) → ≤-trans
-        (s≤s (normal→≤-enl nml α)) {- suc α ≤ suc (F α) -}
-        (<→s≤ (<-inc <s))          {- suc (F α) ≤ F (suc α) -}
+        (s≤s (normal→≤-enl nml α)) -- suc α ≤ suc (F α)
+        (<→s≤ (<-inc <s))          -- suc (F α) ≤ F (suc α)
 ```
 
 - 极限的情况, 即证 `f n ≤ F (lim f)`. 由连续性, `F (lim f) ≈ lim (F ∘ f)`. 只需证 `f n ≤ lim (F ∘ f)`, 只需证 `f n ≤ (F ∘ f) n`, 此即归纳假设. ∎
 
 ```agda
     ; (lim f) → l≤ λ n → ≤-respʳ-≈
-        (≈-sym (lim-ct f))              {- F (lim f) ≈ lim (F ∘ f) -}
-        (≤→≤l (normal→≤-enl nml (f n))) {- f n ≤ lim (F ∘ f) -}
+        (≈-sym (lim-ct f))              -- F (lim f) ≈ lim (F ∘ f)
+        (≤→≤l (normal→≤-enl nml (f n))) -- f n ≤ lim (F ∘ f)
     }
 ```
 
@@ -234,14 +234,14 @@ wf-nml→<-inc : wf-normal F → wf-<-increasing F
 
 wf-nml→<-inc nml@(≤-inc , suc-inc , _) {β = suc β} wfα wfβ α<s
   = ≤-<-trans
-    (≤-inc (<s→≤ α<s)) {- F α ≤ F β -}
-    (suc-inc wfβ)      {- F β < F (suc β) -}
+    (≤-inc (<s→≤ α<s)) -- F α ≤ F β
+    (suc-inc wfβ)      -- F β < F (suc β)
 
 wf-nml→<-inc nml@(_ , _ , lim-ct) {β = lim f} wfα wfβ@(wfn , inc) α<l
   with ∃[n]<fn inc α<l
 ...  | (n , α<fn) = <-trans
-        (wf-nml→<-inc nml wfα wfn α<fn)       {- F α < F (f n) -}
-        (<-respʳ-≈ (≈-sym (lim-ct f)) helper) {- F (f n) < F (lim f) -}
+        (wf-nml→<-inc nml wfα wfn α<fn)       -- F α < F (f n)
+        (<-respʳ-≈ (≈-sym (lim-ct f)) helper) -- F (f n) < F (lim f)
   {- F (f n) < lim (F ∘ f) -}
   where helper = f<l λ m<n → wf-nml→<-inc nml wfn wfn (inc m<n)
 ```

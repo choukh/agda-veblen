@@ -62,11 +62,11 @@ private variable
 rec-from-≤-enl : ∀ α → ≤-enlarging F → ≤-enlarging (rec F from_by α)
 rec-from-≤-enl zero    ≤-enl α₀ = ≤-refl
 rec-from-≤-enl (suc α) ≤-enl α₀ = ≤-trans
-  (rec-from-≤-enl α ≤-enl α₀)     {- α₀ ≤ rec F from α₀ by α -}
-  (≤-enl _)                       {- rec F from α₀ by α ≤ F (rec F from α₀ by α) -}
+  (rec-from-≤-enl α ≤-enl α₀)     -- α₀ ≤ rec F from α₀ by α
+  (≤-enl _)                       -- rec F from α₀ by α ≤ F (rec F from α₀ by α)
 rec-from-≤-enl (lim f) ≤-enl α₀ = ≤-trans
-  (rec-from-≤-enl (f 0) ≤-enl α₀) {- α₀ ≤ rec F from α₀ by f 0 -}
-  (≤→≤l ≤-refl)                   {- rec F from α₀ by f 0 ≤ lim λ n → rec F from α₀ by f n -}
+  (rec-from-≤-enl (f 0) ≤-enl α₀) -- α₀ ≤ rec F from α₀ by f 0
+  (≤→≤l ≤-refl)                   -- rec F from α₀ by f 0 ≤ lim λ n → rec F from α₀ by f n
 ```
 
 **引理** 如果 `F` 弱递增, 那么 `rec F from_by α` 也弱递增.
@@ -75,9 +75,9 @@ rec-from-≤-enl (lim f) ≤-enl α₀ = ≤-trans
 rec-from-≤-inc : ∀ α → ≤-increasing F → ≤-increasing (rec F from_by α)
 rec-from-≤-inc zero    _     ≤ = ≤
 rec-from-≤-inc (suc γ) ≤-inc ≤ = ≤-inc
-  (rec-from-≤-inc γ ≤-inc ≤)       {- rec F from α by γ ≤ rec F from β by γ -}
+  (rec-from-≤-inc γ ≤-inc ≤)       -- rec F from α by γ ≤ rec F from β by γ
 rec-from-≤-inc (lim f) ≤-inc ≤ = l≤ λ n → ≤→≤l
-  (rec-from-≤-inc (f n) ≤-inc ≤)   {- rec F from α by f n ≤ rec F from β by f n -}
+  (rec-from-≤-inc (f n) ≤-inc ≤)   -- rec F from α by f n ≤ rec F from β by f n
 ```
 
 ### 固定初始值
@@ -91,10 +91,10 @@ rec-from-≤-inc (lim f) ≤-inc ≤ = l≤ λ n → ≤→≤l
 rec-by-≤-enl : ∀ {α₀} → ≤-increasing F → <-enlarging F → ≤-enlarging (rec F from α₀ by_)
 rec-by-≤-enl ≤-inc <-enl zero    = z≤
 rec-by-≤-enl ≤-inc <-enl (suc α) = ≤-trans
-  (s≤s (rec-by-≤-enl ≤-inc <-enl α)) {- suc α ≤ suc (rec F from α₀ by α) -}
-  (<→s≤ (<-enl _))                   {- suc (rec F from α₀ by α) ≤ F (rec F from α₀ by α) -}
+  (s≤s (rec-by-≤-enl ≤-inc <-enl α)) -- suc α ≤ suc (rec F from α₀ by α)
+  (<→s≤ (<-enl _))                   -- suc (rec F from α₀ by α) ≤ F (rec F from α₀ by α)
 rec-by-≤-enl ≤-inc <-enl (lim f) = l≤ λ n → ≤→≤l
-  (rec-by-≤-enl ≤-inc <-enl (f n))   {- f n ≤ rec F from α₀ by f n -}
+  (rec-by-≤-enl ≤-inc <-enl (f n))   -- f n ≤ rec F from α₀ by f n
 ```
 
 为了证明 `rec F from α₀ by_` 的递增性, 我们引入一个辅助概念, 叫做 **s∸递增**. 它可以看作 `F` 保持第一章的 [`s∸≤`](Ordinal.html#7532) 关系.
@@ -110,11 +110,11 @@ s∸-increasing F = ∀ α d → F (suc (α ∸ d)) ≤ F α
 rec-by-∸-inc : ∀ {α₀} → ≤-enlarging F → s∸-increasing (rec F from α₀ by_)
 rec-by-∸-inc ≤-enl (suc α) (inj₁ tt) = ≤-refl
 rec-by-∸-inc ≤-enl (suc α) (inj₂ d)  = ≤-trans
-  (rec-by-∸-inc ≤-enl α d)     {- F (rec F from α₀ by (α ∸ d)) ≤ rec F from α₀ by α -}
-  (≤-enl _)                    {- rec F from α₀ by α ≤ F rec F from α₀ by α -}
+  (rec-by-∸-inc ≤-enl α d)     -- F (rec F from α₀ by (α ∸ d)) ≤ rec F from α₀ by α
+  (≤-enl _)                    -- rec F from α₀ by α ≤ F rec F from α₀ by α
 rec-by-∸-inc ≤-enl (lim f) (n , d)   = ≤-trans
-  (rec-by-∸-inc ≤-enl (f n) d) {- F (rec F from α₀ by (f n ∸ d)) ≤ rec F from α₀ by f n -}
-  (≤→≤l ≤-refl)                {- rec F from α₀ by f n ≤ lim λ n → rec F from α₀ by f n -}
+  (rec-by-∸-inc ≤-enl (f n) d) -- F (rec F from α₀ by (f n ∸ d)) ≤ rec F from α₀ by f n
+  (≤→≤l ≤-refl)                -- rec F from α₀ by f n ≤ lim λ n → rec F from α₀ by f n
 ```
 
 **引理** 如果 `F` 弱递增且弱放大, 那么 `rec F from α₀ by_` 弱递增.
@@ -123,10 +123,10 @@ rec-by-∸-inc ≤-enl (lim f) (n , d)   = ≤-trans
 rec-by-≤-inc : ∀ {α₀} → ≤-increasing F → ≤-enlarging F → ≤-increasing (rec F from α₀ by_)
 rec-by-≤-inc ≤-inc ≤-enl {α} {β} z≤      = rec-from-≤-enl β ≤-enl _
 rec-by-≤-inc ≤-inc ≤-enl {α} {β} (s≤ ≤∸) = ≤-trans
-  (≤-inc (rec-by-≤-inc ≤-inc ≤-enl ≤∸)) {- F (rec F from α₀ by α) ≤ F (rec F from α₀ by (β ∸ d)) -}
-  (rec-by-∸-inc ≤-enl β _)              {- F (rec F from α₀ by (β ∸ d)) ≤ rec F from α₀ by β -}
+  (≤-inc (rec-by-≤-inc ≤-inc ≤-enl ≤∸)) -- F (rec F from α₀ by α) ≤ F (rec F from α₀ by (β ∸ d))
+  (rec-by-∸-inc ≤-enl β _)              -- F (rec F from α₀ by (β ∸ d)) ≤ rec F from α₀ by β
 rec-by-≤-inc ≤-inc ≤-enl {α} {β} (l≤ f≤) = l≤ λ n →
-  rec-by-≤-inc ≤-inc ≤-enl (f≤ n)       {- rec F from α₀ by f n ≤ rec F from α₀ by β -}
+  rec-by-≤-inc ≤-inc ≤-enl (f≤ n)       -- rec F from α₀ by f n ≤ rec F from α₀ by β
 ```
 
 **引理** 如果 `F` 弱递增且强放大, 那么 `rec F from α₀ by_` 强递增.
@@ -134,14 +134,14 @@ rec-by-≤-inc ≤-inc ≤-enl {α} {β} (l≤ f≤) = l≤ λ n →
 ```agda
 rec-by-<-inc : ∀ {α₀} → ≤-increasing F → <-enlarging F → <-increasing (rec F from α₀ by_)
 rec-by-<-inc ≤-inc <-enl {α} {suc β} <             = ≤-<-trans
-  (rec-by-≤-inc ≤-inc (<⇒≤-enl <-enl) (<s→≤ <)) {- rec F from α₀ by α ≤ rec F from α₀ by β -}
-  (<-enl _)                                     {- rec F from α₀ by β < F (rec F from α₀ by β) -}
+  (rec-by-≤-inc ≤-inc (<⇒≤-enl <-enl) (<s→≤ <)) -- rec F from α₀ by α ≤ rec F from α₀ by β
+  (<-enl _)                                     -- rec F from α₀ by β < F (rec F from α₀ by β)
 rec-by-<-inc ≤-inc <-enl {α} {lim f} ((n , d) , ≤∸) = ≤-<-trans
-  (rec-by-≤-inc ≤-inc (<⇒≤-enl <-enl) ≤∸)       {- rec F from α₀ by α ≤ rec F from α₀ by (f n ∸ d) -}
+  (rec-by-≤-inc ≤-inc (<⇒≤-enl <-enl) ≤∸)       -- rec F from α₀ by α ≤ rec F from α₀ by (f n ∸ d)
   (<-≤-trans (<-≤-trans
-    (<-enl _)                                   {- rec F from α₀ by (f n ∸ d) < F (rec F from α₀ by (f n ∸ d)) -}
-    (rec-by-∸-inc (<⇒≤-enl <-enl) (f n) d)      {- F (rec F from α₀ by (f n ∸ d)) ≤ rec F from α₀ by f n -}
-  ) f≤l)                                        {- rec F from α₀ by f n ≤ lim λ n → rec F from α₀ by f n -}
+    (<-enl _)                                   -- rec F from α₀ by (f n ∸ d) < F (rec F from α₀ by (f n ∸ d))
+    (rec-by-∸-inc (<⇒≤-enl <-enl) (f n) d)      -- F (rec F from α₀ by (f n ∸ d)) ≤ rec F from α₀ by f n
+  ) f≤l)                                        -- rec F from α₀ by f n ≤ lim λ n → rec F from α₀ by f n
 ```
 
 ## 本章结论
@@ -154,10 +154,10 @@ rec-by-<-inc ≤-inc <-enl {α} {lim f} ((n , d) , ≤∸) = ≤-<-trans
 rec-from-<-enl : ∀ {α} → α > zero → ≤-increasing F
   → <-enlarging F → <-enlarging (rec F from_by α)
 rec-from-<-enl {α = suc α} _              ≤-inc <-enl α₀ = ≤-<-trans
-  (rec-from-≤-enl α (<⇒≤-enl <-enl) α₀)    {- α₀ ≤ rec F from α₀ by α -}
-  (rec-by-<-inc ≤-inc <-enl {α} <s)        {- rec F from α₀ by α < F (rec F from α₀ by α) -}
+  (rec-from-≤-enl α (<⇒≤-enl <-enl) α₀)    -- α₀ ≤ rec F from α₀ by α
+  (rec-by-<-inc ≤-inc <-enl {α} <s)        -- rec F from α₀ by α < F (rec F from α₀ by α)
 rec-from-<-enl {α = lim f} ((n , d) , ≤∸) ≤-inc <-enl α₀ = <→<l
-  (rec-from-<-enl (d , ≤∸) ≤-inc <-enl α₀) {- α₀ < rec F from α₀ by f n -}
+  (rec-from-<-enl (d , ≤∸) ≤-inc <-enl α₀) -- α₀ < rec F from α₀ by f n
 ```
 
 **定理** 如果 `F` 弱递增且强放大, 那么 `rec F from α₀ by_` 保良构, 只要初始值良构且 `F` 保良构.
@@ -167,11 +167,11 @@ rec-wf-preserving : ∀ {α₀} → wellFormed α₀ → ≤-increasing F → <-
   → wf-preserving F → wf-preserving (rec F from α₀ by_)
 rec-wf-preserving wfα₀ ≤-inc <-enl wf-p {zero}  wfα = wfα₀
 rec-wf-preserving wfα₀ ≤-inc <-enl wf-p {suc α} wfα = wf-p
-  {- wellFormed (rec F from α₀ by α) -}
+  -- wellFormed (rec F from α₀ by α)
   (rec-wf-preserving wfα₀ ≤-inc <-enl wf-p {α} wfα)
 rec-wf-preserving wfα₀ ≤-inc <-enl wf-p {lim f} wfα =
-  {- wellFormed (rec F from α₀ by f n) -}
+  -- wellFormed (rec F from α₀ by f n)
   ( λ {n} → rec-wf-preserving wfα₀ ≤-inc <-enl wf-p {f n} (proj₁ wfα) )
-  {- rec F from α₀ by f m < rec F from α₀ by f n -}
+  -- rec F from α₀ by f m < rec F from α₀ by f n
   , λ m<n → rec-by-<-inc ≤-inc <-enl (proj₂ wfα m<n)
 ```
