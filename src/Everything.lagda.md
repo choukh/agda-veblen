@@ -39,3 +39,9 @@ open import Ordinal.Function public
 
 - 定义了序数函数的常用性质
 - 对序数嵌入 (normal function) 的定义做了一些改造, 使之不依赖良构条件.
+
+```agda
+open import Ordinal.Recursion public
+```
+
+- 定义了一般形式的序数递归函数 (超限递归), 并证明了它的一般性质.

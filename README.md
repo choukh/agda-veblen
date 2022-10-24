@@ -28,9 +28,9 @@
 - Common properties of ordinal functions are defined
 - Definition of normal function is adapted for constructive setup
 
-### Ordinal.Recursion.lagda.md
+### [Ordinal.Recursion.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/Recursion.lagda.md)
 
-(TODO)
+- General form of ordianl recursive function is defined and its properties are proved
 
 ### Ordinal.Arithmetic.lagda.md
 

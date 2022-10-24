@@ -132,16 +132,15 @@ normal→≤-enl nml@(_ , <-inc , lim-ct) =
 ```agda
     ; (suc α) → ≤-trans
         (s≤s (normal→≤-enl nml α)) {- suc α ≤ suc (F α) -}
-        (<→s≤ (<-inc <s))                {- suc (F α) ≤ F (suc α) -}
+        (<→s≤ (<-inc <s))          {- suc (F α) ≤ F (suc α) -}
 ```
 
 - 极限的情况, 即证 `f n ≤ F (lim f)`. 由连续性, `F (lim f) ≈ lim (F ∘ f)`. 只需证 `f n ≤ lim (F ∘ f)`, 只需证 `f n ≤ (F ∘ f) n`, 此即归纳假设. ∎
 
 ```agda
-    ; (lim f) → l≤ (λ n → ≤-respʳ-≈
-        (≈-sym (lim-ct f))                    {- F (lim f) ≈ lim (F ∘ f) -}
+    ; (lim f) → l≤ λ n → ≤-respʳ-≈
+        (≈-sym (lim-ct f))              {- F (lim f) ≈ lim (F ∘ f) -}
         (≤→≤l (normal→≤-enl nml (f n))) {- f n ≤ lim (F ∘ f) -}
-      )
     }
 ```
 

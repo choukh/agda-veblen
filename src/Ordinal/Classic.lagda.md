@@ -145,7 +145,7 @@ postulate
 ... | inj₂ ≥ = ≥
 ```
 
-下面是第二章 [`<ω⊎≥ω`](Ordinal.WellFormed.html#5851) 的推广, 前两个分支的证法与之类似.
+下面是第二章 [`<ω⊎≥ω`](Ordinal.WellFormed.html#5849) 的推广, 前两个分支的证法与之类似.
 
 ```agda
 <l⊎≥l : ∀ {α g} → wellFormed α → wellFormed (lim g) → α < lim g ⊎ α ≥ lim g
@@ -171,7 +171,7 @@ postulate
 ...                                         | inj₂ l≤gn = inj₁ (≤-<-trans l≤gn (f<l (proj₂ wfβ)))
 ```
 
-下面是第二章 [`ω≤s→ω≤`](Ordinal.WellFormed.html#6179) 的推广, 证法也与它完全一样.
+下面是第二章 [`ω≤s→ω≤`](Ordinal.WellFormed.html#6177) 的推广, 证法也与它完全一样.
 
 ```agda
 l≤s→l≤ : ∀ {α f} → wellFormed α → wellFormed (lim f) → lim f ≤ suc α → lim f ≤ α

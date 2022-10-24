@@ -130,7 +130,7 @@ fn<fsn inc = inc (ℕ.s≤s ℕ.≤-refl)
 
 ```agda
 ω≤l : ∀ {f} → increasing f → ω ≤ lim f
-ω≤l inc = l≤ (λ n → ≤→≤l (⌜n⌝≤fn inc))
+ω≤l inc = l≤ λ n → ≤→≤l (⌜n⌝≤fn inc)
 ```
 
 ### 等价性
@@ -175,7 +175,7 @@ z<l : ∀ {f} → increasing f → zero < lim f
 z<l inc = <-≤-trans z<ω (ω≤l inc)
 ```
 
-`f<l` 是上一章 [`f≤l`](Ordinal.html#7694) 的 `_<_` 版, 它要求 `f` 递增.
+`f<l` 是上一章 [`f≤l`](Ordinal.html#7684) 的 `_<_` 版, 它要求 `f` 递增.
 
 ```agda
 f<l : ∀ {f n} → increasing f → f n < lim f
