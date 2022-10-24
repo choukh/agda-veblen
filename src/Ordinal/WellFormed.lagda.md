@@ -76,7 +76,8 @@ wellFormed (lim f) = (∀ {n} → wellFormed (f n)) × increasing f
 ⌜ suc n ⌝-wellFormed = ⌜ n ⌝-wellFormed
 ```
 
-`⌜_⌝` 是递增的, 即 `m < n` 蕴含 `⌜m⌝ < ⌜n⌝`. 只需考虑 `n` 是后继的情况, 即 `m < suc n`, 拆开分别讨论 `m < n` 和 `m = n` 并用归纳假设即可.
+**引理** `⌜_⌝` 是递增的.  
+**证明** 即证 `m < n` 蕴含 `⌜m⌝ < ⌜n⌝`. 只需考虑 `n` 是后继的情况, 即 `m < suc n`, 拆开分别讨论 `m < n` 和 `m = n` 并用归纳假设即可. ∎
 
 ```agda
 ⌜⌝-increasing : increasing ⌜_⌝
@@ -115,7 +116,7 @@ fn<fsn : ∀ {f n} → increasing f → f n < f (suc n)
 fn<fsn inc = inc (ℕ.s≤s ℕ.≤-refl)
 ```
 
-递增序列的第 `n` 项不会小于 `n` 自身.
+**引理** 递增序列的第 `n` 项不会小于 `n` 自身.
 
 ```agda
 ⌜n⌝≤fn : ∀ {f n} → increasing f → ⌜ n ⌝ ≤ f n
@@ -123,7 +124,9 @@ fn<fsn inc = inc (ℕ.s≤s ℕ.≤-refl)
 ⌜n⌝≤fn {n = suc n} inc = ≤-trans (s≤s (⌜n⌝≤fn inc)) (<→s≤ (fn<fsn inc))
 ```
 
-我们称递增序列的极限为递增极限序数, 它比良构极限序数更宽泛, 但足以证明一些良好的性质. 如, `ω` 是最小的递增极限序数.
+我们称递增序列的极限为递增极限序数, 它比良构极限序数更宽泛, 但足以证明一些良好的性质. 如:
+
+**引理** `ω` 是最小的递增极限序数.
 
 ```agda
 ω≤l : ∀ {f} → increasing f → ω ≤ lim f
@@ -132,7 +135,7 @@ fn<fsn inc = inc (ℕ.s≤s ℕ.≤-refl)
 
 ### 等价性
 
-`⌜_⌝` 是自然数到良构序数的单射.
+**引理** `⌜_⌝` 是自然数到良构序数的单射.
 
 ```agda
 ⌜⌝-injective : ∀ {m n} → ⌜ m ⌝ ≡ ⌜ n ⌝ → m ≡ n
@@ -140,7 +143,7 @@ fn<fsn inc = inc (ℕ.s≤s ℕ.≤-refl)
 ⌜⌝-injective {suc m} {suc n} eq = cong suc (⌜⌝-injective (suc-injective eq))
 ```
 
-小于 `ω` 的良构序数被 `⌜_⌝` 满射.
+**引理** 小于 `ω` 的良构序数被 `⌜_⌝` 满射.
 
 ```agda
 ⌜⌝-surjective : ∀ {α} → α < ω → wellFormed α → ∃[ n ] α ≡ ⌜ n ⌝
@@ -150,7 +153,7 @@ fn<fsn inc = inc (ℕ.s≤s ℕ.≤-refl)
 ⌜⌝-surjective {lim f} <ω (_ , inc) = ⊥-elim (<⇒≱ <ω (ω≤l inc))
 ```
 
-这说明小于 `ω` 的良构序数与自然数等价.
+**推论** 小于 `ω` 的良构序数与自然数等价.
 
 ```agda
 ∃[<ω]wf↩ℕ : (∃[ α ] α < ω × wellFormed α) ↩ ℕ
@@ -165,25 +168,25 @@ fn<fsn inc = inc (ℕ.s≤s ℕ.≤-refl)
 
 ## 递增极限序数的性质
 
-任意递增极限序数严格大于零.
+**引理** 任意递增极限序数严格大于零.
 
 ```agda
 z<l : ∀ {f} → increasing f → zero < lim f
 z<l inc = <-≤-trans z<ω (ω≤l inc)
 ```
 
-`f<l` 是上一章 [`f≤l`](Ordinal.html#7646) 的 `_<_` 版, 它要求 `f` 递增.
+`f<l` 是上一章 [`f≤l`](Ordinal.html#7694) 的 `_<_` 版, 它要求 `f` 递增.
 
 ```agda
 f<l : ∀ {f n} → increasing f → f n < lim f
 f<l inc = <-≤-trans (fn<fsn inc) f≤l
 ```
 
-递增序列在其极限内有任意大的项.
-
+**引理** 递增序列在其极限内有任意大的项.  
+**证明**
 - 对于零, 我们有 `f 1` 大于它.
 - 对于后继序数 `suc α`, 由归纳假设我们有 `f n` 大于 `α`, 取 `f (suc n)`, 由传递性可证它大于 `suc α`.
-- 对于极限序数 `lim g`, 存在 `f n` 大于 `lim g`.
+- 对于极限序数 `lim g`, 存在 `f n` 大于 `lim g`. ∎
 
 ```agda
 ∃[n]<fn : ∀ {α f} → increasing f → α < lim f → ∃[ n ] α < f n
@@ -193,7 +196,8 @@ f<l inc = <-≤-trans (fn<fsn inc) f≤l
 ∃[n]<fn {lim g} inc ((n , d) , l<f) = n , d , l<f
 ```
 
-`s<l` 将 `s<ω` 的结论一般化到任意递增极限序数. 由上一条, 存在 `n` 使得 `α < f n`, 即 `suc α ≤ f n`, 又 `f n < f (suc n) < lim f`, 由传递性即证.
+**引理** 可以将 `s<ω` 的结论一般化到任意递增极限序数.  
+**证明** 由上一条, 存在 `n` 使得 `α < f n`, 即 `suc α ≤ f n`, 又 `f n < f (suc n) < lim f`, 由传递性即证. ∎
 
 ```agda
 s<l : ∀ {α f} → increasing f → α < lim f → suc α < lim f
@@ -203,7 +207,9 @@ s<l inc < with ∃[n]<fn inc <
 
 ## 良构序数的性质
 
-良构序数允许我们建立内涵等词与序关系的联系. 如, 非零良构序数大于零.
+良构序数允许我们建立内涵等词与序关系的联系. 如:
+
+**引理** 非零良构序数大于零.
 
 ```agda
 ≢z→>z : ∀ {α} → wellFormed α → α ≢ zero → α > zero
@@ -212,7 +218,7 @@ s<l inc < with ∃[n]<fn inc <
 ≢z→>z {lim f} (_ , inc) _   = z<l inc
 ```
 
-外延等于零的良构序数就是零.
+**引理** 外延等于零的良构序数就是零.
 
 ```agda
 ≈z→≡z : ∀ {α} → wellFormed α → α ≈ zero → α ≡ zero
@@ -221,14 +227,16 @@ s<l inc < with ∃[n]<fn inc <
 ≈z→≡z {lim f} (_ , inc) (l≤z , _) = ⊥-elim (<⇒≱ (z<l inc) l≤z)
 ```
 
-小于等于零的良构序数就是零.
+**引理** 小于等于零的良构序数就是零.
 
 ```agda
 ≤z→≡z : ∀ {α} → wellFormed α → α ≤ zero → α ≡ zero
 ≤z→≡z wf ≤z = ≈z→≡z wf (≤z , z≤)
 ```
 
-良构序数还允许我们证明貌似要排中律才能得到的结果. 如, 良构序数要么是零, 要么大于零.
+良构序数还允许我们证明貌似要排中律才能得到的结果. 如:
+
+**引理** 良构序数要么是零, 要么大于零.
 
 ```agda
 ≡z⊎>z : ∀ {α} → wellFormed α → α ≡ zero ⊎ α > zero
@@ -237,7 +245,7 @@ s<l inc < with ∃[n]<fn inc <
 ≡z⊎>z {lim f} (_ , inc) = inj₂ (z<l inc)
 ```
 
-良构序数要么有限, 要么无限.
+**引理** 良构序数要么有限, 要么无限.
 
 ```agda
 <ω⊎≥ω : ∀ {α} → wellFormed α → α < ω ⊎ α ≥ ω
@@ -248,7 +256,8 @@ s<l inc < with ∃[n]<fn inc <
 <ω⊎≥ω {lim f} (_ , inc)       = inj₂ (ω≤l inc)
 ```
 
-良构无限后继序数的直接前驱也是无限序数. 这是上一条的简单推论.
+**引理** 良构无限后继序数的直接前驱也是无限序数.  
+**证明** 这是上一条的简单推论. ∎
 
 ```agda
 ω≤s→ω≤ : ∀ {α} → wellFormed α → ω ≤ suc α → ω ≤ α

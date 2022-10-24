@@ -64,8 +64,8 @@ wf-preserving F = ∀ {α} → wellFormed α → wellFormed (F α)
 显然, 强放大蕴含弱放大.
 
 ```agda
-_ : <-enlarging F → ≤-enlarging F
-_ = λ <-elg α → <⇒≤ (<-elg α)
+<⇒≤-enl : <-enlarging F → ≤-enlarging F
+<⇒≤-enl = λ <-elg α → <⇒≤ (<-elg α)
 ```
 
 下面是两种特殊的放大性, 分别叫做**零放大**和**良构后继放大**. 在 Veblen 不动点理论中要用到它们. 显然, 强放大蕴含这两者.
@@ -98,7 +98,7 @@ _ : <-increasing F → suc-increasing F
 _ = λ <-inc _ → <-inc <s
 ```
 
-如果可以交换 `F` 和 `lim` 的顺序, 我们就说 `F` 在**极限连续**, 简称连续.
+如果可以交换 `F` 和 `lim` 的顺序, 我们就说 `F` **极限连续**, 简称连续.
 
 ```agda
 lim-continuous : (Ord → Ord) → Set
@@ -114,7 +114,10 @@ normal : (Ord → Ord) → Set
 normal F = ≤-increasing F × <-increasing F × lim-continuous F
 ```
 
-对该定义的解释放在下一小节. 我们先来看一些结论. 首先, 序数嵌入蕴含非无穷降链, 即对序数嵌入 `F` 有 `α ≤ F α`. 讨论 `α`.
+对该定义的解释放在下一小节. 我们先来看一些结论.
+
+**引理** 序数嵌入蕴含非无穷降链.  
+**证明** 即证对序数嵌入 `F` 有 `α ≤ F α`. 讨论 `α`.
 
 - 零的情况显然成立.
 
@@ -132,7 +135,7 @@ normal→≤-enl nml@(_ , <-inc , lim-ct) =
         (<→s≤ (<-inc <s))                {- suc (F α) ≤ F (suc α) -}
 ```
 
-- 极限的情况, 即证 `f n ≤ F (lim f)`. 由连续性, `F (lim f) ≈ lim (F ∘ f)`. 只需证 `f n ≤ lim (F ∘ f)`, 只需证 `f n ≤ (F ∘ f) n`, 此即归纳假设.
+- 极限的情况, 即证 `f n ≤ F (lim f)`. 由连续性, `F (lim f) ≈ lim (F ∘ f)`. 只需证 `f n ≤ lim (F ∘ f)`, 只需证 `f n ≤ (F ∘ f) n`, 此即归纳假设. ∎
 
 ```agda
     ; (lim f) → l≤ (λ n → ≤-respʳ-≈
@@ -142,13 +145,13 @@ normal→≤-enl nml@(_ , <-inc , lim-ct) =
     }
 ```
 
-序数嵌入**尊重**序数函数的外延等价性.
+**引理** 序数嵌入**尊重**序数函数的外延等价性.
 
 ```agda
 normal-resp-≈ : normal Respects (λ F G → ∀ {α} → F α ≈ G α)
 ```
 
-我们有 `F` 和 `G` 的外延等价 `ext`, `F` 的弱递增 `≤-inc`, 强递增 `<-inc` 和连续 `lim-ct`, 要证 `G` 是序数嵌入.
+**证明** 我们有 `F` 和 `G` 的外延等价 `ext`, `F` 的弱递增 `≤-inc`, 强递增 `<-inc` 和连续 `lim-ct`, 要证 `G` 是序数嵌入.
 
 ```agda
 normal-resp-≈ {F} {G} ext (≤-inc , <-inc , lim-ct)
@@ -166,7 +169,7 @@ normal-resp-≈ {F} {G} ext (≤-inc , <-inc , lim-ct)
   , (λ α<β → <-≤-trans (<-respˡ-≈ ext (<-inc α<β)) (proj₁ ext))
 ```
 
-- 需证 `G` 连续. 以下改写链是自明的. 对于最后一步, 拆成两个 `_≤_` 式, 分别由 `ext` 的两个分量可证.
+- 需证 `G` 连续. 以下改写链是自明的. 对于最后一步, 拆成两个 `_≤_` 式, 分别由 `ext` 的两个分量可证. ∎
 
 ```agda
   , (λ f → begin
@@ -180,7 +183,7 @@ normal-resp-≈ {F} {G} ext (≤-inc , <-inc , lim-ct)
 
 ## 与传统定义的等价性
 
-在传统文献中序数嵌入定义为在后继递增且极限连续的序数函数. 两种定义对比如下.
+在传统文献中序数嵌入定义为后继递增且极限连续的序数函数. 两种定义对比如下.
 
 | 本构筑    | 传统     |
 | ----     | ----    |
@@ -225,7 +228,7 @@ wf-normal : (Ord → Ord) → Set
 wf-normal F = ≤-increasing F × wf-suc-increasing F × lim-continuous F
 ```
 
-可以证明用 `wf-suc-increasing` 取代 `<-increasing` 定义的 `wf-normal` 蕴含 `wf-<-increasing`.
+**事实** 用 `wf-suc-increasing` 取代 `<-increasing` 定义的 `wf-normal` 蕴含 `wf-<-increasing`.
 
 ```agda
 wf-nml→<-inc : wf-normal F → wf-<-increasing F
@@ -247,4 +250,3 @@ wf-nml→<-inc nml@(_ , _ , lim-ct) {β = lim f} wfα wfβ@(wfn , inc) α<l
 也就是说, 限定在良构序数的情况下[^2], 传统定义蕴含我们的定义. 另一方面, 显然地, 由 `<-increasing` 蕴含 `suc-increasing`, 我们的定义也蕴含传统定义. 这就说明了两者的等价性.
 
 [^2]: _ 且忽略上一小节所述由构造主义和内涵类型论所造成的微妙区别
- 
