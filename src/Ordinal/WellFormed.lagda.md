@@ -35,20 +35,20 @@ open import Function using (_↩_)
 
 ## 良构
 
-我们说序列 `f : ℕ → Ord` **递增**, 如果 `f` *保持* `ℕ.<` 到 `Ord.<`.
+我们说序列 `f : ℕ → Ord` **单调**, 如果 `f` *保持* `ℕ.<` 到 `Ord.<`.
 
 ```agda
-increasing : (ℕ → Ord) → Set
-increasing f = ∀ {m n} → m ℕ.< n → f m < f n
+monotonic : (ℕ → Ord) → Set
+monotonic f = ∀ {m n} → m ℕ.< n → f m < f n
 ```
 
-由递增序列的极限构成的序数我们称为**良构**序数. 注意这是递归定义, 序列的每一项也要求良构. 平凡地, 零以及良构序数的后继也是良构序数.
+由单调序列的极限构成的序数我们称为**良构**序数. 注意这是递归定义, 序列的每一项也要求良构. 平凡地, 零以及良构序数的后继也是良构序数.
 
 ```agda
 wellFormed : Ord → Set
 wellFormed zero    = ⊤
 wellFormed (suc α) = wellFormed α
-wellFormed (lim f) = (∀ {n} → wellFormed (f n)) × increasing f
+wellFormed (lim f) = (∀ {n} → wellFormed (f n)) × monotonic f
 ```
 
 ## 有限序数与 `ω`
@@ -76,13 +76,13 @@ wellFormed (lim f) = (∀ {n} → wellFormed (f n)) × increasing f
 ⌜ suc n ⌝-wellFormed = ⌜ n ⌝-wellFormed
 ```
 
-**引理** `⌜_⌝` 是递增的.  
+**引理** `⌜_⌝` 是单调的.  
 **证明** 即证 `m < n` 蕴含 `⌜m⌝ < ⌜n⌝`. 只需考虑 `n` 是后继的情况, 即 `m < suc n`, 拆开分别讨论 `m < n` 和 `m = n` 并用归纳假设即可. ∎
 
 ```agda
-⌜⌝-increasing : increasing ⌜_⌝
-⌜⌝-increasing {m} {suc n} (ℕ.s≤s m≤n) with (m≤n⇒m<n∨m≡n m≤n)
-... | inj₁ m<n = <-trans (⌜⌝-increasing m<n) <s
+⌜⌝-monotonic : monotonic ⌜_⌝
+⌜⌝-monotonic {m} {suc n} (ℕ.s≤s m≤n) with (m≤n⇒m<n∨m≡n m≤n)
+... | inj₁ m<n = <-trans (⌜⌝-monotonic m<n) <s
 ... | inj₂ refl = <s
 ```
 
@@ -90,7 +90,7 @@ wellFormed (lim f) = (∀ {n} → wellFormed (f n)) × increasing f
 
 ```agda
 ω-wellFormed : wellFormed ω
-ω-wellFormed = (λ {n} → ⌜ n ⌝-wellFormed) , ⌜⌝-increasing
+ω-wellFormed = (λ {n} → ⌜ n ⌝-wellFormed) , ⌜⌝-monotonic
 ```
 
 ### `ω` 的性质
@@ -109,28 +109,28 @@ n<ω {zero}  = z<ω
 n<ω {suc n} = s<ω n<ω
 ```
 
-以下引理将 `increasing` 的 `f m < f n` 结论特化到 `f n < f (suc n)`, 因为它在接下来的证明中经常用到.
+以下引理将 `monotonic` 的 `f m < f n` 结论特化到 `f n < f (suc n)`, 因为它在接下来的证明中经常用到.
 
 ```agda
-fn<fsn : ∀ {f n} → increasing f → f n < f (suc n)
-fn<fsn inc = inc (ℕ.s≤s ℕ.≤-refl)
+fn<fsn : ∀ {f n} → monotonic f → f n < f (suc n)
+fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 ```
 
-**引理** 递增序列的第 `n` 项不会小于 `n` 自身.
+**引理** 单调序列的第 `n` 项不会小于 `n` 自身.
 
 ```agda
-⌜n⌝≤fn : ∀ {f n} → increasing f → ⌜ n ⌝ ≤ f n
-⌜n⌝≤fn {n = zero}  inc = z≤
-⌜n⌝≤fn {n = suc n} inc = ≤-trans (s≤s (⌜n⌝≤fn inc)) (<→s≤ (fn<fsn inc))
+⌜n⌝≤fn : ∀ {f n} → monotonic f → ⌜ n ⌝ ≤ f n
+⌜n⌝≤fn {n = zero}  mono = z≤
+⌜n⌝≤fn {n = suc n} mono = ≤-trans (s≤s (⌜n⌝≤fn mono)) (<→s≤ (fn<fsn mono))
 ```
 
-我们称递增序列的极限为递增极限序数, 它比良构极限序数更宽泛, 但足以证明一些良好的性质. 如:
+我们称单调序列的极限为单调极限序数, 它比良构极限序数更宽泛, 但足以证明一些良好的性质. 如:
 
-**引理** `ω` 是最小的递增极限序数.
+**引理** `ω` 是最小的单调极限序数.
 
 ```agda
-ω≤l : ∀ {f} → increasing f → ω ≤ lim f
-ω≤l inc = l≤ λ n → ≤→≤l (⌜n⌝≤fn inc)
+ω≤l : ∀ {f} → monotonic f → ω ≤ lim f
+ω≤l mono = l≤ λ n → ≤→≤l (⌜n⌝≤fn mono)
 ```
 
 ### 等价性
@@ -150,7 +150,7 @@ fn<fsn inc = inc (ℕ.s≤s ℕ.≤-refl)
 ⌜⌝-surjective {zero}  _  _          = 0 , refl
 ⌜⌝-surjective {suc α} <ω wf with ⌜⌝-surjective (<-trans <s <ω) wf
 ... | n , ≡⌜n⌝                      = (suc n) , cong suc ≡⌜n⌝
-⌜⌝-surjective {lim f} <ω (_ , inc) = ⊥-elim (<⇒≱ <ω (ω≤l inc))
+⌜⌝-surjective {lim f} <ω (_ , mono) = ⊥-elim (<⇒≱ <ω (ω≤l mono))
 ```
 
 **推论** 小于 `ω` 的良构序数与自然数等价.
@@ -166,23 +166,23 @@ fn<fsn inc = inc (ℕ.s≤s ℕ.≤-refl)
   }
 ```
 
-## 递增极限序数的性质
+## 单调极限序数的性质
 
-**引理** 任意递增极限序数严格大于零.
-
-```agda
-z<l : ∀ {f} → increasing f → zero < lim f
-z<l inc = <-≤-trans z<ω (ω≤l inc)
-```
-
-`f<l` 是上一章 [`f≤l`](Ordinal.html#7684) 的 `_<_` 版, 它要求 `f` 递增.
+**引理** 任意单调极限序数严格大于零.
 
 ```agda
-f<l : ∀ {f n} → increasing f → f n < lim f
-f<l inc = <-≤-trans (fn<fsn inc) f≤l
+z<l : ∀ {f} → monotonic f → zero < lim f
+z<l mono = <-≤-trans z<ω (ω≤l mono)
 ```
 
-**引理** 递增序列在其极限内有任意大的项.  
+`f<l` 是上一章 [`f≤l`](Ordinal.html#7684) 的 `_<_` 版, 它要求 `f` 单调.
+
+```agda
+f<l : ∀ {f n} → monotonic f → f n < lim f
+f<l mono = <-≤-trans (fn<fsn mono) f≤l
+```
+
+**引理** 单调序列在其极限内有任意大的项.  
 **证明**
 
 - 对于零, 我们有 `f 1` 大于它.
@@ -190,20 +190,20 @@ f<l inc = <-≤-trans (fn<fsn inc) f≤l
 - 对于极限序数 `lim g`, 存在 `f n` 大于 `lim g`. ∎
 
 ```agda
-∃[n]<fn : ∀ {α f} → increasing f → α < lim f → ∃[ n ] α < f n
-∃[n]<fn {zero}  inc _ = 1 , (≤-<-trans z≤ (fn<fsn inc))
-∃[n]<fn {suc α} inc s<l with ∃[n]<fn inc (<-trans <s s<l)
-... | n , <f = (suc n) , (≤-<-trans (<→s≤ <f) (fn<fsn inc))
-∃[n]<fn {lim g} inc ((n , d) , l<f) = n , d , l<f
+∃[n]<fn : ∀ {α f} → monotonic f → α < lim f → ∃[ n ] α < f n
+∃[n]<fn {zero}  mono _ = 1 , (≤-<-trans z≤ (fn<fsn mono))
+∃[n]<fn {suc α} mono s<l with ∃[n]<fn mono (<-trans <s s<l)
+... | n , <f = (suc n) , (≤-<-trans (<→s≤ <f) (fn<fsn mono))
+∃[n]<fn {lim g} mono ((n , d) , l<f) = n , d , l<f
 ```
 
-**引理** 可以将 `s<ω` 的结论一般化到任意递增极限序数.  
+**引理** 可以将 `s<ω` 的结论一般化到任意单调极限序数.  
 **证明** 由上一条, 存在 `n` 使得 `α < f n`, 即 `suc α ≤ f n`, 又 `f n < f (suc n) < lim f`, 由传递性即证. ∎
 
 ```agda
-s<l : ∀ {α f} → increasing f → α < lim f → suc α < lim f
-s<l inc < with ∃[n]<fn inc <
-... | n , <f = ≤-<-trans (<→s≤ <f) (f<l inc)
+s<l : ∀ {α f} → monotonic f → α < lim f → suc α < lim f
+s<l mono < with ∃[n]<fn mono <
+... | n , <f = ≤-<-trans (<→s≤ <f) (f<l mono)
 ```
 
 ## 良构序数的性质
@@ -214,18 +214,18 @@ s<l inc < with ∃[n]<fn inc <
 
 ```agda
 ≢z→>z : ∀ {α} → wellFormed α → α ≢ zero → α > zero
-≢z→>z {zero}  _         z≢z = ⊥-elim (z≢z refl)
-≢z→>z {suc α} _         _   = (inj₁ tt) , z≤
-≢z→>z {lim f} (_ , inc) _   = z<l inc
+≢z→>z {zero}  _          z≢z = ⊥-elim (z≢z refl)
+≢z→>z {suc α} _          _   = (inj₁ tt) , z≤
+≢z→>z {lim f} (_ , mono) _   = z<l mono
 ```
 
 **引理** 外延等于零的良构序数就是零.
 
 ```agda
 ≈z→≡z : ∀ {α} → wellFormed α → α ≈ zero → α ≡ zero
-≈z→≡z {zero}  _         _         = refl
-≈z→≡z {suc α} _         (s≤z , _) = ⊥-elim (s≰z s≤z)
-≈z→≡z {lim f} (_ , inc) (l≤z , _) = ⊥-elim (<⇒≱ (z<l inc) l≤z)
+≈z→≡z {zero}  _          _         = refl
+≈z→≡z {suc α} _          (s≤z , _) = ⊥-elim (s≰z s≤z)
+≈z→≡z {lim f} (_ , mono) (l≤z , _) = ⊥-elim (<⇒≱ (z<l mono) l≤z)
 ```
 
 **引理** 小于等于零的良构序数就是零.
@@ -241,20 +241,20 @@ s<l inc < with ∃[n]<fn inc <
 
 ```agda
 ≡z⊎>z : ∀ {α} → wellFormed α → α ≡ zero ⊎ α > zero
-≡z⊎>z {zero}  _         = inj₁ refl
-≡z⊎>z {suc α} _         = inj₂ (z<s α)
-≡z⊎>z {lim f} (_ , inc) = inj₂ (z<l inc)
+≡z⊎>z {zero}  _          = inj₁ refl
+≡z⊎>z {suc α} _          = inj₂ (z<s α)
+≡z⊎>z {lim f} (_ , mono) = inj₂ (z<l mono)
 ```
 
 **引理** 良构序数要么有限, 要么无限.
 
 ```agda
 <ω⊎≥ω : ∀ {α} → wellFormed α → α < ω ⊎ α ≥ ω
-<ω⊎≥ω {zero}  _               = inj₁ z<ω
+<ω⊎≥ω {zero}  _                = inj₁ z<ω
 <ω⊎≥ω {suc α} wf with <ω⊎≥ω wf
-...                 | inj₁ <ω = inj₁ (s<ω <ω)
-...                 | inj₂ ≥ω = inj₂ (≤-trans ≥ω ≤s)
-<ω⊎≥ω {lim f} (_ , inc)       = inj₂ (ω≤l inc)
+...                 | inj₁ <ω  = inj₁ (s<ω <ω)
+...                 | inj₂ ≥ω  = inj₂ (≤-trans ≥ω ≤s)
+<ω⊎≥ω {lim f} (_ , mono)       = inj₂ (ω≤l mono)
 ```
 
 **引理** 良构无限后继序数的直接前驱也是无限序数.  

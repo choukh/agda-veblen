@@ -145,11 +145,11 @@ postulate
 ... | inj₂ ≥ = ≥
 ```
 
-下面是第二章 [`<ω⊎≥ω`](Ordinal.WellFormed.html#5849) 的推广, 前两个分支的证法与之类似.
+下面是第二章 [`<ω⊎≥ω`](Ordinal.WellFormed.html#5868) 的推广, 前两个分支的证法与之类似.
 
 ```agda
 <l⊎≥l : ∀ {α g} → wellFormed α → wellFormed (lim g) → α < lim g ⊎ α ≥ lim g
-<l⊎≥l {zero}  _   (_ , inc)        = inj₁ (z<l inc)
+<l⊎≥l {zero}  _   (_ , mono)       = inj₁ (z<l mono)
 <l⊎≥l {suc α} wfα wfβ with <l⊎≥l wfα wfβ
 ...                      | inj₁ <l = inj₁ (s<l (proj₂ wfβ) <l)
 ...                      | inj₂ ≥l = inj₂ (≤-trans ≥l ≤s)
@@ -171,7 +171,7 @@ postulate
 ...                                         | inj₂ l≤gn = inj₁ (≤-<-trans l≤gn (f<l (proj₂ wfβ)))
 ```
 
-下面是第二章 [`ω≤s→ω≤`](Ordinal.WellFormed.html#6177) 的推广, 证法也与它完全一样.
+下面是第二章 [`ω≤s→ω≤`](Ordinal.WellFormed.html#6201) 的推广, 证法也与它完全一样.
 
 ```agda
 l≤s→l≤ : ∀ {α f} → wellFormed α → wellFormed (lim f) → lim f ≤ suc α → lim f ≤ α
@@ -205,10 +205,10 @@ l≤s→l≤ wfα wfβ l≤s with <l⊎≥l wfα wfβ
 - 若 `α ≈ f n`, 有 `α ≈ f n < lim f`, 所以同样有 `suc α < lim f`.
 
 ```agda
-≤-split {suc α} {lim f} wfα (wfn , inc) (s≤ α≤fn∸d)
+≤-split {suc α} {lim f} wfα (wfn , mono) (s≤ α≤fn∸d)
   with ≤-split wfα wfn (≤∸→≤ α≤fn∸d)
-... | inj₁ α<fn = inj₁ (s<l inc (<→<l α<fn))
-... | inj₂ α≈fn = inj₁ (s<l inc (<-respˡ-≈ (≈-sym α≈fn) (f<l inc)))
+... | inj₁ α<fn = inj₁ (s<l mono (<→<l α<fn))
+... | inj₂ α≈fn = inj₁ (s<l mono (<-respˡ-≈ (≈-sym α≈fn) (f<l mono)))
 ```
 
 左边是极限右边是后继的情况, 对 `lim f ≤ suc β` 使用引理 `l≤s→l≤` 得到 `lim f ≤ β`, 对它使用归纳假设得到两个分支.

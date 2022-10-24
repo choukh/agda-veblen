@@ -56,122 +56,122 @@ private variable
 
 如果固定递归的次数 `α`, 那么超限递归可以看作是一个高阶函数, 它将序数函数 F 转化成另一个序数函数 `rec F from_by α`, 它以初始值 `α₀` 为自变量.
 
-**引理** 如果 `F` 弱放大 (非无穷降链), 那么 `rec F from_by α` 也弱放大.
+**引理** 如果 `F` 弱增长 (非无穷降链), 那么 `rec F from_by α` 也弱增长.
 
 ```agda
-rec-from-≤-enl : ∀ α → ≤-enlarging F → ≤-enlarging (rec F from_by α)
-rec-from-≤-enl zero    ≤-enl α₀ = ≤-refl
-rec-from-≤-enl (suc α) ≤-enl α₀ = ≤-trans
-  (rec-from-≤-enl α ≤-enl α₀)     -- α₀ ≤ rec F from α₀ by α
-  (≤-enl _)                       -- rec F from α₀ by α ≤ F (rec F from α₀ by α)
-rec-from-≤-enl (lim f) ≤-enl α₀ = ≤-trans
-  (rec-from-≤-enl (f 0) ≤-enl α₀) -- α₀ ≤ rec F from α₀ by f 0
-  (≤→≤l ≤-refl)                   -- rec F from α₀ by f 0 ≤ lim λ n → rec F from α₀ by f n
+rec-from-≤-enlg : ∀ α → ≤-enlarging F → ≤-enlarging (rec F from_by α)
+rec-from-≤-enlg zero    ≤-enlg α₀ = ≤-refl
+rec-from-≤-enlg (suc α) ≤-enlg α₀ = ≤-trans
+  (rec-from-≤-enlg α ≤-enlg α₀)     -- α₀ ≤ rec F from α₀ by α
+  (≤-enlg _)                        -- rec F from α₀ by α ≤ F (rec F from α₀ by α)
+rec-from-≤-enlg (lim f) ≤-enlg α₀ = ≤-trans
+  (rec-from-≤-enlg (f 0) ≤-enlg α₀) -- α₀ ≤ rec F from α₀ by f 0
+  (≤→≤l ≤-refl)                     -- rec F from α₀ by f 0 ≤ lim λ n → rec F from α₀ by f n
 ```
 
-**引理** 如果 `F` 弱递增, 那么 `rec F from_by α` 也弱递增.
+**引理** 如果 `F` ≤-单调, 那么 `rec F from_by α` 也 ≤-单调.
 
 ```agda
-rec-from-≤-inc : ∀ α → ≤-increasing F → ≤-increasing (rec F from_by α)
-rec-from-≤-inc zero    _     ≤ = ≤
-rec-from-≤-inc (suc γ) ≤-inc ≤ = ≤-inc
-  (rec-from-≤-inc γ ≤-inc ≤)       -- rec F from α by γ ≤ rec F from β by γ
-rec-from-≤-inc (lim f) ≤-inc ≤ = l≤ λ n → ≤→≤l
-  (rec-from-≤-inc (f n) ≤-inc ≤)   -- rec F from α by f n ≤ rec F from β by f n
+rec-from-≤-mono : ∀ α → ≤-monotonic F → ≤-monotonic (rec F from_by α)
+rec-from-≤-mono zero    _      ≤ = ≤
+rec-from-≤-mono (suc γ) ≤-mono ≤ = ≤-mono
+  (rec-from-≤-mono γ ≤-mono ≤)     -- rec F from α by γ ≤ rec F from β by γ
+rec-from-≤-mono (lim f) ≤-mono ≤ = l≤ λ n → ≤→≤l
+  (rec-from-≤-mono (f n) ≤-mono ≤) -- rec F from α by f n ≤ rec F from β by f n
 ```
 
 ### 固定初始值
 
 现在我们考察固定初始值 `α₀` 的超限递归函数 `rec F from α₀ by_`.
 
-**引理** 如果 `F` 弱递增且强放大, 那么 `rec F from α₀ by_` 弱放大.  
-**Remark** 即使 `F` 强放大, 我们也只能证明 `rec F from α₀ by_` 弱放大. 这里已经可以看出不动点的端倪了, 当递归达到一定次数的时候值可能就不再增长了.
+**引理** 如果 `F` ≤-单调且强增长, 那么 `rec F from α₀ by_` 弱增长.  
+**Remark** 即使 `F` 强增长, 我们也只能证明 `rec F from α₀ by_` 弱增长. 这里已经可以看出不动点的端倪了, 当递归达到一定次数的时候值可能就不再增长了.
 
 ```agda
-rec-by-≤-enl : ∀ {α₀} → ≤-increasing F → <-enlarging F → ≤-enlarging (rec F from α₀ by_)
-rec-by-≤-enl ≤-inc <-enl zero    = z≤
-rec-by-≤-enl ≤-inc <-enl (suc α) = ≤-trans
-  (s≤s (rec-by-≤-enl ≤-inc <-enl α)) -- suc α ≤ suc (rec F from α₀ by α)
-  (<→s≤ (<-enl _))                   -- suc (rec F from α₀ by α) ≤ F (rec F from α₀ by α)
-rec-by-≤-enl ≤-inc <-enl (lim f) = l≤ λ n → ≤→≤l
-  (rec-by-≤-enl ≤-inc <-enl (f n))   -- f n ≤ rec F from α₀ by f n
+rec-by-≤-enlg : ∀ {α₀} → ≤-monotonic F → <-enlarging F → ≤-enlarging (rec F from α₀ by_)
+rec-by-≤-enlg ≤-mono <-enlg zero    = z≤
+rec-by-≤-enlg ≤-mono <-enlg (suc α) = ≤-trans
+  (s≤s (rec-by-≤-enlg ≤-mono <-enlg α)) -- suc α ≤ suc (rec F from α₀ by α)
+  (<→s≤ (<-enlg _))                     -- suc (rec F from α₀ by α) ≤ F (rec F from α₀ by α)
+rec-by-≤-enlg ≤-mono <-enlg (lim f) = l≤ λ n → ≤→≤l
+  (rec-by-≤-enlg ≤-mono <-enlg (f n))   -- f n ≤ rec F from α₀ by f n
 ```
 
-为了证明 `rec F from α₀ by_` 的递增性, 我们引入一个辅助概念, 叫做 **s∸递增**. 它可以看作 `F` 保持第一章的 [`s∸≤`](Ordinal.html#7532) 关系.
+为了证明 `rec F from α₀ by_` 的单调性, 我们引入一个辅助概念, 叫做 **s∸单调**. 它可以看作 `F` 保持第一章的 [`s∸≤`](Ordinal.html#7532) 关系.
 
 ```agda
-s∸-increasing : (Ord → Ord) → Set
-s∸-increasing F = ∀ α d → F (suc (α ∸ d)) ≤ F α
+s∸-monotonic : (Ord → Ord) → Set
+s∸-monotonic F = ∀ α d → F (suc (α ∸ d)) ≤ F α
 ```
 
-**引理** 如果 `F` 弱放大, 那么 `rec F from α₀ by_` s∸递增.
+**引理** 如果 `F` 弱增长, 那么 `rec F from α₀ by_` s∸单调.
 
 ```agda
-rec-by-∸-inc : ∀ {α₀} → ≤-enlarging F → s∸-increasing (rec F from α₀ by_)
-rec-by-∸-inc ≤-enl (suc α) (inj₁ tt) = ≤-refl
-rec-by-∸-inc ≤-enl (suc α) (inj₂ d)  = ≤-trans
-  (rec-by-∸-inc ≤-enl α d)     -- F (rec F from α₀ by (α ∸ d)) ≤ rec F from α₀ by α
-  (≤-enl _)                    -- rec F from α₀ by α ≤ F rec F from α₀ by α
-rec-by-∸-inc ≤-enl (lim f) (n , d)   = ≤-trans
-  (rec-by-∸-inc ≤-enl (f n) d) -- F (rec F from α₀ by (f n ∸ d)) ≤ rec F from α₀ by f n
-  (≤→≤l ≤-refl)                -- rec F from α₀ by f n ≤ lim λ n → rec F from α₀ by f n
+rec-by-∸-mono : ∀ {α₀} → ≤-enlarging F → s∸-monotonic (rec F from α₀ by_)
+rec-by-∸-mono ≤-enlg (suc α) (inj₁ tt) = ≤-refl
+rec-by-∸-mono ≤-enlg (suc α) (inj₂ d)  = ≤-trans
+  (rec-by-∸-mono ≤-enlg α d)     -- F (rec F from α₀ by (α ∸ d)) ≤ rec F from α₀ by α
+  (≤-enlg _)                     -- rec F from α₀ by α ≤ F rec F from α₀ by α
+rec-by-∸-mono ≤-enlg (lim f) (n , d)   = ≤-trans
+  (rec-by-∸-mono ≤-enlg (f n) d) -- F (rec F from α₀ by (f n ∸ d)) ≤ rec F from α₀ by f n
+  (≤→≤l ≤-refl)                  -- rec F from α₀ by f n ≤ lim λ n → rec F from α₀ by f n
 ```
 
-**引理** 如果 `F` 弱递增且弱放大, 那么 `rec F from α₀ by_` 弱递增.
+**引理** 如果 `F` ≤-单调且弱增长, 那么 `rec F from α₀ by_` ≤-单调.
 
 ```agda
-rec-by-≤-inc : ∀ {α₀} → ≤-increasing F → ≤-enlarging F → ≤-increasing (rec F from α₀ by_)
-rec-by-≤-inc ≤-inc ≤-enl {α} {β} z≤      = rec-from-≤-enl β ≤-enl _
-rec-by-≤-inc ≤-inc ≤-enl {α} {β} (s≤ ≤∸) = ≤-trans
-  (≤-inc (rec-by-≤-inc ≤-inc ≤-enl ≤∸)) -- F (rec F from α₀ by α) ≤ F (rec F from α₀ by (β ∸ d))
-  (rec-by-∸-inc ≤-enl β _)              -- F (rec F from α₀ by (β ∸ d)) ≤ rec F from α₀ by β
-rec-by-≤-inc ≤-inc ≤-enl {α} {β} (l≤ f≤) = l≤ λ n →
-  rec-by-≤-inc ≤-inc ≤-enl (f≤ n)       -- rec F from α₀ by f n ≤ rec F from α₀ by β
+rec-by-≤-mono : ∀ {α₀} → ≤-monotonic F → ≤-enlarging F → ≤-monotonic (rec F from α₀ by_)
+rec-by-≤-mono ≤-mono ≤-enlg {α} {β} z≤      = rec-from-≤-enlg β ≤-enlg _
+rec-by-≤-mono ≤-mono ≤-enlg {α} {β} (s≤ ≤∸) = ≤-trans
+  (≤-mono (rec-by-≤-mono ≤-mono ≤-enlg ≤∸)) -- F (rec F from α₀ by α) ≤ F (rec F from α₀ by (β ∸ d))
+  (rec-by-∸-mono ≤-enlg β _)                -- F (rec F from α₀ by (β ∸ d)) ≤ rec F from α₀ by β
+rec-by-≤-mono ≤-mono ≤-enlg {α} {β} (l≤ f≤) = l≤ λ n →
+  rec-by-≤-mono ≤-mono ≤-enlg (f≤ n)        -- rec F from α₀ by f n ≤ rec F from α₀ by β
 ```
 
-**引理** 如果 `F` 弱递增且强放大, 那么 `rec F from α₀ by_` 强递增.
+**引理** 如果 `F` ≤-单调且强增长, 那么 `rec F from α₀ by_` <-单调.
 
 ```agda
-rec-by-<-inc : ∀ {α₀} → ≤-increasing F → <-enlarging F → <-increasing (rec F from α₀ by_)
-rec-by-<-inc ≤-inc <-enl {α} {suc β} <             = ≤-<-trans
-  (rec-by-≤-inc ≤-inc (<⇒≤-enl <-enl) (<s→≤ <)) -- rec F from α₀ by α ≤ rec F from α₀ by β
-  (<-enl _)                                     -- rec F from α₀ by β < F (rec F from α₀ by β)
-rec-by-<-inc ≤-inc <-enl {α} {lim f} ((n , d) , ≤∸) = ≤-<-trans
-  (rec-by-≤-inc ≤-inc (<⇒≤-enl <-enl) ≤∸)       -- rec F from α₀ by α ≤ rec F from α₀ by (f n ∸ d)
+rec-by-<-mono : ∀ {α₀} → ≤-monotonic F → <-enlarging F → <-monotonic (rec F from α₀ by_)
+rec-by-<-mono ≤-mono <-enlg {α} {suc β} <              = ≤-<-trans
+  (rec-by-≤-mono ≤-mono (<⇒≤-enlg <-enlg) (<s→≤ <)) -- rec F from α₀ by α ≤ rec F from α₀ by β
+  (<-enlg _)                                        -- rec F from α₀ by β < F (rec F from α₀ by β)
+rec-by-<-mono ≤-mono <-enlg {α} {lim f} ((n , d) , ≤∸) = ≤-<-trans
+  (rec-by-≤-mono ≤-mono (<⇒≤-enlg <-enlg) ≤∸)       -- rec F from α₀ by α ≤ rec F from α₀ by (f n ∸ d)
   (<-≤-trans (<-≤-trans
-    (<-enl _)                                   -- rec F from α₀ by (f n ∸ d) < F (rec F from α₀ by (f n ∸ d))
-    (rec-by-∸-inc (<⇒≤-enl <-enl) (f n) d)      -- F (rec F from α₀ by (f n ∸ d)) ≤ rec F from α₀ by f n
-  ) f≤l)                                        -- rec F from α₀ by f n ≤ lim λ n → rec F from α₀ by f n
+    (<-enlg _)                                      -- rec F from α₀ by (f n ∸ d) < F (rec F from α₀ by (f n ∸ d))
+    (rec-by-∸-mono (<⇒≤-enlg <-enlg) (f n) d)       -- F (rec F from α₀ by (f n ∸ d)) ≤ rec F from α₀ by f n
+  ) f≤l)                                            -- rec F from α₀ by f n ≤ lim λ n → rec F from α₀ by f n
 ```
 
 ## 本章结论
 
-虽然超限递归对递归次数不能保证强放大, 但是对初始值能保证强放大.
+虽然超限递归对递归次数不能保证强增长, 但是对初始值能保证强增长.
 
-**定理** 如果 `F` 弱递增且强放大, 那么 `rec F from_by α` 也强放大, 只要 `α > zero`.
+**定理** 如果 `F` ≤-单调且强增长, 那么 `rec F from_by α` 也强增长, 只要 `α > zero`.
 
 ```agda
-rec-from-<-enl : ∀ {α} → α > zero → ≤-increasing F
+rec-from-<-enlg : ∀ {α} → α > zero → ≤-monotonic F
   → <-enlarging F → <-enlarging (rec F from_by α)
-rec-from-<-enl {α = suc α} _              ≤-inc <-enl α₀ = ≤-<-trans
-  (rec-from-≤-enl α (<⇒≤-enl <-enl) α₀)    -- α₀ ≤ rec F from α₀ by α
-  (rec-by-<-inc ≤-inc <-enl {α} <s)        -- rec F from α₀ by α < F (rec F from α₀ by α)
-rec-from-<-enl {α = lim f} ((n , d) , ≤∸) ≤-inc <-enl α₀ = <→<l
-  (rec-from-<-enl (d , ≤∸) ≤-inc <-enl α₀) -- α₀ < rec F from α₀ by f n
+rec-from-<-enlg {α = suc α} _              ≤-mono <-enlg α₀ = ≤-<-trans
+  (rec-from-≤-enlg α (<⇒≤-enlg <-enlg) α₀)    -- α₀ ≤ rec F from α₀ by α
+  (rec-by-<-mono ≤-mono <-enlg {α} <s)        -- rec F from α₀ by α < F (rec F from α₀ by α)
+rec-from-<-enlg {α = lim f} ((n , d) , ≤∸) ≤-mono <-enlg α₀ = <→<l
+  (rec-from-<-enlg (d , ≤∸) ≤-mono <-enlg α₀) -- α₀ < rec F from α₀ by f n
 ```
 
-**定理** 如果 `F` 弱递增且强放大, 那么 `rec F from α₀ by_` 保良构, 只要初始值良构且 `F` 保良构.
+**定理** 如果 `F` ≤-单调且强增长, 那么 `rec F from α₀ by_` 保良构, 只要初始值良构且 `F` 保良构.
 
 ```agda
-rec-wf-preserving : ∀ {α₀} → wellFormed α₀ → ≤-increasing F → <-enlarging F
+rec-wf-preserving : ∀ {α₀} → wellFormed α₀ → ≤-monotonic F → <-enlarging F
   → wf-preserving F → wf-preserving (rec F from α₀ by_)
-rec-wf-preserving wfα₀ ≤-inc <-enl wf-p {zero}  wfα = wfα₀
-rec-wf-preserving wfα₀ ≤-inc <-enl wf-p {suc α} wfα = wf-p
+rec-wf-preserving wfα₀ ≤-mono <-enlg wf-p {zero}  wfα = wfα₀
+rec-wf-preserving wfα₀ ≤-mono <-enlg wf-p {suc α} wfα = wf-p
   -- wellFormed (rec F from α₀ by α)
-  (rec-wf-preserving wfα₀ ≤-inc <-enl wf-p {α} wfα)
-rec-wf-preserving wfα₀ ≤-inc <-enl wf-p {lim f} wfα =
+  (rec-wf-preserving wfα₀ ≤-mono <-enlg wf-p {α} wfα)
+rec-wf-preserving wfα₀ ≤-mono <-enlg wf-p {lim f} wfα =
   -- wellFormed (rec F from α₀ by f n)
-  ( λ {n} → rec-wf-preserving wfα₀ ≤-inc <-enl wf-p {f n} (proj₁ wfα) )
+  ( λ {n} → rec-wf-preserving wfα₀ ≤-mono <-enlg wf-p {f n} (proj₁ wfα) )
   -- rec F from α₀ by f m < rec F from α₀ by f n
-  , λ m<n → rec-by-<-inc ≤-inc <-enl (proj₂ wfα m<n)
+  , λ m<n → rec-by-<-mono ≤-mono <-enlg (proj₂ wfα m<n)
 ```
