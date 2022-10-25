@@ -18,6 +18,8 @@ zhihu-url: https://zhuanlan.zhihu.com/p/575766146
 module Ordinal.Function where
 ```
 
+## 前置
+
 本章在内容上延续前两章.
 
 ```agda
@@ -25,12 +27,12 @@ open import Ordinal
 open import Ordinal.WellFormed using (wellFormed; ∃[n]<fn; f<l)
 ```
 
-对于标准库除了乘积类型, 我们还将使用函数复合 `_∘_`, 函数**尊重**二元关系 `_Respects_`, 以及序数广集上的 `_≈_` 推理.
+标准库依赖除了乘积类型之外, 我们还将使用函数复合 `_∘_`, 恒等函数 `id`, 函数的单调性 `Monotonic₁`, 函数**尊重**二元关系 `_Respects_`, 以及序数广集上的 `_≈_` 推理.
 
 ```agda
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
-open import Function using (_∘_)
-open import Relation.Binary using (_Preserves_⟶_; _Respects_)
+open import Function using (_∘_; id)
+open import Relation.Binary using (Monotonic₁; _Respects_)
 open import Relation.Binary.Reasoning.Setoid (OrdSetoid)
   using (begin_; step-≈; step-≈˘; _∎)
 ```
@@ -51,6 +53,13 @@ wf-preserving : (Ord → Ord) → Set
 wf-preserving F = ∀ {α} → wellFormed α → wellFormed (F α)
 ```
 
+显然 `suc` 保良构.
+
+```agda
+_ : wf-preserving suc
+_ = id
+```
+
 以下两条称为 F 的增长性. `α ≤ F α` 称为**弱增长**, `α < F α` 称为**强增长**. 弱增长在有些书中又被称为*非无穷降链*.
 
 ```agda
@@ -59,6 +68,16 @@ wf-preserving F = ∀ {α} → wellFormed α → wellFormed (F α)
 
 <-increasing : (Ord → Ord) → Set
 <-increasing F = ∀ α → α < F α
+```
+
+显然 `suc` 满足增长性.
+
+```agda
+_ : ≤-increasing suc
+_ = λ _ → ≤s
+
+_ : <-increasing suc
+_ = λ _ → <s
 ```
 
 显然, 强增长蕴含弱增长.
@@ -82,10 +101,20 @@ suc-increasing F = ∀ {α} → wellFormed α → suc α < F (suc α)
 
 ```agda
 ≤-monotonic : (Ord → Ord) → Set
-≤-monotonic F = F Preserves _≤_ ⟶ _≤_
+≤-monotonic F = Monotonic₁ _≤_ _≤_ F
 
 <-monotonic : (Ord → Ord) → Set
-<-monotonic F = F Preserves _<_ ⟶ _<_
+<-monotonic F = Monotonic₁ _<_ _<_ F
+```
+
+显然 `suc` 满足单调性.
+
+```agda
+_ : ≤-monotonic suc
+_ = s≤s
+
+_ : <-monotonic suc
+_ = s<s
 ```
 
 下面是一种特殊的单调性, 称为**后继单调**. 显然, <-单调蕴含后继单调.
