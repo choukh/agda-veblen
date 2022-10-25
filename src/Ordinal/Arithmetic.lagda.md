@@ -31,8 +31,12 @@ open import Ordinal.Recursion
 我们需要以下标准库依赖.
 
 ```agda
+open import Algebra.Definitions {A = Ord} _≈_
 open import Data.Nat as ℕ using (ℕ)
+open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
+open import Relation.Binary.Reasoning.Setoid (OrdSetoid)
+  using (begin_; step-≈; step-≈˘; _∎)
 ```
 
 ## 序数算术
@@ -97,13 +101,35 @@ _ : ∀ {α f} → α ^ lim f ≡ lim λ n → α ^ f n
 _ = refl
 ```
 
-## 初等运算律
+## 加法
+
+我们对照 [Data.Nat.Properties](https://agda.github.io/agda-stdlib/Data.Nat.Properties.html#14236) 考察序数加法的性质.
+
+序数加法有结合律, 但没有交换律.
 
 ```agda
-
++-assoc : Associative _+_
++-assoc _ _ zero = ≡→≈ refl
++-assoc α β (suc γ) = s≈s (+-assoc α β γ)
++-assoc α β (lim f) = l≤ (λ n → ≤→≤l (proj₁ (+-assoc α β (f n))))
+                    , l≤ (λ n → ≤→≤l (proj₂ (+-assoc α β (f n))))
 ```
 
-## 作为自然数算术的保守扩展
+序数零是序数加法单位元.
+
+```agda
++-identityˡ : LeftIdentity zero _+_
++-identityˡ zero    = ≡→≈ refl
++-identityˡ (suc α) = s≈s (+-identityˡ α)
++-identityˡ (lim f) = l≤ (λ n → ≤→≤l (proj₁ (+-identityˡ (f n))))
+                    , l≤ (λ n → ≤→≤l (proj₂ (+-identityˡ (f n))))
+
++-identityʳ : RightIdentity zero _+_
++-identityʳ = λ _ → ≡→≈ refl
+
++-identity : Identity zero _+_
++-identity = +-identityˡ , +-identityʳ
+```
 
 如所期望的那样, 序数算术也有一加一等于二.
 
@@ -119,3 +145,5 @@ _ = refl
 --m+n {ℕ.zero} = {!   !}
 --m+n {ℕ.suc m} = {!   !}
 ```
+
+序数加法没有 `suc α + β ≡ suc (α + β)`

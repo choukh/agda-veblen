@@ -30,7 +30,7 @@ open import Ordinal.WellFormed using (wellFormed; ∃[n]<fn; f<l)
 ```agda
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Function using (_∘_)
-open import Relation.Binary using (_Respects_)
+open import Relation.Binary using (_Preserves_⟶_; _Respects_)
 open import Relation.Binary.Reasoning.Setoid (OrdSetoid)
   using (begin_; step-≈; step-≈˘; _∎)
 ```
@@ -54,38 +54,38 @@ wf-preserving F = ∀ {α} → wellFormed α → wellFormed (F α)
 以下两条称为 F 的增长性. `α ≤ F α` 称为**弱增长**, `α < F α` 称为**强增长**. 弱增长在有些书中又被称为*非无穷降链*.
 
 ```agda
-≤-enlarging : (Ord → Ord) → Set
-≤-enlarging F = ∀ α → α ≤ F α
+≤-increasing : (Ord → Ord) → Set
+≤-increasing F = ∀ α → α ≤ F α
 
-<-enlarging : (Ord → Ord) → Set
-<-enlarging F = ∀ α → α < F α
+<-increasing : (Ord → Ord) → Set
+<-increasing F = ∀ α → α < F α
 ```
 
 显然, 强增长蕴含弱增长.
 
 ```agda
-<⇒≤-enlg : <-enlarging F → ≤-enlarging F
-<⇒≤-enlg = λ <-enlg α → <⇒≤ (<-enlg α)
+<⇒≤-incr : <-increasing F → ≤-increasing F
+<⇒≤-incr = λ <-incr α → <⇒≤ (<-incr α)
 ```
 
 下面是两种特殊的增长性, 分别叫做**零处增长**和**良构后继处增长**. 在 Veblen 不动点理论中要用到它们. 显然, 强增长蕴含这两者.
 
 ```agda
-zero-enlarging : (Ord → Ord) → Set
-zero-enlarging F = zero < F zero
+zero-increasing : (Ord → Ord) → Set
+zero-increasing F = zero < F zero
 
-suc-enlarging : (Ord → Ord) → Set
-suc-enlarging F = ∀ {α} → wellFormed α → suc α < F (suc α)
+suc-increasing : (Ord → Ord) → Set
+suc-increasing F = ∀ {α} → wellFormed α → suc α < F (suc α)
 ```
 
 以下两条称为 F 的单调性, 分别叫做 **≤-单调** 和 **<-单调**.
 
 ```agda
 ≤-monotonic : (Ord → Ord) → Set
-≤-monotonic F = ∀ {α β} → α ≤ β → F α ≤ F β
+≤-monotonic F = F Preserves _≤_ ⟶ _≤_
 
 <-monotonic : (Ord → Ord) → Set
-<-monotonic F = ∀ {α β} → α < β → F α < F β
+<-monotonic F = F Preserves _<_ ⟶ _<_
 ```
 
 下面是一种特殊的单调性, 称为**后继单调**. 显然, <-单调蕴含后继单调.
@@ -122,8 +122,8 @@ normal F = ≤-monotonic F × <-monotonic F × lim-continuous F
 - 零的情况显然成立.
 
 ```agda
-normal→≤-enlg : normal F → ≤-enlarging F
-normal→≤-enlg nml@(_ , <-mono , lim-ct) =
+normal→≤-incr : normal F → ≤-increasing F
+normal→≤-incr nml@(_ , <-mono , lim-ct) =
   λ { zero    → z≤
 ```
 
@@ -131,16 +131,16 @@ normal→≤-enlg nml@(_ , <-mono , lim-ct) =
 
 ```agda
     ; (suc α) → ≤-trans
-        (s≤s (normal→≤-enlg nml α)) -- suc α ≤ suc (F α)
-        (<→s≤ (<-mono <s))         -- suc (F α) ≤ F (suc α)
+        (s≤s (normal→≤-incr nml α)) -- suc α ≤ suc (F α)
+        (<→s≤ (<-mono <s))          -- suc (F α) ≤ F (suc α)
 ```
 
 - 极限的情况, 即证 `f n ≤ F (lim f)`. 由连续性, `F (lim f) ≈ lim (F ∘ f)`. 只需证 `f n ≤ lim (F ∘ f)`, 只需证 `f n ≤ (F ∘ f) n`, 此即归纳假设. ∎
 
 ```agda
     ; (lim f) → l≤ λ n → ≤-respʳ-≈
-        (≈-sym (lim-ct f))              -- F (lim f) ≈ lim (F ∘ f)
-        (≤→≤l (normal→≤-enlg nml (f n))) -- f n ≤ lim (F ∘ f)
+        (≈-sym (lim-ct f))               -- F (lim f) ≈ lim (F ∘ f)
+        (≤→≤l (normal→≤-incr nml (f n))) -- f n ≤ lim (F ∘ f)
     }
 ```
 
