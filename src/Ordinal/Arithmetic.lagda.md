@@ -41,19 +41,18 @@ open import Relation.Binary.PropositionalEquality as Eq
   using (_≡_; refl; sym; cong)
 ```
 
-本章需要 `_≡_` 和 `_≈_` 两套推理.
+本章需要 `≤-Reasoning` 和 `≡-Reasoning` 两套推理, 由于 syntax 重名, 我们采用短模块名进行区分.
 
 ```agda
-open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; step-≡; step-≡˘; _∎)
-open import Relation.Binary.Reasoning.Setoid (OrdSetoid)
-  using (step-≈; step-≈˘) renaming (begin_ to ≈-begin_; _∎ to _≈-∎)
+open module ≡ = Eq.≡-Reasoning
+open module ≤ = Ordinal.≤-Reasoning
 ```
 
 本章需要考察序数上的代数结构.
 
 ```agda
 open import Algebra.Definitions {A = Ord} _≈_
-open import Algebra.Structures {A = Ord} _≈_
+open import Algebra.Structures  {A = Ord} _≈_
 ```
 
 ## 序数算术
@@ -113,15 +112,15 @@ _ = refl
 
 ```agda
 ⌜_⌝+⌜_⌝ : ∀ m n → ⌜ m ⌝ + ⌜ n ⌝ ≡ ⌜ m ℕ.+ n ⌝
-⌜ m ⌝+⌜ ℕ.zero ⌝      = begin
-  ⌜ m ⌝ + ⌜ ℕ.zero ⌝  ≡⟨⟩
-  ⌜ m ⌝               ≡˘⟨ cong ⌜_⌝ (ℕ.+-identityʳ m) ⟩
-  ⌜ m ℕ.+ ℕ.zero ⌝    ∎
-⌜ m ⌝+⌜ ℕ.suc n ⌝     = begin
-  ⌜ m ⌝ + suc ⌜ n ⌝   ≡⟨⟩
-  suc (⌜ m ⌝ + ⌜ n ⌝) ≡⟨ cong suc ⌜ m ⌝+⌜ n ⌝ ⟩
-  suc ⌜ m ℕ.+ n ⌝     ≡˘⟨ cong ⌜_⌝ (ℕ.+-suc m n) ⟩
-  ⌜ m ℕ.+ ℕ.suc n ⌝   ∎
+⌜ m ⌝+⌜ ℕ.zero ⌝    = ≡.begin
+  ⌜ m ⌝ + ⌜ ℕ.zero ⌝  ≡.≡⟨⟩
+  ⌜ m ⌝               ≡.≡˘⟨ cong ⌜_⌝ (ℕ.+-identityʳ m) ⟩
+  ⌜ m ℕ.+ ℕ.zero ⌝    ≡.∎
+⌜ m ⌝+⌜ ℕ.suc n ⌝   = ≡.begin
+  ⌜ m ⌝ + suc ⌜ n ⌝   ≡.≡⟨⟩
+  suc (⌜ m ⌝ + ⌜ n ⌝) ≡.≡⟨ cong suc ⌜ m ⌝+⌜ n ⌝ ⟩
+  suc ⌜ m ℕ.+ n ⌝     ≡.≡˘⟨ cong ⌜_⌝ (ℕ.+-suc m n) ⟩
+  ⌜ m ℕ.+ ℕ.suc n ⌝   ≡.∎
 ```
 
 ### 运算律
@@ -195,10 +194,10 @@ _ = refl
 
 ```agda
 +-congˡ : LeftCongruent _+_
-+-congˡ {α} (≤ , ≥) = (+-monoʳ-≤ α ≤) , (+-monoʳ-≤ α ≥)
++-congˡ {α} (≤ , ≥) = +-monoʳ-≤ α ≤ , +-monoʳ-≤ α ≥
 
 +-congʳ : RightCongruent _+_
-+-congʳ {α} (≤ , ≥) = (+-monoˡ-≤ α ≤) , (+-monoˡ-≤ α ≥)
++-congʳ {α} (≤ , ≥) = +-monoˡ-≤ α ≤ , +-monoˡ-≤ α ≥
 
 +-cong : Congruent₂ _+_
 +-cong {v = v} x≈y u≈v = ≈-trans (+-congˡ u≈v) (+-congʳ {v} x≈y)

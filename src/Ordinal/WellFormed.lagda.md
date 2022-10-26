@@ -18,19 +18,28 @@ zhihu-url: https://zhuanlan.zhihu.com/p/573846653
 module Ordinal.WellFormed where
 ```
 
-我们导入第一章的内容和标准库的常规模块. 注意 Agda 有构造子重载, `ℕ` 的 `zero` 和 `suc` 与 `Ord` 的同名, 但只要类型明确就没有问题.
+## 前置
+
+本章在内容上延续上一章.
 
 ```agda
 open import Ordinal
+open Ordinal.≤-Reasoning
+```
+
+标准库依赖大部分都在上一章出现过. 注意 Agda 有构造子重载, `ℕ` 的 `zero` 和 `suc` 与 `Ord` 的同名, 但只要类型明确就没有问题. `_↩_` 表示存在左逆, 其强度介于等价和同构之间. `Monotonic₁` 是函数对序关系的单调性.
+
+```agda
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Unit using (⊤; tt)
 open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Nat.Properties as ℕ using (m≤n⇒m<n∨m≡n)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
+open import Function using (_↩_)
+open import Relation.Binary using (Monotonic₁)
 open import Relation.Binary.PropositionalEquality as Eq
   using (_≡_; _≢_; refl; sym; cong; subst)
-open import Function using (_↩_)
 ```
 
 ## 良构
@@ -39,7 +48,7 @@ open import Function using (_↩_)
 
 ```agda
 monotonic : (ℕ → Ord) → Set
-monotonic f = ∀ {m n} → m ℕ.< n → f m < f n
+monotonic f = Monotonic₁ ℕ._<_ _<_ f
 ```
 
 由单调序列的极限构成的序数我们称为**良构**序数. 注意这是递归定义, 序列的每一项也要求良构. 平凡地, 零以及良构序数的后继也是良构序数.
@@ -82,8 +91,8 @@ wellFormed (lim f) = (∀ {n} → wellFormed (f n)) × monotonic f
 ```agda
 ⌜⌝-monotonic : monotonic ⌜_⌝
 ⌜⌝-monotonic {m} {suc n} (ℕ.s≤s m≤n) with (m≤n⇒m<n∨m≡n m≤n)
-... | inj₁ m<n = <-trans (⌜⌝-monotonic m<n) <s
-... | inj₂ refl = <s
+... | inj₁ m<n  = begin-strict ⌜ m ⌝ <⟨ ⌜⌝-monotonic m<n ⟩ ⌜ n ⌝ <⟨ <s ⟩ suc ⌜ n ⌝ ∎
+... | inj₂ refl = begin-strict ⌜ m ⌝ <⟨ <s ⟩ suc ⌜ m ⌝ ∎
 ```
 
 以上两条引理说明 `ω` 是良构序数.
@@ -102,7 +111,8 @@ z<ω : zero < ω
 z<ω = (1 , inj₁ tt) , z≤
 
 s<ω : ∀ {α} → α < ω → suc α < ω
-s<ω ((n , d) , ≤) = (suc n , inj₁ tt) , ≤-trans (s≤s ≤) s∸≤
+s<ω {α} ((n , d) , ≤) = (suc n , inj₁ tt) ,
+  (begin suc α ≤⟨ s≤s ≤ ⟩ suc (⌜ n ⌝ ∸ d) ≤⟨ s∸≤ ⟩ ⌜ n ⌝ ∎)
 
 n<ω : ∀ {n} → ⌜ n ⌝ < ω
 n<ω {zero}  = z<ω
@@ -120,8 +130,11 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 
 ```agda
 ⌜n⌝≤fn : ∀ {f n} → monotonic f → ⌜ n ⌝ ≤ f n
-⌜n⌝≤fn {n = zero}  mono = z≤
-⌜n⌝≤fn {n = suc n} mono = ≤-trans (s≤s (⌜n⌝≤fn mono)) (<→s≤ (fn<fsn mono))
+⌜n⌝≤fn     {n = zero}  mono = z≤
+⌜n⌝≤fn {f} {n = suc n} mono = begin
+  suc ⌜ n ⌝ ≤⟨ s≤s (⌜n⌝≤fn mono) ⟩
+  suc (f n) ≤⟨ <→s≤ (fn<fsn mono) ⟩
+  f (suc n) ∎
 ```
 
 我们称单调序列的极限为单调极限序数, 它比良构极限序数更宽泛, 但足以证明一些良好的性质. 如:
@@ -139,7 +152,7 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 
 ```agda
 ⌜⌝-injective : ∀ {m n} → ⌜ m ⌝ ≡ ⌜ n ⌝ → m ≡ n
-⌜⌝-injective {zero} {zero} eq = refl
+⌜⌝-injective {zero}  {zero}  eq = refl
 ⌜⌝-injective {suc m} {suc n} eq = cong suc (⌜⌝-injective (suc-injective eq))
 ```
 
@@ -147,10 +160,12 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 
 ```agda
 ⌜⌝-surjective : ∀ {α} → α < ω → wellFormed α → ∃[ n ] α ≡ ⌜ n ⌝
-⌜⌝-surjective {zero}  _  _          = 0 , refl
-⌜⌝-surjective {suc α} <ω wf with ⌜⌝-surjective (<-trans <s <ω) wf
-... | n , ≡⌜n⌝                      = (suc n) , cong suc ≡⌜n⌝
-⌜⌝-surjective {lim f} <ω (_ , mono) = ⊥-elim (<⇒≱ <ω (ω≤l mono))
+⌜⌝-surjective {zero}  _  _ = 0 , refl
+⌜⌝-surjective {suc α} s<ω wf
+  with ⌜⌝-surjective α<ω wf
+  where α<ω = begin-strict α <⟨ <s ⟩ suc α <⟨ s<ω ⟩ ω ∎
+... | n , ≡⌜n⌝ = suc n , cong suc ≡⌜n⌝
+⌜⌝-surjective {lim f} l<ω (_ , mono) = ⊥-elim (<⇒≱ l<ω (ω≤l mono))
 ```
 
 **推论** 小于 `ω` 的良构序数与自然数等价.
@@ -172,28 +187,31 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 
 ```agda
 z<l : ∀ {f} → monotonic f → zero < lim f
-z<l mono = <-≤-trans z<ω (ω≤l mono)
+z<l {f} mono = begin-strict zero <⟨ z<ω ⟩ ω ≤⟨ ω≤l mono ⟩ lim f ∎
 ```
 
-`f<l` 是上一章 [`f≤l`](Ordinal.html#7684) 的 `_<_` 版, 它要求 `f` 单调.
+`f<l` 是上一章 [`f≤l`](Ordinal.html#7688) 的 `_<_` 版, 它要求 `f` 单调.
 
 ```agda
 f<l : ∀ {f n} → monotonic f → f n < lim f
-f<l mono = <-≤-trans (fn<fsn mono) f≤l
+f<l {f} {n} mono = begin-strict f n <⟨ fn<fsn mono ⟩ f (suc n) ≤⟨ f≤l ⟩ lim f ∎
 ```
 
 **引理** 单调序列在其极限内有任意大的项.  
 **证明**
 
 - 对于零, 我们有 `f 1` 大于它.
-- 对于后继序数 `suc α`, 由归纳假设我们有 `f n` 大于 `α`, 取 `f (suc n)`, 由传递性可证它大于 `suc α`.
+- 对于后继序数 `suc α`, 由归纳假设我们有 `f n` 大于 `α`, 由传递性有 `f (suc n)` 大于 `suc α`.
 - 对于极限序数 `lim g`, 存在 `f n` 大于 `lim g`. ∎
 
 ```agda
 ∃[n]<fn : ∀ {α f} → monotonic f → α < lim f → ∃[ n ] α < f n
-∃[n]<fn {zero}  mono _ = 1 , (≤-<-trans z≤ (fn<fsn mono))
-∃[n]<fn {suc α} mono s<l with ∃[n]<fn mono (<-trans <s s<l)
-... | n , <f = (suc n) , (≤-<-trans (<→s≤ <f) (fn<fsn mono))
+∃[n]<fn {zero}  {f} mono _ = 1 ,
+  (begin-strict zero ≤⟨ z≤ ⟩ f 0 <⟨ fn<fsn mono ⟩ f 1 ∎)
+∃[n]<fn {suc α} {f} mono s<l
+  with ∃[n]<fn mono (begin-strict α <⟨ <s ⟩ suc α <⟨ s<l ⟩ lim f ∎)
+... | n , <f = suc n ,
+  (begin-strict suc α ≤⟨ <→s≤ <f ⟩ f n <⟨ fn<fsn mono ⟩ f (suc n) ∎)
 ∃[n]<fn {lim g} mono ((n , d) , l<f) = n , d , l<f
 ```
 
@@ -202,8 +220,8 @@ f<l mono = <-≤-trans (fn<fsn mono) f≤l
 
 ```agda
 s<l : ∀ {α f} → monotonic f → α < lim f → suc α < lim f
-s<l mono < with ∃[n]<fn mono <
-... | n , <f = ≤-<-trans (<→s≤ <f) (f<l mono)
+s<l {α} {f} mono < with ∃[n]<fn mono <
+... | n , <f = begin-strict suc α ≤⟨ <→s≤ <f ⟩ f n <⟨ f<l mono ⟩ lim f ∎
 ```
 
 ## 良构序数的性质
@@ -215,7 +233,7 @@ s<l mono < with ∃[n]<fn mono <
 ```agda
 ≢z→>z : ∀ {α} → wellFormed α → α ≢ zero → α > zero
 ≢z→>z {zero}  _          z≢z = ⊥-elim (z≢z refl)
-≢z→>z {suc α} _          _   = (inj₁ tt) , z≤
+≢z→>z {suc α} _          _   = inj₁ tt , z≤
 ≢z→>z {lim f} (_ , mono) _   = z<l mono
 ```
 
@@ -253,7 +271,7 @@ s<l mono < with ∃[n]<fn mono <
 <ω⊎≥ω {zero}  _                = inj₁ z<ω
 <ω⊎≥ω {suc α} wf with <ω⊎≥ω wf
 ...                 | inj₁ <ω  = inj₁ (s<ω <ω)
-...                 | inj₂ ≥ω  = inj₂ (≤-trans ≥ω ≤s)
+...                 | inj₂ ≥ω  = inj₂ (begin lim ⌜_⌝ ≤⟨ ≥ω ⟩ α ≤⟨ ≤s ⟩ suc α ∎)
 <ω⊎≥ω {lim f} (_ , mono)       = inj₂ (ω≤l mono)
 ```
 

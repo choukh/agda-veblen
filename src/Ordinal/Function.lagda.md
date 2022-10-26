@@ -24,17 +24,16 @@ module Ordinal.Function where
 
 ```agda
 open import Ordinal
+open Ordinal.≤-Reasoning
 open import Ordinal.WellFormed using (wellFormed; ∃[n]<fn; f<l)
 ```
 
-标准库依赖除了乘积类型之外, 我们还将使用函数复合 `_∘_`, 恒等函数 `id`, 函数的单调性 `Monotonic₁`, 函数**尊重**二元关系 `_Respects_`, 以及序数广集上的 `_≈_` 推理.
+标准库依赖除了乘积类型之外, 我们还将使用函数复合 `_∘_`, 恒等函数 `id`, 函数的单调性 `Monotonic₁`, 以及函数**尊重**二元关系 `_Respects_`.
 
 ```agda
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Function using (_∘_; id)
 open import Relation.Binary using (Monotonic₁; _Respects_)
-open import Relation.Binary.Reasoning.Setoid (OrdSetoid)
-  using (begin_; step-≈; step-≈˘; _∎)
 ```
 
 ## 序数函数的性质
@@ -200,7 +199,7 @@ normal-resp-≈ {F} {G} ext (≤-mono , <-mono , lim-ct)
 - 需证 `G` 连续. 以下改写链是自明的. 对于最后一步, 拆成两个 `_≤_` 式, 分别由 `ext` 的两个分量可证. ∎
 
 ```agda
-  , (λ f → begin
+  , (λ f → begin-equality
       G (lim f)   ≈˘⟨ ext ⟩
       F (lim f)   ≈⟨ lim-ct f ⟩
       lim (F ∘ f) ≈⟨ helper f ⟩

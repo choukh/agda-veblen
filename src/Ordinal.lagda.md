@@ -58,7 +58,7 @@ open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
 ```agda
 open import Relation.Binary using (Rel; _⇒_)
 open import Relation.Binary.Definitions
-  using (Reflexive; Symmetric; Transitive; Irreflexive; Asymmetric)
+  using (Reflexive; Symmetric; Transitive; Trans; Irreflexive; Asymmetric)
 open import Relation.Binary.Consequences using (trans∧irr⇒asym)
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 ```
@@ -303,10 +303,10 @@ _≉_ : Rel Ord 0ℓ
 
 ```agda
 s≈s : ∀ {α β} → α ≈ β → suc α ≈ suc β
-s≈s (α≤β , β≤α) = (s≤s α≤β) , (s≤s β≤α)
+s≈s (α≤β , β≤α) = s≤s α≤β , s≤s β≤α
 
 s≈s→≈ : ∀ {α β} → suc α ≈ suc β → α ≈ β
-s≈s→≈ (sα≤sβ , sβ≤sα) = (s≤s→≤ sα≤sβ) , (s≤s→≤ sβ≤sα)
+s≈s→≈ (sα≤sβ , sβ≤sα) = s≤s→≤ sα≤sβ , s≤s→≤ sβ≤sα
 
 ≈⇔s≈s : ∀ {α β} → α ≈ β ⇔ suc α ≈ suc β
 ≈⇔s≈s = mk⇔ s≈s s≈s→≈
@@ -361,7 +361,6 @@ infix 4 _<_ _>_ _≮_ _≯_
 
 _<_ : Rel Ord 0ℓ
 α < β = ∃[ d ] α ≤ β ∸ d
-
 ```
 
 注意这里不使用标准库的 [NonStrictToStrict](https://agda.github.io/agda-stdlib/Relation.Binary.Construct.NonStrictToStrict.html) 框架把 `_<_` 定义成 `α ≤ β × α ≉ β`, 理由有三.
@@ -392,7 +391,7 @@ z<s : ∀ α → zero < suc α
 z<s α = inj₁ tt , z≤
 
 <s : ∀ {α} → α < suc α
-<s = (inj₁ tt) , ≤-refl
+<s = inj₁ tt , ≤-refl
 ```
 
 由上一小节证明的否定式可以证明 `_<_` 反自反且传递. 其中反自反分两个版本: `_≡_` 版用 refl 反演后即引理 `≰∸`; `_≈_` 版用引理 `≤→∸≱` 不难证明.
@@ -409,7 +408,7 @@ z<s α = inj₁ tt , z≤
 
 ```agda
 <-trans : Transitive _<_
-<-trans (d₁ , α≤β∸d₁) (d₂ , β≤γ∸d₂) = d₂ , (≤-trans (≤∸→≤ α≤β∸d₁) β≤γ∸d₂)
+<-trans (d₁ , α≤β∸d₁) (d₂ , β≤γ∸d₂) = d₂ , ≤-trans (≤∸→≤ α≤β∸d₁) β≤γ∸d₂
 
 <-asym : Asymmetric _<_
 <-asym = trans∧irr⇒asym {_≈_ = _≈_} ≈-refl <-trans <-irrefl-≈
@@ -451,7 +450,7 @@ s≤→< (s≤ {d = d} α≤β∸d) = d , α≤β∸d
 
 ```agda
 ≤→<s : ∀ {α β} → α ≤ β → α < suc β
-≤→<s α≤β = (inj₁ tt) , α≤β
+≤→<s α≤β = inj₁ tt , α≤β
 
 <s→≤ : ∀ {α β} → α < suc β → α ≤ β
 <s→≤ (inj₁ tt , α≤β)   = α≤β
@@ -480,10 +479,10 @@ s<s→< = _⟨$⟩_ (Equivalence.from <⇔s<s)
 由此可得传递性的变体.
 
 ```agda
-<-≤-trans : ∀ {α β γ} → α < β → β ≤ γ → α < γ
+<-≤-trans : Trans _<_ _≤_ _<_
 <-≤-trans α<β β≤γ = s≤→< (≤-trans (<→s≤ α<β) β≤γ)
 
-≤-<-trans : ∀ {α β γ} → α ≤ β → β < γ → α < γ
+≤-<-trans : Trans _≤_ _<_ _<_
 ≤-<-trans α≤β β<γ = s≤→< (≤-trans (s≤s α≤β) (<→s≤ β<γ))
 ```
 
@@ -547,9 +546,23 @@ open import Relation.Binary.Structures (_≈_)
 <-resp-≈ = IsStrictPartialOrder.<-resp-≈ <-isStrictPartialOrder
 ```
 
+我们用本章所证明的结论来实例化标准库所提供的涉及序关系和等价关系的推理组合子, 并输出为子模块, 后续章节会大量使用它.
+
+```agda
+module ≤-Reasoning where
+  open import Relation.Binary.Reasoning.Base.Triple
+    ≤-isPreorder
+    <-trans
+    <-resp-≈
+    <⇒≤
+    <-≤-trans
+    ≤-<-trans
+    public
+```
+
 ## 序数广集
 
-由 `≈-isEquivalence` 可以构造序数广集, 它相当于是 `Ord` 在 `_≈_` 上的商集, 合并了传统理论中同一序数在我们这里的多种基本序列表示.
+由 `≈-isEquivalence` 可以构造序数广集, 它相当于是 `Ord` 在 `_≈_` 上的商集, 合并了传统理论中同一序数在我们这里的多种基本序列表示. 但我们几乎不会使用它, 而是直接使用底层的 `Ord`.
 
 ```agda
 open Relation.Binary using (Setoid)
