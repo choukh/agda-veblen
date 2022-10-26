@@ -133,8 +133,7 @@ _ = refl
 +-assoc : Associative _+_
 +-assoc _ _ zero = ≡⇒≈ refl
 +-assoc α β (suc γ) = s≈s (+-assoc α β γ)
-+-assoc α β (lim f) = l≤ (λ n → ≤f⇒≤l (proj₁ (+-assoc α β (f n))))
-                    , l≤ (λ n → ≤f⇒≤l (proj₂ (+-assoc α β (f n))))
++-assoc α β (lim f) = l≈l (+-assoc α β (f _))
 ```
 
 **引理** 序数零是序数加法单位元.
@@ -143,8 +142,7 @@ _ = refl
 +-identityˡ : LeftIdentity zero _+_
 +-identityˡ zero    = ≡⇒≈ refl
 +-identityˡ (suc α) = s≈s (+-identityˡ α)
-+-identityˡ (lim f) = l≤ (λ n → ≤f⇒≤l (proj₁ (+-identityˡ (f n))))
-                    , l≤ (λ n → ≤f⇒≤l (proj₂ (+-identityˡ (f n))))
++-identityˡ (lim f) = l≈l (+-identityˡ (f _))
 
 +-identityʳ : RightIdentity zero _+_
 +-identityʳ = λ _ → ≡⇒≈ refl
@@ -161,9 +159,9 @@ _ = refl
 
 1+ω : ⌜ 1 ⌝ + ω ≈ ω
 1+ω = l≤ (λ n → ≤f⇒≤l {n = ℕ.suc n}
-        (≤-respˡ-≈ (≡⇒≈ (sym ⌜ 1 ⌝+⌜ n ⌝)) ≤-refl)) {- ⌜ 1 ⌝ + ⌜ n ⌝ ≤ suc ⌜ n ⌝ -}
+        (≤.begin ⌜ 1 ⌝ + ⌜ n ⌝ ≤.≡⟨ ⌜ 1 ⌝+⌜ n ⌝ ⟩ ⌜ 1 ℕ.+ n ⌝ ≤.∎))
     , l≤ (λ n → ≤f⇒≤l {n = n}
-        (≤-respʳ-≈ (≡⇒≈ (sym ⌜ 1 ⌝+⌜ n ⌝)) ≤s))     {- ⌜ n ⌝ ≤ ⌜ 1 ⌝ + ⌜ n ⌝ -}
+        (≤.begin ⌜ n ⌝ ≤⟨ ≤s ⟩ suc ⌜ n ⌝ ≤.≡˘⟨ ⌜ 1 ⌝+⌜ n ⌝ ⟩ ⌜ 1 ⌝ + ⌜ n ⌝ ≤.∎))
 ```
 
 ### 增长性, 单调性与合同性
@@ -171,23 +169,25 @@ _ = refl
 由上一章超限递归的基本性质立即得到序数加法的增长性和单调性.
 
 ```agda
-+-incrˡ-≤ : ∀ α → ≤-increasing (_+ α)
-+-incrˡ-≤ α β = rec-from-incr-≤ α (λ _ → ≤s) β
+module _ (α) where
 
-+-incrʳ-≤ : ∀ α → ≤-increasing (α +_)
-+-incrʳ-≤ α β = rec-by-incr-≤ s≤s (λ _ → <s) β
+  +-incrˡ-≤ : ≤-increasing (_+ α)
+  +-incrˡ-≤ β = rec-from-incr-≤ α (λ _ → ≤s) β
 
-+-incrˡ-< : ∀ α → α > zero → <-increasing (_+ α)
-+-incrˡ-< α >z β = rec-from-incr-< >z s≤s (λ _ → <s) β
+  +-incrʳ-≤ : ≤-increasing (α +_)
+  +-incrʳ-≤ β = rec-by-incr-≤ s≤s (λ _ → <s) β
 
-+-monoˡ-≤ : ∀ α → ≤-monotonic (_+ α)
-+-monoˡ-≤ α ≤ = rec-from-mono-≤ α s≤s ≤
+  +-incrˡ-< : α > zero → <-increasing (_+ α)
+  +-incrˡ-< >z β = rec-from-incr-< >z s≤s (λ _ → <s) β
 
-+-monoʳ-≤ : ∀ α → ≤-monotonic (α +_)
-+-monoʳ-≤ α ≤ = rec-by-mono-≤ s≤s (λ _ → ≤s) ≤
+  +-monoˡ-≤ : ≤-monotonic (_+ α)
+  +-monoˡ-≤ ≤ = rec-from-mono-≤ α s≤s ≤
 
-+-monoʳ-< : ∀ α → <-monotonic (α +_ )
-+-monoʳ-< α < = rec-by-mono-< s≤s (λ _ → <s) <
+  +-monoʳ-≤ : ≤-monotonic (α +_)
+  +-monoʳ-≤ ≤ = rec-by-mono-≤ s≤s (λ _ → ≤s) ≤
+
+  +-monoʳ-< : <-monotonic (α +_ )
+  +-monoʳ-< < = rec-by-mono-< s≤s (λ _ → <s) <
 ```
 
 由 `+-monoˡ-≤` 以及 `+-monoʳ-≤` 立即得到 `_+_` 的合同性 (congruence).
@@ -200,7 +200,10 @@ _ = refl
 +-congʳ {α} (≤ , ≥) = +-monoˡ-≤ α ≤ , +-monoˡ-≤ α ≥
 
 +-cong : Congruent₂ _+_
-+-cong {v = v} x≈y u≈v = ≈-trans (+-congˡ u≈v) (+-congʳ {v} x≈y)
++-cong {α} {β} {γ} {δ} α≈β γ≈δ = ≤.begin-equality
+  α + γ ≈⟨ +-congˡ γ≈δ ⟩
+  α + δ ≈⟨ +-congʳ {δ} α≈β ⟩
+  β + δ ≤.∎
 ```
 
 ### 代数结构
