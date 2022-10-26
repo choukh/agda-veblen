@@ -54,8 +54,8 @@ postulate
 ```agda
 ¬¬-elim : ∀ {P : Set} → ¬ ¬ P → P
 ¬¬-elim {P} ¬¬p with LEM {P = P}
-...                | _ because ofʸ  p = p
-...                | _ because ofⁿ ¬p = ⊥-elim (¬¬p ¬p)
+... | _ because ofʸ  p = p
+... | _ because ofⁿ ¬p = ⊥-elim (¬¬p ¬p)
 ```
 
 两次反证法即可证"非全部满足则存在不满足".
@@ -105,8 +105,8 @@ postulate
 ```agda
 ≤-total {suc α} {lim f} wfα wfβ with ≤-total wfα wfβ
 ... | inj₁ α≤l with ≤-split wfα wfβ α≤l
-...               | inj₁ α<l = inj₁ (begin suc α <⟨ s<l (proj₂ wfβ) α<l ⟩ lim f ∎)
-...               | inj₂ α≈l = inj₂ (begin lim f ≤⟨ proj₂ α≈l ⟩ α ≤⟨ ≤s ⟩ suc α ∎)
+...   | inj₁ α<l = inj₁ (begin suc α <⟨ s<l (proj₂ wfβ) α<l ⟩ lim f ∎)
+...   | inj₂ α≈l = inj₂ (begin lim f ≤⟨ proj₂ α≈l ⟩ α ≤⟨ ≤s ⟩ suc α ∎)
 ≤-total {suc α} {lim f} wfα wfβ
     | inj₂ l≤α = inj₂ (≤⇒≤s l≤α)
 ```
@@ -115,10 +115,10 @@ postulate
 
 ```agda
 ≤-total {lim f} {suc β} wfα wfβ with ≤-total wfα wfβ
-... | inj₁ l≤β = inj₁ (begin lim f ≤⟨ l≤β ⟩ β ≤⟨ ≤s ⟩ suc β ∎)
+... | inj₁ l≤β = inj₁ (≤⇒≤s l≤β)
 ... | inj₂ β≤l with ≤-split wfβ wfα β≤l
-...               | inj₁ β<l = inj₂ (begin suc β <⟨ s<l (proj₂ wfα) β<l ⟩ lim f ∎)
-...               | inj₂ β≈l = inj₁ (begin lim f ≤⟨ proj₂ β≈l ⟩ β ≤⟨ ≤s ⟩ suc β ∎)
+...   | inj₁ β<l = inj₂ (begin suc β <⟨ s<l (proj₂ wfα) β<l ⟩ lim f ∎)
+...   | inj₂ β≈l = inj₁ (begin lim f ≤⟨ proj₂ β≈l ⟩ β ≤⟨ ≤s ⟩ suc β ∎)
 ```
 
 最后一种两边都是极限的情况必须要排中律, 因为对抽象的 `f` 和 `g` 没有计算方法可以得到诸如 `∀ n → f n ≤ lim g`.
@@ -132,9 +132,9 @@ postulate
 ≤-total {lim f} {lim g} wfα wfβ with LEM {P = ∀ n → f n ≤ lim g}
 ... | _ because ofʸ fn≤l = inj₁ (l≤ fn≤l)
 ... | _ because ofⁿ fn≰l with ¬∀⇒∃¬ fn≰l
-...                         | (n , fn≰l) with ≤-total wfβ (proj₁ wfα)
-...                                         | inj₁ l≤fn = inj₂ (≤f⇒≤l l≤fn)
-...                                         | inj₂ fn≤l = ⊥-elim (fn≰l fn≤l)
+...   | (n , fn≰l) with ≤-total wfβ (proj₁ wfα)
+...     | inj₁ l≤fn = inj₂ (≤f⇒≤l l≤fn)
+...     | inj₂ fn≤l = ⊥-elim (fn≰l fn≤l)
 ```
 
 在证明 `≤-split` 之前我们先用 `≤-total` 证一些引理. 没错, 互递归之间可以插入一些依赖两者的引理. 首先由 `≤-total` 立即有 `≰⇒≥`.
@@ -146,14 +146,14 @@ postulate
 ... | inj₂ ≥ = ≥
 ```
 
-下面是第二章 [`<ω⊎≥ω`](Ordinal.WellFormed.html#5868) 的推广, 前两个分支的证法与之类似.
+下面是第二章 [`<ω⊎≥ω`](Ordinal.WellFormed.html#6406) 的推广, 前两个分支的证法与之类似.
 
 ```agda
 <l⊎≥l : ∀ {α g} → wellFormed α → wellFormed (lim g) → α < lim g ⊎ α ≥ lim g
 <l⊎≥l {zero}  _   (_ , mono)       = inj₁ (z<l mono)
 <l⊎≥l {suc α} wfα wfβ with <l⊎≥l wfα wfβ
-...                      | inj₁ <l = inj₁ (s<l (proj₂ wfβ) <l)
-...                      | inj₂ ≥l = inj₂ (≤-trans ≥l ≤s)
+... | inj₁ <l = inj₁ (s<l (proj₂ wfβ) <l)
+... | inj₂ ≥l = inj₂ (≤⇒≤s ≥l)
 ```
 
 第三个分支, 要证 `lim f < lim g ⊎ lim f ≥ lim g`. 我们用排中律.
@@ -167,18 +167,20 @@ postulate
 <l⊎≥l {lim f} {g} wfα wfβ with LEM {P = ∀ n → g n ≤ lim f}
 ... | _ because ofʸ gn≤l = inj₂ (l≤ gn≤l)
 ... | _ because ofⁿ gn≰l with ¬∀⇒∃¬ gn≰l
-...                         | (n , gn≰l) with <l⊎≥l {g n} {f} (proj₁ wfβ) wfα
-...                                         | inj₁ gn<l = ⊥-elim (gn≰l (<⇒≤ gn<l))
-...                                         | inj₂ l≤gn = inj₁ (≤-<-trans l≤gn (f<l (proj₂ wfβ)))
+...   | (n , gn≰l) with <l⊎≥l {g n} {f} (proj₁ wfβ) wfα
+...     | inj₁ gn<l = ⊥-elim (gn≰l (<⇒≤ gn<l))
+...     | inj₂ l≤gn = inj₁ (begin-strict lim f ≤⟨ l≤gn ⟩
+                                         g n   <⟨ f<l (proj₂ wfβ) ⟩
+                                         lim g ∎)
 ```
 
-下面是第二章 [`ω≤s⇒ω≤`](Ordinal.WellFormed.html#6201) 的推广, 证法也与它完全一样.
+下面是第二章 [`ω≤s⇒ω≤`](Ordinal.WellFormed.html#6733) 的推广, 证法也与它完全一样.
 
 ```agda
 l≤s⇒l≤ : ∀ {α f} → wellFormed α → wellFormed (lim f) → lim f ≤ suc α → lim f ≤ α
 l≤s⇒l≤ wfα wfβ l≤s with <l⊎≥l wfα wfβ
-...                   | inj₁ <l = ⊥-elim (≤⇒≯ l≤s (s<l (proj₂ wfβ) <l))
-...                   | inj₂ ≥l = ≥l
+... | inj₁ <l = ⊥-elim (≤⇒≯ l≤s (s<l (proj₂ wfβ) <l))
+... | inj₂ ≥l = ≥l
 ```
 
 终于, 可以证明 `≤-split` 了. 首先是比较简单的五种情况.
@@ -209,7 +211,7 @@ l≤s⇒l≤ wfα wfβ l≤s with <l⊎≥l wfα wfβ
 ≤-split {suc α} {lim f} wfα (wfn , mono) (s≤ α≤fn∸d)
   with ≤-split wfα wfn (≤∸⇒≤ α≤fn∸d)
 ... | inj₁ α<fn = inj₁ (s<l mono (<f⇒<l α<fn))
-... | inj₂ α≈fn = inj₁ (s<l mono (<-respˡ-≈ (≈-sym α≈fn) (f<l mono)))
+... | inj₂ α≈fn = inj₁ (s<l mono (begin-strict α ≤⟨ proj₁ α≈fn ⟩ _ <⟨ f<l mono ⟩ lim f ∎))
 ```
 
 左边是极限右边是后继的情况, 对 `lim f ≤ suc β` 使用引理 `l≤s⇒l≤` 得到 `lim f ≤ β`, 对它使用归纳假设得到两个分支.
@@ -220,8 +222,8 @@ l≤s⇒l≤ wfα wfβ l≤s with <l⊎≥l wfα wfβ
 ```agda
 ≤-split {lim f} {suc β} wfα wfβ l≤β
   with ≤-split wfα wfβ (l≤s⇒l≤ wfβ wfα l≤β)
-... | inj₁ l<β = inj₁ (<-trans l<β <s)
-... | inj₂ l≈β = inj₁ (<-respˡ-≈ (≈-sym l≈β) <s)
+... | inj₁ l<β = inj₁ (begin-strict lim f <⟨ l<β ⟩ β <⟨ <s ⟩ suc β ∎)
+... | inj₂ l≈β = inj₁ (≤⇒<s (proj₁ l≈β))
 ```
 
 最后一种两边都是极限的情况, 与 `≤-total` 类似, 我们用排中律.
@@ -233,7 +235,7 @@ l≤s⇒l≤ wfα wfβ l≤s with <l⊎≥l wfα wfβ
 ≤-split {lim f} {lim g} wfα wfβ f≤g with LEM {P = ∀ n → g n ≤ lim f}
 ... | _ because ofʸ gn≤l = inj₂ (f≤g , l≤ gn≤l)
 ... | _ because ofⁿ gn≰l with ¬∀⇒∃¬ gn≰l
-...                         | (n , gn≰l) = inj₁ (≤-<-trans
-                              (≰⇒≥ (proj₁ wfβ) wfα gn≰l)
-                              (f<l (proj₂ wfβ)))
+...   | (n , gn≰l) = inj₁ (begin-strict lim f ≤⟨ ≰⇒≥ (proj₁ wfβ) wfα gn≰l ⟩
+                                        g n   <⟨ f<l (proj₂ wfβ) ⟩
+                                        lim g ∎)
 ```
