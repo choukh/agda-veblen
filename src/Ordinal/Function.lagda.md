@@ -151,24 +151,26 @@ normal F = ≤-monotonic F × <-monotonic F × lim-continuous F
 
 ```agda
 normal⇒≤-incr : normal F → ≤-increasing F
-normal⇒≤-incr nml@(_ , <-mono , lim-ct) =
+normal⇒≤-incr {F} nml@(_ , <-mono , lim-ct) =
   λ { zero    → z≤
 ```
 
 - 后继的情况, 首先由归纳假设 `α ≤ F α` 有 `suc α ≤ suc (F α)`. 又由后继单调 `F α < F (suc α)` 有 `suc (F α) ≤ F (suc α)`. 结合两者由传递性即得 `suc α ≤ F (suc α)`.
 
 ```agda
-    ; (suc α) → ≤-trans
-        (s≤s (normal⇒≤-incr nml α)) -- suc α ≤ suc (F α)
-        (<⇒s≤ (<-mono <s))          -- suc (F α) ≤ F (suc α)
+    ; (suc α) →   begin
+        suc α     ≤⟨ s≤s (normal⇒≤-incr nml α) ⟩
+        suc (F α) ≤⟨ <⇒s≤ (<-mono <s) ⟩
+        F (suc α) ∎
 ```
 
 - 极限的情况, 即证 `f n ≤ F (lim f)`. 由连续性, `F (lim f) ≈ lim (F ∘ f)`. 只需证 `f n ≤ lim (F ∘ f)`, 只需证 `f n ≤ (F ∘ f) n`, 此即归纳假设. ∎
 
 ```agda
-    ; (lim f) → l≤ λ n → ≤-respʳ-≈
-        (≈-sym (lim-ct f))               -- F (lim f) ≈ lim (F ∘ f)
-        (≤f⇒≤l (normal⇒≤-incr nml (f n))) -- f n ≤ lim (F ∘ f)
+    ; (lim f) → l≤ λ n → begin
+        f n              ≤⟨ ≤f⇒≤l (normal⇒≤-incr nml (f n)) ⟩
+        lim (F ∘ f)      ≈˘⟨ lim-ct f ⟩
+        F (lim f)        ∎
     }
 ```
 
@@ -187,25 +189,23 @@ normal-resp-≈ {F} {G} ext (≤-mono , <-mono , lim-ct)
 - 需证 `G` ≤-单调. 对 `α ≤ β`, 由 `≤-mono` 有 `F α ≤ F β`, 两边都用 `ext` 改写即得 `G α ≤ G β`.
 
 ```agda
-  = (λ α≤β → ≤-respˡ-≈ ext (≤-respʳ-≈ ext (≤-mono α≤β)))
+  = (λ {α} {β} α≤β → begin G α ≈˘⟨ ext ⟩ F α ≤⟨ ≤-mono α≤β ⟩ F β ≈⟨ ext ⟩ G β ∎)
 ```
 
 - 需证 `G` <-单调. 对 `α < β`, 由 `<-mono` 有 `F α < F β`, 左边用 `ext` 改写得 `G α < F β`. 由 `ext` 又有 `F β ≤ G β`. 由传递性即得 `G α < G β`.
 
 ```agda
-  , (λ α<β → <-≤-trans (<-respˡ-≈ ext (<-mono α<β)) (proj₁ ext))
+  , (λ {α} {β} α<β → begin-strict G α ≈˘⟨ ext ⟩ F α <⟨ <-mono α<β ⟩ F β ≈⟨ ext ⟩ G β ∎)
 ```
 
-- 需证 `G` 连续. 以下改写链是自明的. 对于最后一步, 拆成两个 `_≤_` 式, 分别由 `ext` 的两个分量可证. ∎
+- 需证 `G` 连续. 以下改写链是自明的. ∎
 
 ```agda
   , (λ f → begin-equality
       G (lim f)   ≈˘⟨ ext ⟩
       F (lim f)   ≈⟨ lim-ct f ⟩
-      lim (F ∘ f) ≈⟨ helper f ⟩
+      lim (F ∘ f) ≈⟨ l≈l ext ⟩
       lim (G ∘ f) ∎)
-    where helper = λ f → l≤ (λ n → ≤f⇒≤l (proj₁ ext))
-                       , l≤ (λ n → ≤f⇒≤l (proj₂ ext))
 ```
 
 ## 与传统定义的等价性
@@ -260,18 +260,18 @@ wf-normal F = ≤-monotonic F × wf-suc-monotonic F × lim-continuous F
 ```agda
 wf-nml⇒<-mono : wf-normal F → wf-<-monotonic F
 
-wf-nml⇒<-mono nml@(≤-mono , suc-mono , _) {β = suc β} wfα wfβ α<s
-  = ≤-<-trans
-    (≤-mono (<s⇒≤ α<s)) -- F α ≤ F β
-    (suc-mono wfβ)      -- F β < F (suc β)
+wf-nml⇒<-mono {F} nml@(≤-mono , suc-mono , _) {α} {suc β} wfα wfβ α<s = begin-strict
+  F α       ≤⟨ ≤-mono (<s⇒≤ α<s) ⟩
+  F β       <⟨ suc-mono wfβ ⟩
+  F (suc β) ∎
 
-wf-nml⇒<-mono nml@(_ , _ , lim-ct) {β = lim f} wfα wfβ@(wfn , inc) α<l
-  with ∃[n]<fn inc α<l
-...  | (n , α<fn) = <-trans
-        (wf-nml⇒<-mono nml wfα wfn α<fn)      -- F α < F (f n)
-        (<-respʳ-≈ (≈-sym (lim-ct f)) helper) -- F (f n) < F (lim f)
-  {- F (f n) < lim (F ∘ f) -}
-  where helper = f<l λ m<n → wf-nml⇒<-mono nml wfn wfn (inc m<n)
+wf-nml⇒<-mono {F} nml@(_ , _ , lim-ct) {α} {lim f} wfα wfβ@(wfn , mono) α<l
+  with ∃[n]<fn mono α<l
+... | (n , α<fn) = begin-strict
+      F α          <⟨ wf-nml⇒<-mono nml wfα wfn α<fn ⟩
+      F (f n)      <⟨ f<l (λ m<n → wf-nml⇒<-mono nml wfn wfn (mono m<n)) ⟩
+      lim (F ∘ f)  ≈˘⟨ lim-ct f ⟩
+      F (lim f)    ∎
 ```
 
 也就是说, 限定在良构序数的情况下[^2], 传统定义蕴含我们的定义. 另一方面, 显然地, 由 `<-monotonic` 蕴含 `suc-monotonic`, 我们的定义也蕴含传统定义. 这就说明了两者的等价性.
