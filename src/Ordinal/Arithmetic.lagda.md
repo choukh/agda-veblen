@@ -208,7 +208,7 @@ _ = refl
 
 序数加法构成原群, 半群和幺半群.
 
-```
+```agda
 +-isMagma : IsMagma _+_
 +-isMagma = record
   { isEquivalence = ≈-isEquivalence
@@ -242,6 +242,10 @@ _ = refl
 _ : ∀ {α f} → α * lim f ≡ lim λ n → α * f n
 _ = refl
 ```
+
+### 有限序数
+
+**事实** 有限序数乘法与自然数乘法等价.
 
 ## 幂运算
 

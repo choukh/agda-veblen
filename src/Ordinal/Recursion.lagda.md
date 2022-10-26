@@ -127,10 +127,10 @@ rec-by-mono-s∸≤ : ∀ {α₀} → ≤-increasing F → s∸-monotonic (rec F
 rec-by-mono-s∸≤ ≤-incr (suc α) (inj₁ tt) = ≤-refl
 rec-by-mono-s∸≤ ≤-incr (suc α) (inj₂ d)  = ≤-trans
   (rec-by-mono-s∸≤ ≤-incr α d)     -- F (rec F from α₀ by (α ∸ d)) ≤ rec F from α₀ by α
-  (≤-incr _)                     -- rec F from α₀ by α ≤ F rec F from α₀ by α
+  (≤-incr _)                       -- rec F from α₀ by α ≤ F rec F from α₀ by α
 rec-by-mono-s∸≤ ≤-incr (lim f) (n , d)   = ≤-trans
   (rec-by-mono-s∸≤ ≤-incr (f n) d) -- F (rec F from α₀ by (f n ∸ d)) ≤ rec F from α₀ by f n
-  (≤→≤l ≤-refl)                  -- rec F from α₀ by f n ≤ lim λ n → rec F from α₀ by f n
+  (≤→≤l ≤-refl)                    -- rec F from α₀ by f n ≤ lim λ n → rec F from α₀ by f n
 ```
 
 **引理** 如果 `F` ≤-单调且弱增长, 那么 `rec F from α₀ by_` ≤-单调.
@@ -140,7 +140,7 @@ rec-by-mono-≤ : ∀ {α₀} → ≤-monotonic F → ≤-increasing F → ≤-m
 rec-by-mono-≤ ≤-mono ≤-incr {α} {β} z≤      = rec-from-incr-≤ β ≤-incr _
 rec-by-mono-≤ ≤-mono ≤-incr {α} {β} (s≤ ≤∸) = ≤-trans
   (≤-mono (rec-by-mono-≤ ≤-mono ≤-incr ≤∸)) -- F (rec F from α₀ by α) ≤ F (rec F from α₀ by (β ∸ d))
-  (rec-by-mono-s∸≤ ≤-incr β _)                -- F (rec F from α₀ by (β ∸ d)) ≤ rec F from α₀ by β
+  (rec-by-mono-s∸≤ ≤-incr β _)              -- F (rec F from α₀ by (β ∸ d)) ≤ rec F from α₀ by β
 rec-by-mono-≤ ≤-mono ≤-incr {α} {β} (l≤ f≤) = l≤ λ n →
   rec-by-mono-≤ ≤-mono ≤-incr (f≤ n)        -- rec F from α₀ by f n ≤ rec F from α₀ by β
 ```
@@ -156,7 +156,7 @@ rec-by-mono-< ≤-mono <-incr {α} {lim f} ((n , d) , ≤∸) = ≤-<-trans
   (rec-by-mono-≤ ≤-mono (<⇒≤-incr <-incr) ≤∸)       -- rec F from α₀ by α ≤ rec F from α₀ by (f n ∸ d)
   (<-≤-trans (<-≤-trans
     (<-incr _)                                      -- rec F from α₀ by (f n ∸ d) < F (rec F from α₀ by (f n ∸ d))
-    (rec-by-mono-s∸≤ (<⇒≤-incr <-incr) (f n) d)       -- F (rec F from α₀ by (f n ∸ d)) ≤ rec F from α₀ by f n
+    (rec-by-mono-s∸≤ (<⇒≤-incr <-incr) (f n) d)     -- F (rec F from α₀ by (f n ∸ d)) ≤ rec F from α₀ by f n
   ) f≤l)                                            -- rec F from α₀ by f n ≤ lim λ n → rec F from α₀ by f n
 ```
 

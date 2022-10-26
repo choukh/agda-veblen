@@ -30,7 +30,7 @@ open import Ordinal public
 open import Ordinal.WellFormed public
 ```
 
-- 定义良构序数为由严格单调序列递归构造的序数
+- 定义良构序数为由单调序列递归构造的序数
 - 证明了有限序数与 `ω` 是良构序数
 
 ```agda
