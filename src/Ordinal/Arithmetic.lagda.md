@@ -133,8 +133,8 @@ _ = refl
 +-assoc : Associative _+_
 +-assoc _ _ zero = ≡⇒≈ refl
 +-assoc α β (suc γ) = s≈s (+-assoc α β γ)
-+-assoc α β (lim f) = l≤ (λ n → ≤→≤l (proj₁ (+-assoc α β (f n))))
-                    , l≤ (λ n → ≤→≤l (proj₂ (+-assoc α β (f n))))
++-assoc α β (lim f) = l≤ (λ n → ≤f⇒≤l (proj₁ (+-assoc α β (f n))))
+                    , l≤ (λ n → ≤f⇒≤l (proj₂ (+-assoc α β (f n))))
 ```
 
 **引理** 序数零是序数加法单位元.
@@ -143,8 +143,8 @@ _ = refl
 +-identityˡ : LeftIdentity zero _+_
 +-identityˡ zero    = ≡⇒≈ refl
 +-identityˡ (suc α) = s≈s (+-identityˡ α)
-+-identityˡ (lim f) = l≤ (λ n → ≤→≤l (proj₁ (+-identityˡ (f n))))
-                    , l≤ (λ n → ≤→≤l (proj₂ (+-identityˡ (f n))))
++-identityˡ (lim f) = l≤ (λ n → ≤f⇒≤l (proj₁ (+-identityˡ (f n))))
+                    , l≤ (λ n → ≤f⇒≤l (proj₂ (+-identityˡ (f n))))
 
 +-identityʳ : RightIdentity zero _+_
 +-identityʳ = λ _ → ≡⇒≈ refl
@@ -160,9 +160,9 @@ _ : ω + ⌜ 1 ⌝ ≡ suc ω
 _ = refl
 
 1+ω : ⌜ 1 ⌝ + ω ≈ ω
-1+ω = l≤ (λ n → ≤→≤l {n = ℕ.suc n}
+1+ω = l≤ (λ n → ≤f⇒≤l {n = ℕ.suc n}
         (≤-respˡ-≈ (≡⇒≈ (sym ⌜ 1 ⌝+⌜ n ⌝)) ≤-refl)) {- ⌜ 1 ⌝ + ⌜ n ⌝ ≤ suc ⌜ n ⌝ -}
-    , l≤ (λ n → ≤→≤l {n = n}
+    , l≤ (λ n → ≤f⇒≤l {n = n}
         (≤-respʳ-≈ (≡⇒≈ (sym ⌜ 1 ⌝+⌜ n ⌝)) ≤s))     {- ⌜ n ⌝ ≤ ⌜ 1 ⌝ + ⌜ n ⌝ -}
 ```
 

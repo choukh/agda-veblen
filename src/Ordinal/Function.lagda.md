@@ -150,8 +150,8 @@ normal F = ≤-monotonic F × <-monotonic F × lim-continuous F
 - 零的情况显然成立.
 
 ```agda
-normal→≤-incr : normal F → ≤-increasing F
-normal→≤-incr nml@(_ , <-mono , lim-ct) =
+normal⇒≤-incr : normal F → ≤-increasing F
+normal⇒≤-incr nml@(_ , <-mono , lim-ct) =
   λ { zero    → z≤
 ```
 
@@ -159,8 +159,8 @@ normal→≤-incr nml@(_ , <-mono , lim-ct) =
 
 ```agda
     ; (suc α) → ≤-trans
-        (s≤s (normal→≤-incr nml α)) -- suc α ≤ suc (F α)
-        (<→s≤ (<-mono <s))          -- suc (F α) ≤ F (suc α)
+        (s≤s (normal⇒≤-incr nml α)) -- suc α ≤ suc (F α)
+        (<⇒s≤ (<-mono <s))          -- suc (F α) ≤ F (suc α)
 ```
 
 - 极限的情况, 即证 `f n ≤ F (lim f)`. 由连续性, `F (lim f) ≈ lim (F ∘ f)`. 只需证 `f n ≤ lim (F ∘ f)`, 只需证 `f n ≤ (F ∘ f) n`, 此即归纳假设. ∎
@@ -168,7 +168,7 @@ normal→≤-incr nml@(_ , <-mono , lim-ct) =
 ```agda
     ; (lim f) → l≤ λ n → ≤-respʳ-≈
         (≈-sym (lim-ct f))               -- F (lim f) ≈ lim (F ∘ f)
-        (≤→≤l (normal→≤-incr nml (f n))) -- f n ≤ lim (F ∘ f)
+        (≤f⇒≤l (normal⇒≤-incr nml (f n))) -- f n ≤ lim (F ∘ f)
     }
 ```
 
@@ -204,8 +204,8 @@ normal-resp-≈ {F} {G} ext (≤-mono , <-mono , lim-ct)
       F (lim f)   ≈⟨ lim-ct f ⟩
       lim (F ∘ f) ≈⟨ helper f ⟩
       lim (G ∘ f) ∎)
-    where helper = λ f → l≤ (λ n → ≤→≤l (proj₁ ext))
-                       , l≤ (λ n → ≤→≤l (proj₂ ext))
+    where helper = λ f → l≤ (λ n → ≤f⇒≤l (proj₁ ext))
+                       , l≤ (λ n → ≤f⇒≤l (proj₂ ext))
 ```
 
 ## 与传统定义的等价性
@@ -232,8 +232,8 @@ normal-resp-≈ {F} {G} ext (≤-mono , <-mono , lim-ct)
 ```agda
 open import Function.Definitions (_≈_) (_≈_) using (Congruent)
 
-≤-inc→cong : ≤-monotonic F → Congruent F
-≤-inc→cong ≤-mono = λ { (≤ , ≥) → ≤-mono ≤ , ≤-mono ≥ }
+≤-inc⇒cong : ≤-monotonic F → Congruent F
+≤-inc⇒cong ≤-mono = λ { (≤ , ≥) → ≤-mono ≤ , ≤-mono ≥ }
 ```
 
 从根本上可以说, ≤-单调的必要性来源于本构筑所依赖的类型论基础的构造主义性和内涵性.
@@ -258,20 +258,20 @@ wf-normal F = ≤-monotonic F × wf-suc-monotonic F × lim-continuous F
 **事实** 用 `wf-suc-monotonic` 取代 `<-monotonic` 定义的 `wf-normal` 蕴含 `wf-<-monotonic`.
 
 ```agda
-wf-nml→<-mono : wf-normal F → wf-<-monotonic F
+wf-nml⇒<-mono : wf-normal F → wf-<-monotonic F
 
-wf-nml→<-mono nml@(≤-mono , suc-mono , _) {β = suc β} wfα wfβ α<s
+wf-nml⇒<-mono nml@(≤-mono , suc-mono , _) {β = suc β} wfα wfβ α<s
   = ≤-<-trans
-    (≤-mono (<s→≤ α<s)) -- F α ≤ F β
+    (≤-mono (<s⇒≤ α<s)) -- F α ≤ F β
     (suc-mono wfβ)      -- F β < F (suc β)
 
-wf-nml→<-mono nml@(_ , _ , lim-ct) {β = lim f} wfα wfβ@(wfn , inc) α<l
+wf-nml⇒<-mono nml@(_ , _ , lim-ct) {β = lim f} wfα wfβ@(wfn , inc) α<l
   with ∃[n]<fn inc α<l
 ...  | (n , α<fn) = <-trans
-        (wf-nml→<-mono nml wfα wfn α<fn)      -- F α < F (f n)
+        (wf-nml⇒<-mono nml wfα wfn α<fn)      -- F α < F (f n)
         (<-respʳ-≈ (≈-sym (lim-ct f)) helper) -- F (f n) < F (lim f)
   {- F (f n) < lim (F ∘ f) -}
-  where helper = f<l λ m<n → wf-nml→<-mono nml wfn wfn (inc m<n)
+  where helper = f<l λ m<n → wf-nml⇒<-mono nml wfn wfn (inc m<n)
 ```
 
 也就是说, 限定在良构序数的情况下[^2], 传统定义蕴含我们的定义. 另一方面, 显然地, 由 `<-monotonic` 蕴含 `suc-monotonic`, 我们的定义也蕴含传统定义. 这就说明了两者的等价性.

@@ -133,7 +133,7 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 ⌜n⌝≤fn     {n = zero}  mono = z≤
 ⌜n⌝≤fn {f} {n = suc n} mono = begin
   suc ⌜ n ⌝ ≤⟨ s≤s (⌜n⌝≤fn mono) ⟩
-  suc (f n) ≤⟨ <→s≤ (fn<fsn mono) ⟩
+  suc (f n) ≤⟨ <⇒s≤ (fn<fsn mono) ⟩
   f (suc n) ∎
 ```
 
@@ -143,7 +143,7 @@ fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
 
 ```agda
 ω≤l : ∀ {f} → monotonic f → ω ≤ lim f
-ω≤l mono = l≤ λ n → ≤→≤l (⌜n⌝≤fn mono)
+ω≤l mono = l≤ λ n → ≤f⇒≤l (⌜n⌝≤fn mono)
 ```
 
 ### 等价性
@@ -190,7 +190,7 @@ z<l : ∀ {f} → monotonic f → zero < lim f
 z<l {f} mono = begin-strict zero <⟨ z<ω ⟩ ω ≤⟨ ω≤l mono ⟩ lim f ∎
 ```
 
-`f<l` 是上一章 [`f≤l`](Ordinal.html#7688) 的 `_<_` 版, 它要求 `f` 单调.
+`f<l` 是上一章 [`f≤l`](Ordinal.html#7698) 的 `_<_` 版, 它要求 `f` 单调.
 
 ```agda
 f<l : ∀ {f n} → monotonic f → f n < lim f
@@ -211,7 +211,7 @@ f<l {f} {n} mono = begin-strict f n <⟨ fn<fsn mono ⟩ f (suc n) ≤⟨ f≤l 
 ∃[n]<fn {suc α} {f} mono s<l
   with ∃[n]<fn mono (begin-strict α <⟨ <s ⟩ suc α <⟨ s<l ⟩ lim f ∎)
 ... | n , <f = suc n ,
-  (begin-strict suc α ≤⟨ <→s≤ <f ⟩ f n <⟨ fn<fsn mono ⟩ f (suc n) ∎)
+  (begin-strict suc α ≤⟨ <⇒s≤ <f ⟩ f n <⟨ fn<fsn mono ⟩ f (suc n) ∎)
 ∃[n]<fn {lim g} mono ((n , d) , l<f) = n , d , l<f
 ```
 
@@ -221,7 +221,7 @@ f<l {f} {n} mono = begin-strict f n <⟨ fn<fsn mono ⟩ f (suc n) ≤⟨ f≤l 
 ```agda
 s<l : ∀ {α f} → monotonic f → α < lim f → suc α < lim f
 s<l {α} {f} mono < with ∃[n]<fn mono <
-... | n , <f = begin-strict suc α ≤⟨ <→s≤ <f ⟩ f n <⟨ f<l mono ⟩ lim f ∎
+... | n , <f = begin-strict suc α ≤⟨ <⇒s≤ <f ⟩ f n <⟨ f<l mono ⟩ lim f ∎
 ```
 
 ## 良构序数的性质
@@ -231,26 +231,26 @@ s<l {α} {f} mono < with ∃[n]<fn mono <
 **引理** 非零良构序数大于零.
 
 ```agda
-≢z→>z : ∀ {α} → wellFormed α → α ≢ zero → α > zero
-≢z→>z {zero}  _          z≢z = ⊥-elim (z≢z refl)
-≢z→>z {suc α} _          _   = inj₁ tt , z≤
-≢z→>z {lim f} (_ , mono) _   = z<l mono
+≢z⇒>z : ∀ {α} → wellFormed α → α ≢ zero → α > zero
+≢z⇒>z {zero}  _          z≢z = ⊥-elim (z≢z refl)
+≢z⇒>z {suc α} _          _   = inj₁ tt , z≤
+≢z⇒>z {lim f} (_ , mono) _   = z<l mono
 ```
 
 **引理** 外延等于零的良构序数就是零.
 
 ```agda
-≈z→≡z : ∀ {α} → wellFormed α → α ≈ zero → α ≡ zero
-≈z→≡z {zero}  _          _         = refl
-≈z→≡z {suc α} _          (s≤z , _) = ⊥-elim (s≰z s≤z)
-≈z→≡z {lim f} (_ , mono) (l≤z , _) = ⊥-elim (<⇒≱ (z<l mono) l≤z)
+≈z⇒≡z : ∀ {α} → wellFormed α → α ≈ zero → α ≡ zero
+≈z⇒≡z {zero}  _          _         = refl
+≈z⇒≡z {suc α} _          (s≤z , _) = ⊥-elim (s≰z s≤z)
+≈z⇒≡z {lim f} (_ , mono) (l≤z , _) = ⊥-elim (<⇒≱ (z<l mono) l≤z)
 ```
 
 **引理** 小于等于零的良构序数就是零.
 
 ```agda
-≤z→≡z : ∀ {α} → wellFormed α → α ≤ zero → α ≡ zero
-≤z→≡z wf ≤z = ≈z→≡z wf (≤z , z≤)
+≤z⇒≡z : ∀ {α} → wellFormed α → α ≤ zero → α ≡ zero
+≤z⇒≡z wf ≤z = ≈z⇒≡z wf (≤z , z≤)
 ```
 
 良构序数还允许我们证明貌似要排中律才能得到的结果. 如:
@@ -271,7 +271,7 @@ s<l {α} {f} mono < with ∃[n]<fn mono <
 <ω⊎≥ω {zero}  _                = inj₁ z<ω
 <ω⊎≥ω {suc α} wf with <ω⊎≥ω wf
 ...                 | inj₁ <ω  = inj₁ (s<ω <ω)
-...                 | inj₂ ≥ω  = inj₂ (begin lim ⌜_⌝ ≤⟨ ≥ω ⟩ α ≤⟨ ≤s ⟩ suc α ∎)
+...                 | inj₂ ≥ω  = inj₂ (≤⇒≤s ≥ω)
 <ω⊎≥ω {lim f} (_ , mono)       = inj₂ (ω≤l mono)
 ```
 
@@ -279,8 +279,8 @@ s<l {α} {f} mono < with ∃[n]<fn mono <
 **证明** 这是上一条的简单推论. ∎
 
 ```agda
-ω≤s→ω≤ : ∀ {α} → wellFormed α → ω ≤ suc α → ω ≤ α
-ω≤s→ω≤ wf ω≤s with <ω⊎≥ω wf
+ω≤s⇒ω≤ : ∀ {α} → wellFormed α → ω ≤ suc α → ω ≤ α
+ω≤s⇒ω≤ wf ω≤s with <ω⊎≥ω wf
 ...                  | inj₁ <ω = ⊥-elim (≤⇒≯ ω≤s (s<ω <ω))
 ...                  | inj₂ ≥ω = ≥ω
 ```
