@@ -111,16 +111,16 @@ _ = refl
 **事实** 有限序数加法与自然数加法等价.
 
 ```agda
-⌜_⌝+⌜_⌝ : ∀ m n → ⌜ m ⌝ + ⌜ n ⌝ ≡ ⌜ m ℕ.+ n ⌝
-⌜ m ⌝+⌜ ℕ.zero ⌝    = ≡.begin
-  ⌜ m ⌝ + ⌜ ℕ.zero ⌝  ≡.≡⟨⟩
-  ⌜ m ⌝               ≡.≡˘⟨ cong ⌜_⌝ (ℕ.+-identityʳ m) ⟩
-  ⌜ m ℕ.+ ℕ.zero ⌝    ≡.∎
-⌜ m ⌝+⌜ ℕ.suc n ⌝   = ≡.begin
-  ⌜ m ⌝ + suc ⌜ n ⌝   ≡.≡⟨⟩
-  suc (⌜ m ⌝ + ⌜ n ⌝) ≡.≡⟨ cong suc ⌜ m ⌝+⌜ n ⌝ ⟩
-  suc ⌜ m ℕ.+ n ⌝     ≡.≡˘⟨ cong ⌜_⌝ (ℕ.+-suc m n) ⟩
-  ⌜ m ℕ.+ ℕ.suc n ⌝   ≡.∎
+⌜⌝+⌜⌝≡⌜+⌝ : ∀ m n → ⌜ m ⌝ + ⌜ n ⌝ ≡ ⌜ m ℕ.+ n ⌝
+⌜⌝+⌜⌝≡⌜+⌝ m ℕ.zero    = ≡.begin
+  ⌜ m ⌝ + ⌜ ℕ.zero ⌝    ≡.≡⟨⟩
+  ⌜ m ⌝                 ≡.≡˘⟨ cong ⌜_⌝ (ℕ.+-identityʳ m) ⟩
+  ⌜ m ℕ.+ ℕ.zero ⌝      ≡.∎
+⌜⌝+⌜⌝≡⌜+⌝ m (ℕ.suc n) = ≡.begin
+  ⌜ m ⌝ + suc ⌜ n ⌝     ≡.≡⟨⟩
+  suc (⌜ m ⌝ + ⌜ n ⌝)   ≡.≡⟨ cong suc (⌜⌝+⌜⌝≡⌜+⌝ m n) ⟩
+  suc ⌜ m ℕ.+ n ⌝       ≡.≡˘⟨ cong ⌜_⌝ (ℕ.+-suc m n) ⟩
+  ⌜ m ℕ.+ ℕ.suc n ⌝     ≡.∎
 ```
 
 ### 运算律
@@ -136,18 +136,18 @@ _ = refl
 +-assoc α β (lim f) = l≈l (+-assoc α β (f _))
 ```
 
-**引理** 序数零是序数加法单位元.
+**引理** `⌜ 0 ⌝` 是序数加法的幺元.
 
 ```agda
-+-identityˡ : LeftIdentity zero _+_
++-identityˡ : LeftIdentity ⌜ 0 ⌝ _+_
 +-identityˡ zero    = ≡⇒≈ refl
 +-identityˡ (suc α) = s≈s (+-identityˡ α)
 +-identityˡ (lim f) = l≈l (+-identityˡ (f _))
 
-+-identityʳ : RightIdentity zero _+_
++-identityʳ : RightIdentity ⌜ 0 ⌝ _+_
 +-identityʳ = λ _ → ≡⇒≈ refl
 
-+-identity : Identity zero _+_
++-identity : Identity ⌜ 0 ⌝ _+_
 +-identity = +-identityˡ , +-identityʳ
 ```
 
@@ -157,11 +157,13 @@ _ = refl
 _ : ω + ⌜ 1 ⌝ ≡ suc ω
 _ = refl
 
-1+ω : ⌜ 1 ⌝ + ω ≈ ω
-1+ω = l≤ (λ n → ≤f⇒≤l {n = ℕ.suc n}
-        (≤.begin ⌜ 1 ⌝ + ⌜ n ⌝ ≤.≡⟨ ⌜ 1 ⌝+⌜ n ⌝ ⟩ ⌜ 1 ℕ.+ n ⌝ ≤.∎))
-    , l≤ (λ n → ≤f⇒≤l {n = n}
-        (≤.begin ⌜ n ⌝ ≤⟨ ≤s ⟩ suc ⌜ n ⌝ ≤.≡˘⟨ ⌜ 1 ⌝+⌜ n ⌝ ⟩ ⌜ 1 ⌝ + ⌜ n ⌝ ≤.∎))
+1+ω≈ω : ⌜ 1 ⌝ + ω ≈ ω
+1+ω≈ω = l≤ (λ n → ≤f⇒≤l {n = ℕ.suc n} (≤.begin
+          ⌜ 1 ⌝ + ⌜ n ⌝                ≤.≡⟨ ⌜⌝+⌜⌝≡⌜+⌝ 1 n ⟩
+          ⌜ 1 ℕ.+ n ⌝                  ≤.∎))
+      , l≤ (λ n → ≤f⇒≤l {n = n} (      ≤.begin
+          ⌜ n ⌝ ≤⟨ ≤s ⟩ suc ⌜ n ⌝      ≤.≡˘⟨ ⌜⌝+⌜⌝≡⌜+⌝ 1 n ⟩
+          ⌜ 1 ⌝ + ⌜ n ⌝                ≤.∎))
 ```
 
 ### 增长性, 单调性与合同性
@@ -208,7 +210,7 @@ module _ (α) where
 
 ### 代数结构
 
-序数加法构成原群, 半群和幺半群.
+**定理** 序数加法构成原群, 半群和幺半群.
 
 ```agda
 +-isMagma : IsMagma _+_
@@ -249,6 +251,43 @@ _ = refl
 
 **事实** 有限序数乘法与自然数乘法等价.
 
+```agda
+⌜⌝*⌜⌝≡⌜*⌝ : ∀ m n → ⌜ m ⌝ * ⌜ n ⌝ ≡ ⌜ m ℕ.* n ⌝
+⌜⌝*⌜⌝≡⌜*⌝ m ℕ.zero      = ≡.begin
+  ⌜ m ⌝ * zero            ≡.≡˘⟨ cong ⌜_⌝ (ℕ.*-zeroʳ m) ⟩
+  ⌜ m ℕ.* ℕ.zero ⌝        ≡.∎
+⌜⌝*⌜⌝≡⌜*⌝ m (ℕ.suc n)   = ≡.begin
+  ⌜ m ⌝ * suc ⌜ n ⌝       ≡.≡⟨⟩
+  ⌜ m ⌝ * ⌜ n ⌝ + ⌜ m ⌝   ≡.≡⟨ cong (_+ ⌜ m ⌝) (⌜⌝*⌜⌝≡⌜*⌝ m n) ⟩
+  ⌜ m ℕ.* n ⌝ + ⌜ m ⌝     ≡.≡⟨ ⌜⌝+⌜⌝≡⌜+⌝ (m ℕ.* n) m ⟩
+  ⌜ m ℕ.* n ℕ.+ m ⌝       ≡.≡⟨ cong ⌜_⌝ (ℕ.+-comm (m ℕ.* n) m) ⟩
+  ⌜ m ℕ.+ m ℕ.* n ⌝       ≡.≡˘⟨ cong ⌜_⌝ (ℕ.*-suc m n) ⟩
+  ⌜ m ℕ.* ℕ.suc n ⌝       ≡.∎
+```
+
+### 运算律
+
+**引理** `⌜ 1 ⌝` 是序数乘法的幺元.
+
+```agda
+*-identityˡ : LeftIdentity ⌜ 1 ⌝ _*_
+*-identityˡ zero    = ≡⇒≈ refl
+*-identityˡ (suc α) = ≤.begin-equality
+  ⌜ 1 ⌝ * suc α       ≤.≡⟨⟩
+  suc (⌜ 1 ⌝ * α)     ≤.≈⟨ s≈s (*-identityˡ α) ⟩
+  suc α               ≤.∎
+*-identityˡ (lim f) = l≤ (λ n →       ≤.begin
+                        ⌜ 1 ⌝ * f n   ≤.≈⟨ *-identityˡ (f n) ⟩
+                        f n           ≤.≤⟨ f≤l ⟩
+                        lim f         ≤.∎)
+                    , l≤ (λ n →       ≤.begin
+                        f n           ≤.≈˘⟨ *-identityˡ (f n) ⟩
+                        ⌜ 1 ⌝ * f n   ≤.≤⟨ f≤l ⟩
+                        ⌜ 1 ⌝ * lim f ≤.∎)
+
+
+```
+
 ## 幂运算
 
 由 `_^_` 的定义立即有
@@ -266,18 +305,22 @@ _ = refl
 
 ## 序数嵌入
 
-`+_`, `*_`, `^_` 都是序数嵌入, 但 `_+`, `_*`, `_^` 不是.
+**定理** `+_`, `*_`, `^_` 都是序数嵌入.
 
 ```agda
 +-normal : ∀ α → normal (α +_)
 +-normal α = +-monoʳ-≤ α , +-monoʳ-< α , rec-ct
 ```
 
+**注意** `_+`, `_*`, `_^` 不是序数嵌入.
+
 ## 保良构性
 
-`+_`, `*_`, `^_` 都保良构, 但 `_+`, `_*`, `_^` 不保.
+**定理** `+_`, `*_`, `^_` 都保良构.
 
 ```agda
 +-wfp : ∀ {α} → wellFormed α → wf-preserving (α +_)
 +-wfp wfα {β} = rec-wfp wfα s≤s (λ _ → <s) id {β}
 ```
+
+**注意** `_+`, `_*`, `_^` 不保良构.
