@@ -192,7 +192,7 @@ normal-resp-≈ {F} {G} ext (≤-mono , <-mono , lim-ct)
   = (λ {α} {β} α≤β → begin G α ≈˘⟨ ext ⟩ F α ≤⟨ ≤-mono α≤β ⟩ F β ≈⟨ ext ⟩ G β ∎)
 ```
 
-- 需证 `G` <-单调. 对 `α < β`, 由 `<-mono` 有 `F α < F β`, 左边用 `ext` 改写得 `G α < F β`. 由 `ext` 又有 `F β ≤ G β`. 由传递性即得 `G α < G β`.
+- 需证 `G` <-单调. 对 `α < β`, 由 `<-mono` 有 `F α < F β`, 两边都用 `ext` 改写即得 `G α < G β`.
 
 ```agda
   , (λ {α} {β} α<β → begin-strict G α ≈˘⟨ ext ⟩ F α <⟨ <-mono α<β ⟩ F β ≈⟨ ext ⟩ G β ∎)

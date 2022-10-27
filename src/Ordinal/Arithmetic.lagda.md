@@ -131,7 +131,7 @@ _ = refl
 
 ```agda
 +-assoc : Associative _+_
-+-assoc _ _ zero = ≡⇒≈ refl
++-assoc _ _ zero    = ≡⇒≈ refl
 +-assoc α β (suc γ) = s≈s (+-assoc α β γ)
 +-assoc α β (lim f) = l≈l (+-assoc α β (f _))
 ```
