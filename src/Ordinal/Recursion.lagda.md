@@ -99,7 +99,7 @@ rec-from-mono-≤ (lim f) ≤-mono ≤ = l≤ λ n → ≤f⇒≤l
 
 ```agda
 rec-ct : ∀ {F α₀} → lim-continuous (rec F from α₀ by_)
-rec-ct _ = ≡⇒≈ refl
+rec-ct _ = ≈-refl
 ```
 
 **引理** 如果 `F` ≤-单调且强增长, 那么 `rec F from α₀ by_` 弱增长.

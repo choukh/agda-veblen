@@ -41,11 +41,15 @@ open import Relation.Binary.PropositionalEquality as Eq
   using (_≡_; refl; sym; cong)
 ```
 
-本章需要 `≤-Reasoning` 和 `≡-Reasoning` 两套推理, 由于 syntax 重名, 我们采用短模块名进行区分.
+本章需要 `≤-Reasoning` 和 `≡-Reasoning` 两套推理. 由于 `step-≡` 对应的 syntax 重名, 我们加上短模块名进行区分: `≡.≡⟨⟩`, `≤.≡⟨⟩`.
 
 ```agda
-open module ≡ = Eq.≡-Reasoning
-open module ≤ = Ordinal.≤-Reasoning
+open module ≡ = Eq.≡-Reasoning renaming
+  ( begin_          to begin-propeq_
+  ; _∎              to _◼)
+open module ≤ = Ordinal.≤-Reasoning renaming
+  ( begin-equality_ to begin-eq_
+  ; begin_          to begin-nonstrict_)
 ```
 
 本章需要考察序数上的代数结构.
@@ -112,15 +116,15 @@ _ = refl
 
 ```agda
 ⌜⌝+⌜⌝≡⌜+⌝ : ∀ m n → ⌜ m ⌝ + ⌜ n ⌝ ≡ ⌜ m ℕ.+ n ⌝
-⌜⌝+⌜⌝≡⌜+⌝ m ℕ.zero    = ≡.begin
+⌜⌝+⌜⌝≡⌜+⌝ m ℕ.zero    = begin-propeq
   ⌜ m ⌝ + ⌜ ℕ.zero ⌝    ≡.≡⟨⟩
   ⌜ m ⌝                 ≡.≡˘⟨ cong ⌜_⌝ (ℕ.+-identityʳ m) ⟩
-  ⌜ m ℕ.+ ℕ.zero ⌝      ≡.∎
-⌜⌝+⌜⌝≡⌜+⌝ m (ℕ.suc n) = ≡.begin
+  ⌜ m ℕ.+ ℕ.zero ⌝      ◼
+⌜⌝+⌜⌝≡⌜+⌝ m (ℕ.suc n) = begin-propeq
   ⌜ m ⌝ + suc ⌜ n ⌝     ≡.≡⟨⟩
   suc (⌜ m ⌝ + ⌜ n ⌝)   ≡.≡⟨ cong suc (⌜⌝+⌜⌝≡⌜+⌝ m n) ⟩
   suc ⌜ m ℕ.+ n ⌝       ≡.≡˘⟨ cong ⌜_⌝ (ℕ.+-suc m n) ⟩
-  ⌜ m ℕ.+ ℕ.suc n ⌝     ≡.∎
+  ⌜ m ℕ.+ ℕ.suc n ⌝     ◼
 ```
 
 ### 运算律
@@ -131,7 +135,7 @@ _ = refl
 
 ```agda
 +-assoc : Associative _+_
-+-assoc _ _ zero    = ≡⇒≈ refl
++-assoc _ _ zero    = ≈-refl
 +-assoc α β (suc γ) = s≈s (+-assoc α β γ)
 +-assoc α β (lim f) = l≈l (+-assoc α β (f _))
 ```
@@ -140,12 +144,12 @@ _ = refl
 
 ```agda
 +-identityˡ : LeftIdentity ⌜ 0 ⌝ _+_
-+-identityˡ zero    = ≡⇒≈ refl
++-identityˡ zero    = ≈-refl
 +-identityˡ (suc α) = s≈s (+-identityˡ α)
 +-identityˡ (lim f) = l≈l (+-identityˡ (f _))
 
 +-identityʳ : RightIdentity ⌜ 0 ⌝ _+_
-+-identityʳ = λ _ → ≡⇒≈ refl
++-identityʳ = λ _ → ≈-refl
 
 +-identity : Identity ⌜ 0 ⌝ _+_
 +-identity = +-identityˡ , +-identityʳ
@@ -158,12 +162,12 @@ _ : ω + ⌜ 1 ⌝ ≡ suc ω
 _ = refl
 
 1+ω≈ω : ⌜ 1 ⌝ + ω ≈ ω
-1+ω≈ω = l≤ (λ n → ≤f⇒≤l {n = ℕ.suc n} (≤.begin
+1+ω≈ω = l≤ (λ n → ≤f⇒≤l {n = ℕ.suc n} (begin-nonstrict
           ⌜ 1 ⌝ + ⌜ n ⌝                ≤.≡⟨ ⌜⌝+⌜⌝≡⌜+⌝ 1 n ⟩
-          ⌜ 1 ℕ.+ n ⌝                  ≤.∎))
-      , l≤ (λ n → ≤f⇒≤l {n = n} (      ≤.begin
+          ⌜ 1 ℕ.+ n ⌝                  ∎))
+      , l≤ (λ n → ≤f⇒≤l {n = n} (      begin-nonstrict
           ⌜ n ⌝ ≤⟨ ≤s ⟩ suc ⌜ n ⌝      ≤.≡˘⟨ ⌜⌝+⌜⌝≡⌜+⌝ 1 n ⟩
-          ⌜ 1 ⌝ + ⌜ n ⌝                ≤.∎))
+          ⌜ 1 ⌝ + ⌜ n ⌝                ∎))
 ```
 
 ### 增长性, 单调性与合同性
@@ -202,10 +206,10 @@ module _ (α) where
 +-congʳ {α} (≤ , ≥) = +-monoˡ-≤ α ≤ , +-monoˡ-≤ α ≥
 
 +-cong : Congruent₂ _+_
-+-cong {α} {β} {γ} {δ} α≈β γ≈δ = ≤.begin-equality
++-cong {α} {β} {γ} {δ} α≈β γ≈δ = begin-eq
   α + γ ≈⟨ +-congˡ γ≈δ ⟩
   α + δ ≈⟨ +-congʳ {δ} α≈β ⟩
-  β + δ ≤.∎
+  β + δ ∎
 ```
 
 ### 代数结构
@@ -253,16 +257,16 @@ _ = refl
 
 ```agda
 ⌜⌝*⌜⌝≡⌜*⌝ : ∀ m n → ⌜ m ⌝ * ⌜ n ⌝ ≡ ⌜ m ℕ.* n ⌝
-⌜⌝*⌜⌝≡⌜*⌝ m ℕ.zero      = ≡.begin
+⌜⌝*⌜⌝≡⌜*⌝ m ℕ.zero      = begin-propeq
   ⌜ m ⌝ * zero            ≡.≡˘⟨ cong ⌜_⌝ (ℕ.*-zeroʳ m) ⟩
-  ⌜ m ℕ.* ℕ.zero ⌝        ≡.∎
-⌜⌝*⌜⌝≡⌜*⌝ m (ℕ.suc n)   = ≡.begin
+  ⌜ m ℕ.* ℕ.zero ⌝        ◼
+⌜⌝*⌜⌝≡⌜*⌝ m (ℕ.suc n)   = begin-propeq
   ⌜ m ⌝ * suc ⌜ n ⌝       ≡.≡⟨⟩
   ⌜ m ⌝ * ⌜ n ⌝ + ⌜ m ⌝   ≡.≡⟨ cong (_+ ⌜ m ⌝) (⌜⌝*⌜⌝≡⌜*⌝ m n) ⟩
   ⌜ m ℕ.* n ⌝ + ⌜ m ⌝     ≡.≡⟨ ⌜⌝+⌜⌝≡⌜+⌝ (m ℕ.* n) m ⟩
   ⌜ m ℕ.* n ℕ.+ m ⌝       ≡.≡⟨ cong ⌜_⌝ (ℕ.+-comm (m ℕ.* n) m) ⟩
   ⌜ m ℕ.+ m ℕ.* n ⌝       ≡.≡˘⟨ cong ⌜_⌝ (ℕ.*-suc m n) ⟩
-  ⌜ m ℕ.* ℕ.suc n ⌝       ≡.∎
+  ⌜ m ℕ.* ℕ.suc n ⌝       ◼
 ```
 
 ### 运算律
@@ -271,21 +275,64 @@ _ = refl
 
 ```agda
 *-identityˡ : LeftIdentity ⌜ 1 ⌝ _*_
-*-identityˡ zero    = ≡⇒≈ refl
-*-identityˡ (suc α) = ≤.begin-equality
+*-identityˡ zero    = ≈-refl
+*-identityˡ (suc α) = begin-eq
   ⌜ 1 ⌝ * suc α       ≤.≡⟨⟩
-  suc (⌜ 1 ⌝ * α)     ≤.≈⟨ s≈s (*-identityˡ α) ⟩
-  suc α               ≤.∎
-*-identityˡ (lim f) = l≤ (λ n →       ≤.begin
-                        ⌜ 1 ⌝ * f n   ≤.≈⟨ *-identityˡ (f n) ⟩
-                        f n           ≤.≤⟨ f≤l ⟩
-                        lim f         ≤.∎)
-                    , l≤ (λ n →       ≤.begin
-                        f n           ≤.≈˘⟨ *-identityˡ (f n) ⟩
-                        ⌜ 1 ⌝ * f n   ≤.≤⟨ f≤l ⟩
-                        ⌜ 1 ⌝ * lim f ≤.∎)
+  suc (⌜ 1 ⌝ * α)     ≈⟨ s≈s (*-identityˡ α) ⟩
+  suc α               ∎
+*-identityˡ (lim f) = l≤ (λ n →       begin-nonstrict
+                        ⌜ 1 ⌝ * f n   ≈⟨ *-identityˡ (f n) ⟩
+                        f n           ≤⟨ f≤l ⟩
+                        lim f         ∎)
+                    , l≤ (λ n →       begin-nonstrict
+                        f n           ≈˘⟨ *-identityˡ (f n) ⟩
+                        ⌜ 1 ⌝ * f n   ≤⟨ f≤l ⟩
+                        ⌜ 1 ⌝ * lim f ∎)
 
+*-identityʳ : RightIdentity ⌜ 1 ⌝ _*_
+*-identityʳ α = begin-eq
+  α * ⌜ 1 ⌝     ≤.≡⟨⟩
+  α * ⌜ 0 ⌝ + α ≈⟨ +-identityˡ α ⟩
+  α             ∎
 
+*-identity : Identity ⌜ 1 ⌝ _*_
+*-identity = *-identityˡ , *-identityʳ
+```
+
+**引理** `⌜ 0 ⌝` 是序数乘法的零元.
+
+```agda
+*-zeroˡ : LeftZero ⌜ 0 ⌝ _*_
+*-zeroˡ zero      = ≈-refl
+*-zeroˡ (suc α)   = begin-eq
+  ⌜ 0 ⌝ * suc α     ≤.≡⟨⟩
+  ⌜ 0 ⌝ * α + ⌜ 0 ⌝ ≈⟨ +-identityʳ (⌜ 0 ⌝ * α) ⟩
+  ⌜ 0 ⌝ * α         ≈⟨ *-zeroˡ α ⟩
+  ⌜ 0 ⌝             ∎
+*-zeroˡ (lim f) = l≤ (λ n → proj₁ (*-zeroˡ (f n))) , z≤
+
+*-zeroʳ : RightZero ⌜ 0 ⌝ _*_
+*-zeroʳ _ = ≈-refl
+
+*-zero : Zero ⌜ 0 ⌝ _*_
+*-zero = *-zeroˡ , *-zeroʳ
+```
+
+**引理** 序数乘法对序数加法满足左分配律.
+
+```agda
+*-distribˡ-+ : _*_ DistributesOverˡ _+_
+*-distribˡ-+ α β zero     = begin-eq
+  α * (β + ⌜ 0 ⌝)           ≤.≡⟨⟩
+  α * β + ⌜ 0 ⌝             ≈˘⟨ +-congˡ (*-zeroʳ (α * β)) ⟩
+  α * β + α * ⌜ 0 ⌝         ∎
+*-distribˡ-+ α β (suc γ)  = begin-eq
+  α * (β + suc γ)           ≤.≡⟨⟩
+  α * (β + γ) + α           ≈⟨ +-congʳ {α} (*-distribˡ-+ α β γ) ⟩
+  α * β + α * γ + α         ≈⟨ +-assoc (α * β) (α * γ) α ⟩
+  α * β + (α * γ + α)       ≤.≡⟨⟩
+  α * β + (α * suc γ)       ∎
+*-distribˡ-+ α β (lim f)  = l≈l (*-distribˡ-+ α β (f _))
 ```
 
 ## 幂运算
