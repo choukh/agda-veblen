@@ -479,7 +479,7 @@ _ = refl
   }
 ```
 
-### 其他常用引理
+### 其他引理
 
 ```agda
 α*2≈α+α : ∀ α → α * ⌜ 2 ⌝ ≈ α + α
@@ -769,30 +769,30 @@ _ = *-zeroʳ
 ```agda
 ω^-absorb-+ : ∀ α β → wellFormed β → α < β → ω ^ α + ω ^ β ≈ ω ^ β
 ω^-absorb-+ α (suc β) wfβ α<β =
-    l≤ (λ n →               begin-nonstrict
-      ω ^ α + ω ^ β * ⌜ n ⌝ ≤⟨ +-monoˡ-≤ _ (^-monoʳ-≤ ω (<⇒s≤ z<ω) (<s⇒≤ α<β)) ⟩
-      ω ^ β + ω ^ β * ⌜ n ⌝ ≈⟨ +-assoc-n _ _ ⟩
-      ω ^ β * ⌜ n ⌝ + ω ^ β ≤.≡⟨⟩
-      ω ^ β * suc ⌜ n ⌝     ≤⟨ *-monoʳ-≤ _ (<⇒≤ (s<ω n<ω)) ⟩
-      ω ^ β * ω             ≤.≡⟨⟩
-      ω ^ suc β             ∎)
-  , l≤ (λ n →               begin-nonstrict
-      ω ^ β * ⌜ n ⌝         ≤⟨ +-incrʳ-≤ _ _ ⟩
-      ω ^ α + ω ^ β * ⌜ n ⌝ ≤⟨ +-monoʳ-≤ _ (*-monoʳ-≤ _ (<⇒≤ n<ω)) ⟩
-      ω ^ α + ω ^ β * ω     ≤.≡⟨⟩
-      ω ^ α + ω ^ suc β     ∎)
+    l≤ (λ n →                   begin-nonstrict
+      ω ^ α + ω ^ β * ⌜ n ⌝     ≤⟨ +-monoˡ-≤ _ (^-monoʳ-≤ ω (<⇒s≤ z<ω) (<s⇒≤ α<β)) ⟩
+      ω ^ β + ω ^ β * ⌜ n ⌝     ≈⟨ +-assoc-n _ _ ⟩
+      ω ^ β * ⌜ n ⌝ + ω ^ β     ≤.≡⟨⟩
+      ω ^ β * suc ⌜ n ⌝         ≤⟨ *-monoʳ-≤ _ (<⇒≤ (s<ω n<ω)) ⟩
+      ω ^ β * ω                 ≤.≡⟨⟩
+      ω ^ suc β                 ∎)
+  , l≤ (λ n →                   begin-nonstrict
+      ω ^ β * ⌜ n ⌝             ≤⟨ +-incrʳ-≤ _ _ ⟩
+      ω ^ α + ω ^ β * ⌜ n ⌝     ≤⟨ +-monoʳ-≤ _ (*-monoʳ-≤ _ (<⇒≤ n<ω)) ⟩
+      ω ^ α + ω ^ β * ω         ≤.≡⟨⟩
+      ω ^ α + ω ^ suc β         ∎)
 ω^-absorb-+ α (lim f) (wfn , mono) α<l with ∃[n]<fn mono α<l
 ... | (m , α<fm) = l≤ helper , l≤ λ n → ≤f⇒≤l (+-incrʳ-≤ _ _) where
   helper : ∀ n → ω ^ α + ω ^ f n ≤ lim (λ n → ω ^ f n)
   helper n with (ℕ.<-cmp m n)
-  ... | tri< m<n _ _  = ≤f⇒≤l (begin-nonstrict
-        ω ^ α + ω ^ f n        ≤⟨ proj₁ (ω^-absorb-+ α (f n) wfn α<fn) ⟩
-        ω ^ f n                ∎) where α<fn = <-trans α<fm (mono m<n)
-  ... | tri≈ _ refl _ = ≤f⇒≤l (begin-nonstrict
-        ω ^ α + ω ^ f n        ≤⟨ proj₁ (ω^-absorb-+ α (f n) wfn α<fm) ⟩
-        ω ^ f n                ∎)
-  ... | tri> _ _ n<m  = ≤f⇒≤l (begin-nonstrict
-        ω ^ α + ω ^ f n        ≤⟨ +-monoʳ-≤ _ (^-monoʳ-≤ _ (<⇒≤ n<ω) (<⇒≤ (mono n<m))) ⟩
-        ω ^ α + ω ^ f m        ≤⟨ proj₁ (ω^-absorb-+ α (f m) wfn α<fm) ⟩
-        ω ^ f m ∎)
+  ... | tri< m<n _ _  = ≤f⇒≤l ( begin-nonstrict
+        ω ^ α + ω ^ f n         ≤⟨ proj₁ (ω^-absorb-+ α (f n) wfn α<fn) ⟩
+        ω ^ f n                 ∎) where α<fn = <-trans α<fm (mono m<n)
+  ... | tri≈ _ refl _ = ≤f⇒≤l ( begin-nonstrict
+        ω ^ α + ω ^ f n         ≤⟨ proj₁ (ω^-absorb-+ α (f n) wfn α<fm) ⟩
+        ω ^ f n                 ∎)
+  ... | tri> _ _ n<m  = ≤f⇒≤l ( begin-nonstrict
+        ω ^ α + ω ^ f n         ≤⟨ +-monoʳ-≤ _ (^-monoʳ-≤ _ (<⇒≤ n<ω) (<⇒≤ (mono n<m))) ⟩
+        ω ^ α + ω ^ f m         ≤⟨ proj₁ (ω^-absorb-+ α (f m) wfn α<fm) ⟩
+        ω ^ f m                 ∎)
 ```
