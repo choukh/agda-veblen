@@ -14,8 +14,7 @@ zhihu-tags: Agda, 序数, 大数数学
 **(本章施工中)**
 
 ```agda
-{-# OPTIONS --without-K --safe #-}
-{-# OPTIONS --experimental-lossy-unification #-}
+{-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
 
 module Ordinal.Arithmetic where
 ```
