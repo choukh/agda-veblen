@@ -150,7 +150,7 @@ postulate
 
 ```agda
 <l⊎≥l : ∀ {α g} → wellFormed α → wellFormed (lim g) → α < lim g ⊎ α ≥ lim g
-<l⊎≥l {zero}  _   (_ , mono)       = inj₁ (z<l mono)
+<l⊎≥l {zero} _ (_ , mono) = inj₁ (z<l mono)
 <l⊎≥l {suc α} wfα wfβ with <l⊎≥l wfα wfβ
 ... | inj₁ <l = inj₁ (s<l (proj₂ wfβ) <l)
 ... | inj₂ ≥l = inj₂ (≤⇒≤s ≥l)

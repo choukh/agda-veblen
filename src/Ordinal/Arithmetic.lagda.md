@@ -15,6 +15,7 @@ zhihu-tags: Agda, 序数, 大数数学
 
 ```agda
 {-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --experimental-lossy-unification #-}
 
 module Ordinal.Arithmetic where
 ```
@@ -35,6 +36,7 @@ open import Ordinal.Recursion
 ```agda
 open import Data.Nat as ℕ using (ℕ)
 import Data.Nat.Properties as ℕ
+open import Data.Unit using (tt)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 open import Function using (id)
 open import Relation.Binary.PropositionalEquality as Eq
@@ -162,12 +164,12 @@ _ : ω + ⌜ 1 ⌝ ≡ suc ω
 _ = refl
 
 1+ω≈ω : ⌜ 1 ⌝ + ω ≈ ω
-1+ω≈ω = l≤ (λ n → ≤f⇒≤l {n = ℕ.suc n} (begin-nonstrict
-          ⌜ 1 ⌝ + ⌜ n ⌝                ≤.≡⟨ ⌜⌝+⌜⌝≡⌜+⌝ 1 n ⟩
-          ⌜ 1 ℕ.+ n ⌝                  ∎))
-      , l≤ (λ n → ≤f⇒≤l {n = n} (      begin-nonstrict
-          ⌜ n ⌝ ≤⟨ ≤s ⟩ suc ⌜ n ⌝      ≤.≡˘⟨ ⌜⌝+⌜⌝≡⌜+⌝ 1 n ⟩
-          ⌜ 1 ⌝ + ⌜ n ⌝                ∎))
+1+ω≈ω = l≤ (λ n → ≤f⇒≤l (begin-nonstrict
+          ⌜ 1 ⌝ + ⌜ n ⌝           ≤.≡⟨ ⌜⌝+⌜⌝≡⌜+⌝ 1 n ⟩
+          ⌜ 1 ℕ.+ n ⌝             ∎))
+      , l≤ (λ n → ≤f⇒≤l (begin-nonstrict
+          ⌜ n ⌝ ≤⟨ ≤s ⟩ suc ⌜ n ⌝ ≤.≡˘⟨ ⌜⌝+⌜⌝≡⌜+⌝ 1 n ⟩
+          ⌜ 1 ⌝ + ⌜ n ⌝           ∎))
 ```
 
 ### 增长性, 单调性与合同性
@@ -183,7 +185,7 @@ module _ (α) where
   +-incrʳ-≤ : ≤-increasing (α +_)
   +-incrʳ-≤ β = rec-by-incr-≤ s≤s (λ _ → <s) β
 
-  +-incrˡ-< : α > zero → <-increasing (_+ α)
+  +-incrˡ-< : α > ⌜ 0 ⌝ → <-increasing (_+ α)
   +-incrˡ-< >z β = rec-from-incr-< >z s≤s (λ _ → <s) β
 
   +-monoˡ-≤ : ≤-monotonic (_+ α)
@@ -208,7 +210,7 @@ module _ (α) where
 +-cong : Congruent₂ _+_
 +-cong {α} {β} {γ} {δ} α≈β γ≈δ = begin-eq
   α + γ ≈⟨ +-congˡ γ≈δ ⟩
-  α + δ ≈⟨ +-congʳ {δ} α≈β ⟩
+  α + δ ≈⟨ +-congʳ α≈β ⟩
   β + δ ∎
 ```
 
@@ -229,7 +231,7 @@ module _ (α) where
   ; assoc   = +-assoc
   }
 
-+-0-isMonoid : IsMonoid _+_ zero
++-0-isMonoid : IsMonoid _+_ ⌜ 0 ⌝
 +-0-isMonoid = record
   { isSemigroup = +-isSemigroup
   ; identity    = +-identity
@@ -328,11 +330,115 @@ _ = refl
   α * β + α * ⌜ 0 ⌝         ∎
 *-distribˡ-+ α β (suc γ)  = begin-eq
   α * (β + suc γ)           ≤.≡⟨⟩
-  α * (β + γ) + α           ≈⟨ +-congʳ {α} (*-distribˡ-+ α β γ) ⟩
+  α * (β + γ) + α           ≈⟨ +-congʳ (*-distribˡ-+ α β γ) ⟩
   α * β + α * γ + α         ≈⟨ +-assoc (α * β) (α * γ) α ⟩
   α * β + (α * γ + α)       ≤.≡⟨⟩
   α * β + (α * suc γ)       ∎
 *-distribˡ-+ α β (lim f)  = l≈l (*-distribˡ-+ α β (f _))
+```
+
+**引理** 序数乘法满足结合律.
+
+```agda
+*-assoc : Associative _*_
+*-assoc α β zero    = ≈-refl
+*-assoc α β (suc γ) = begin-eq
+  α * β * suc γ       ≤.≡⟨⟩
+  α * β * γ + α * β   ≈⟨ +-congʳ {α * β} (*-assoc α β γ) ⟩
+  α * (β * γ) + α * β ≈˘⟨ *-distribˡ-+ α (β * γ) β ⟩
+  α * (β * γ + β)     ≤.≡⟨⟩
+  α * (β * suc γ)     ∎
+*-assoc α β (lim f) = l≈l (*-assoc α β (f _))
+```
+
+### 增长性, 单调性与合同性
+
+序数乘法的单调性等需要配合序数加法的相关性质, 且需要注意运算方向和证明顺序都与加法有所不同, 且有些性质需要额外的前提.
+
+首先是从右侧乘法的 ≤-单调性推出左侧乘法的弱增长性.
+
+```agda
+*-monoʳ-≤ : ∀ α → ≤-monotonic (α *_)
+*-monoʳ-≤ α = rec-by-mono-≤ (+-monoˡ-≤ α) (+-incrˡ-≤ α)
+
+*-incrˡ-≤ : ∀ α → α ≥ ⌜ 1 ⌝ → ≤-increasing (_* α)
+*-incrˡ-≤ α α≥1 β = begin-nonstrict
+  β               ≈˘⟨ *-identityʳ β ⟩
+  β * ⌜ 1 ⌝       ≤⟨ *-monoʳ-≤ β α≥1 ⟩
+  β * α           ∎
+```
+
+然后, 类似地, 从右侧乘法的 <-单调性推出左侧乘法的强增长性.
+
+```agda
+*-monoʳ-< : ∀ α → α > ⌜ 0 ⌝ → <-monotonic (α *_)
+*-monoʳ-< α α>0 = rec-by-mono-< (+-monoˡ-≤ α) (+-incrˡ-< α α>0)
+
+*-incrˡ-< : ∀ α β → α > ⌜ 0 ⌝ → β > ⌜ 1 ⌝ → α < α * β
+*-incrˡ-< α β α>0 β>1 = begin-strict
+  α                     ≈˘⟨ *-identityʳ α ⟩
+  α * ⌜ 1 ⌝             <⟨ *-monoʳ-< α α>0 β>1 ⟩
+  α * β                 ∎
+```
+
+接着是从左侧乘法的 ≤-单调性推出右侧乘法的弱增长性. 注意前者已经无法使用超限递归的相关引理了, 需要用归纳法证明.
+
+```agda
+*-monoˡ-≤ : ∀ α → ≤-monotonic (_* α)
+*-monoˡ-≤ zero            _ = z≤
+*-monoˡ-≤ (suc α) {β} {γ} ≤ = begin-nonstrict
+  β * suc α                   ≤.≡⟨⟩
+  β * α + β                   ≤⟨ +-monoʳ-≤ (β * α) ≤ ⟩
+  β * α + γ                   ≤⟨ +-monoˡ-≤ γ (*-monoˡ-≤ α ≤) ⟩
+  γ * α + γ                   ≤.≡⟨⟩
+  γ * suc α                   ∎
+*-monoˡ-≤ (lim f) {β} {γ} ≤ = l≤ λ n → ≤f⇒≤l (*-monoˡ-≤ (f n) ≤)
+
+*-incrʳ-≤ : ∀ α → α ≥ ⌜ 1 ⌝ → ≤-increasing (α *_)
+*-incrʳ-≤ α α≥1 β = begin-nonstrict
+  β                 ≈˘⟨ *-identityˡ β ⟩
+  ⌜ 1 ⌝ * β         ≤⟨ *-monoˡ-≤ β α≥1 ⟩
+  α * β             ∎
+```
+
+最后, 我们用 ≤-单调性证明合同性.
+
+```agda
+*-congˡ : LeftCongruent _*_
+*-congˡ {α} (≤ , ≥) = *-monoʳ-≤ α ≤ , *-monoʳ-≤ α ≥
+
+*-congʳ : RightCongruent _*_
+*-congʳ {α} (≤ , ≥) = *-monoˡ-≤ α ≤ , *-monoˡ-≤ α ≥
+
+*-cong : Congruent₂ _*_
+*-cong {α} {β} {γ} {δ} α≈β γ≈δ = begin-eq
+  α * γ ≈⟨ *-congˡ γ≈δ ⟩
+  α * δ ≈⟨ *-congʳ α≈β ⟩
+  β * δ ∎
+```
+
+### 代数结构
+
+**定理** 序数乘法构成原群, 半群和幺半群.
+
+```agda
+*-isMagma : IsMagma _*_
+*-isMagma = record
+  { isEquivalence = ≈-isEquivalence
+  ; ∙-cong        = *-cong
+  }
+
+*-isSemigroup : IsSemigroup _*_
+*-isSemigroup = record
+  { isMagma = *-isMagma
+  ; assoc   = *-assoc
+  }
+
+*-1-isMonoid : IsMonoid _*_ ⌜ 1 ⌝
+*-1-isMonoid = record
+  { isSemigroup = *-isSemigroup
+  ; identity    = *-identity
+  }
 ```
 
 ## 幂运算
@@ -352,22 +458,28 @@ _ = refl
 
 ## 序数嵌入
 
-**定理** `+_`, `*_`, `^_` 都是序数嵌入.
+**定理** 右侧运算 `+_`, `*_`, `^_` 都是序数嵌入.
 
 ```agda
 +-normal : ∀ α → normal (α +_)
 +-normal α = +-monoʳ-≤ α , +-monoʳ-< α , rec-ct
+
+*-normal : ∀ α → α > ⌜ 0 ⌝ → normal (α *_)
+*-normal α α>0 = *-monoʳ-≤ α , *-monoʳ-< α α>0 , rec-ct
 ```
 
-**注意** `_+`, `_*`, `_^` 不是序数嵌入.
+**注意** 左侧运算 `_+`, `_*`, `_^` 不是序数嵌入.
 
 ## 保良构性
 
-**定理** `+_`, `*_`, `^_` 都保良构.
+**定理** 右侧运算 `+_`, `*_`, `^_` 都保良构.
 
 ```agda
 +-wfp : ∀ {α} → wellFormed α → wf-preserving (α +_)
-+-wfp wfα {β} = rec-wfp wfα s≤s (λ _ → <s) id {β}
++-wfp wfα = rec-wfp wfα s≤s (λ _ → <s) id
+
+*-wfp : ∀ {α} → wellFormed α → α > ⌜ 0 ⌝ → wf-preserving (α *_)
+*-wfp {α} wfα α>0 = rec-wfp tt (+-monoˡ-≤ α) (+-incrˡ-< α α>0) (λ wfx → +-wfp wfx wfα)
 ```
 
-**注意** `_+`, `_*`, `_^` 不保良构.
+**注意** 左侧运算 `_+`, `_*`, `_^` 不保良构.

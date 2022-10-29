@@ -12,8 +12,11 @@ zhihu-url: https://zhuanlan.zhihu.com/p/576854750
 > 高亮渲染: [Ordinal.Recursion.html](https://choukh.github.io/agda-lvo/Ordinal.Recursion.html)  
 > 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
+从本章开始, 我们会视情况打开 *实验性有损合一化* 特性, 它可以减少显式标记隐参的需要, 而且跟 `--safe` 是兼容的. 当然它也有一些缺点, 我们这里不会展开.
+
 ```agda
 {-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --experimental-lossy-unification #-}
 
 module Ordinal.Recursion where
 ```
@@ -179,7 +182,7 @@ rec-from-incr-< : ∀ {α} → α > zero → ≤-monotonic F
   → <-increasing F → <-increasing (rec F from_by α)
 rec-from-incr-< {F} {suc α} _ ≤-mono <-incr α₀ = begin-strict
   α₀                      ≤⟨ rec-from-incr-≤ α (<⇒≤-incr <-incr) α₀ ⟩
-  rec F from α₀ by α      <⟨ rec-by-mono-< ≤-mono <-incr {α} <s ⟩
+  rec F from α₀ by α      <⟨ rec-by-mono-< ≤-mono <-incr <s ⟩
   rec F from α₀ by suc α  ∎
 rec-from-incr-< {F} {lim f} ((n , d) , ≤∸) ≤-mono <-incr α₀ = <f⇒<l
   (rec-from-incr-< (d , ≤∸) ≤-mono <-incr α₀) -- α₀ < rec F from α₀ by f n
@@ -193,10 +196,10 @@ rec-wfp : ∀ {α₀} → wellFormed α₀ → ≤-monotonic F → <-increasing 
 rec-wfp wfα₀ ≤-mono <-incr wf-p {zero}  wfα = wfα₀
 rec-wfp wfα₀ ≤-mono <-incr wf-p {suc α} wfα = wf-p
   -- wellFormed (rec F from α₀ by α)
-  (rec-wfp wfα₀ ≤-mono <-incr wf-p {α} wfα)
+  (rec-wfp wfα₀ ≤-mono <-incr wf-p wfα)
 rec-wfp wfα₀ ≤-mono <-incr wf-p {lim f} wfα =
   -- wellFormed (rec F from α₀ by f n)
-  ( λ {n} → rec-wfp wfα₀ ≤-mono <-incr wf-p {f n} (proj₁ wfα) )
+  ( rec-wfp wfα₀ ≤-mono <-incr wf-p (proj₁ wfα) )
   -- rec F from α₀ by f m < rec F from α₀ by f n
   , λ m<n → rec-by-mono-< ≤-mono <-incr (proj₂ wfα m<n)
 ```
