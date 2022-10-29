@@ -11,7 +11,7 @@ zhihu-tags: Agda, 序数, 大数数学
 > 高亮渲染: [Ordinal.Arithmetic.html](https://choukh.github.io/agda-lvo/Ordinal.Arithmetic.html)  
 > 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
-**(本章施工中)**
+本章打开了 [*实验性有损合一化*](https://agda.readthedocs.io/en/v2.6.2.2/language/lossy-unification.html) 特性, 它可以减少显式标记隐式参数的需要, 而且跟 `--safe` 是兼容的. 当然它也有一些缺点, 具体这里不会展开.
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
@@ -25,7 +25,7 @@ module Ordinal.Arithmetic where
 
 ```agda
 open import Ordinal
-open import Ordinal.WellFormed using (wellFormed; ⌜_⌝; ω)
+open import Ordinal.WellFormed
 open import Ordinal.Function
 open import Ordinal.Recursion
 ```
@@ -33,11 +33,14 @@ open import Ordinal.Recursion
 以下标准库依赖在前几章都出现过.
 
 ```agda
+open import Level using (0ℓ)
 open import Data.Nat as ℕ using (ℕ)
 import Data.Nat.Properties as ℕ
 open import Data.Unit using (tt)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 open import Function using (id)
+open import Relation.Binary using (_Preserves_⟶_)
+open Relation.Binary.Tri
 open import Relation.Binary.PropositionalEquality as Eq
   using (_≡_; refl; sym; cong)
 ```
@@ -53,9 +56,11 @@ open module ≤ = Ordinal.≤-Reasoning renaming
   ; begin_          to begin-nonstrict_)
 ```
 
-本章需要考察序数上的代数结构.
+本章需要谈论序数上的代数结构.
 
 ```agda
+open import Algebra.Bundles
+open import Algebra.Morphism
 open import Algebra.Definitions {A = Ord} _≈_
 open import Algebra.Structures  {A = Ord} _≈_
 ```
@@ -117,10 +122,10 @@ _ = refl
 
 ```agda
 ⌜⌝+⌜⌝≡⌜+⌝ : ∀ m n → ⌜ m ⌝ + ⌜ n ⌝ ≡ ⌜ m ℕ.+ n ⌝
-⌜⌝+⌜⌝≡⌜+⌝ m ℕ.zero    = begin-propeq
-  ⌜ m ⌝ + ⌜ ℕ.zero ⌝    ≡.≡⟨⟩
+⌜⌝+⌜⌝≡⌜+⌝ m 0           = begin-propeq
+  ⌜ m ⌝ + ⌜ 0 ⌝         ≡.≡⟨⟩
   ⌜ m ⌝                 ≡.≡˘⟨ cong ⌜_⌝ (ℕ.+-identityʳ m) ⟩
-  ⌜ m ℕ.+ ℕ.zero ⌝      ◼
+  ⌜ m ℕ.+ 0 ⌝           ◼
 ⌜⌝+⌜⌝≡⌜+⌝ m (ℕ.suc n) = begin-propeq
   ⌜ m ⌝ + suc ⌜ n ⌝     ≡.≡⟨⟩
   suc (⌜ m ⌝ + ⌜ n ⌝)   ≡.≡⟨ cong suc (⌜⌝+⌜⌝≡⌜+⌝ m n) ⟩
@@ -237,6 +242,23 @@ module _ (α) where
   }
 ```
 
+```agda
++-magma : Magma 0ℓ 0ℓ
++-magma = record
+  { isMagma = +-isMagma
+  }
+
++-semigroup : Semigroup 0ℓ 0ℓ
++-semigroup = record
+  { isSemigroup = +-isSemigroup
+  }
+
++-0-monoid : Monoid 0ℓ 0ℓ
++-0-monoid = record
+  { isMonoid = +-0-isMonoid
+  }
+```
+
 ## 乘法
 
 由 `_*_` 的定义立即有
@@ -258,9 +280,9 @@ _ = refl
 
 ```agda
 ⌜⌝*⌜⌝≡⌜*⌝ : ∀ m n → ⌜ m ⌝ * ⌜ n ⌝ ≡ ⌜ m ℕ.* n ⌝
-⌜⌝*⌜⌝≡⌜*⌝ m ℕ.zero      = begin-propeq
-  ⌜ m ⌝ * zero            ≡.≡˘⟨ cong ⌜_⌝ (ℕ.*-zeroʳ m) ⟩
-  ⌜ m ℕ.* ℕ.zero ⌝        ◼
+⌜⌝*⌜⌝≡⌜*⌝ m 0             = begin-propeq
+  ⌜ m ⌝ * ⌜ 0 ⌝           ≡.≡˘⟨ cong ⌜_⌝ (ℕ.*-zeroʳ m) ⟩
+  ⌜ m ℕ.* 0 ⌝             ◼
 ⌜⌝*⌜⌝≡⌜*⌝ m (ℕ.suc n)   = begin-propeq
   ⌜ m ⌝ * suc ⌜ n ⌝       ≡.≡⟨⟩
   ⌜ m ⌝ * ⌜ n ⌝ + ⌜ m ⌝   ≡.≡⟨ cong (_+ ⌜ m ⌝) (⌜⌝*⌜⌝≡⌜*⌝ m n) ⟩
@@ -380,7 +402,7 @@ _ = refl
   α * β                 ∎
 ```
 
-接着是从左侧乘法的 ≤-单调性推出右侧乘法的弱增长性. 注意前者已经无法使用超限递归的相关引理了, 需要用归纳法证明.
+接着是从左侧乘法的 ≤-单调性推出右侧乘法的弱增长性. 注意前者已经无法使用超限递归的相关引理了, 需要直接用归纳法证明.
 
 ```agda
 *-monoˡ-≤ : ∀ α → ≤-monotonic (_* α)
@@ -440,6 +462,33 @@ _ = refl
   }
 ```
 
+```agda
+*-magma : Magma 0ℓ 0ℓ
+*-magma = record
+  { isMagma = *-isMagma
+  }
+
+*-semigroup : Semigroup 0ℓ 0ℓ
+*-semigroup = record
+  { isSemigroup = *-isSemigroup
+  }
+
+*-1-monoid : Monoid 0ℓ 0ℓ
+*-1-monoid = record
+  { isMonoid = *-1-isMonoid
+  }
+```
+
+### 其他常用引理
+
+```agda
+α*2≈α+α : ∀ α → α * ⌜ 2 ⌝ ≈ α + α
+α*2≈α+α α     = begin-eq
+  α * ⌜ 2 ⌝     ≤.≡⟨⟩
+  α * ⌜ 1 ⌝ + α ≈⟨ +-congʳ (*-identityʳ α) ⟩
+  α + α         ∎
+```
+
 ## 幂运算
 
 由 `_^_` 的定义立即有
@@ -455,6 +504,203 @@ _ : ∀ {α f} → α ^ lim f ≡ lim λ n → α ^ f n
 _ = refl
 ```
 
+### 有限序数
+
+**事实** 有限序数幂运算与自然数幂运算等价.
+
+```agda
+⌜⌝^⌜⌝≡⌜^⌝ : ∀ m n → ⌜ m ⌝ ^ ⌜ n ⌝ ≡ ⌜ m ℕ.^ n ⌝
+⌜⌝^⌜⌝≡⌜^⌝ m 0         = refl
+⌜⌝^⌜⌝≡⌜^⌝ m (ℕ.suc n) = begin-propeq
+  ⌜ m ⌝ ^ suc ⌜ n ⌝     ≡.≡⟨⟩
+  ⌜ m ⌝ ^ ⌜ n ⌝ * ⌜ m ⌝ ≡.≡⟨ cong (_* ⌜ m ⌝) (⌜⌝^⌜⌝≡⌜^⌝ m n) ⟩
+  ⌜ m ℕ.^ n ⌝ * ⌜ m ⌝   ≡.≡⟨ ⌜⌝*⌜⌝≡⌜*⌝ (m ℕ.^ n) m ⟩
+  ⌜ m ℕ.^ n ℕ.* m ⌝     ≡.≡⟨ cong ⌜_⌝ (ℕ.*-comm (m ℕ.^ n) m) ⟩
+  ⌜ m ℕ.^ ℕ.suc n ⌝     ◼
+```
+
+### 运算律
+
+**引理** `⌜ 1 ⌝` 是序数幂运算的右幺元和左零元.
+
+```agda
+^-identityʳ : RightIdentity ⌜ 1 ⌝ _^_
+^-identityʳ α = begin-eq
+  α ^ ⌜ 1 ⌝     ≤.≡⟨⟩
+  α ^ ⌜ 0 ⌝ * α ≈⟨ *-identityˡ α ⟩
+  α             ∎
+
+^-zeroˡ : LeftZero ⌜ 1 ⌝ _^_
+^-zeroˡ zero      = ≈-refl
+^-zeroˡ (suc α)   = begin-eq
+  ⌜ 1 ⌝ ^ suc α     ≤.≡⟨⟩
+  ⌜ 1 ⌝ ^ α * ⌜ 1 ⌝ ≈⟨ *-identityʳ _ ⟩
+  ⌜ 1 ⌝ ^ α         ≈⟨ ^-zeroˡ α ⟩
+  ⌜ 1 ⌝             ∎
+^-zeroˡ (lim f) = l≤ (λ n → proj₁ (^-zeroˡ (f n)))
+                , ≤f⇒≤l (proj₂ (^-zeroˡ (f 1)))
+```
+
+零的幂比较奇怪. 首先零的零次幂是一, 这个由定义立即可得. 然后零的后继次幂是乘法右零元的特例.
+
+```agda
+_ : ∀ α → ⌜ 0 ⌝ ^ suc α ≈ ⌜ 0 ⌝
+_ = *-zeroʳ
+```
+
+但是零的极限次幂在我们的构筑中不是良构序数. 例如 `zero ^ ω` 是如下序列的极限.
+
+> zero ^ ⌜ 0 ⌝, zero ^ ⌜ 1 ⌝, zero ^ ⌜ 2 ⌝, ...
+
+即
+
+> ⌜ 1 ⌝, ⌜ 0 ⌝, ⌜ 0 ⌝, ...
+
+当然我们可以无视首项, 把该序列的极限视作零, 就像有些书那样. 这里不做这种处理, 也没有必要.
+
+**引理** 幂运算对加法满足左分配律, 只不过分配之后转换成了乘法.
+
+```agda
+^-distribˡ-+-* : ∀ α β γ → α ^ (β + γ) ≈ α ^ β * α ^ γ
+^-distribˡ-+-* α β zero    = begin-eq
+  α ^ (β + zero)             ≈˘⟨ *-identityʳ _ ⟩
+  α ^ β * ⌜ 1 ⌝              ≈⟨ *-congˡ (≈-refl {⌜ 1 ⌝}) ⟩
+  α ^ β * α ^ ⌜ 0 ⌝          ∎
+^-distribˡ-+-* α β (suc γ) = begin-eq
+  α ^ (β + suc γ)            ≤.≡⟨⟩
+  α ^ (β + γ) * α            ≈⟨ *-congʳ (^-distribˡ-+-* α β γ) ⟩
+  α ^ β * α ^ γ * α          ≈⟨ *-assoc _ _ _ ⟩
+  α ^ β * (α ^ γ * α)        ≈⟨ *-congˡ ≈-refl ⟩
+  α ^ β * (α ^ suc γ)        ∎
+^-distribˡ-+-* α β (lim f) = l≈l (^-distribˡ-+-* α β (f _))
+```
+
+**引理** 幂运算满足结合律, 只不过结合之后转换成了乘法.
+
+```agda
+^-*-assoc : ∀ α β γ → (α ^ β) ^ γ ≈ α ^ (β * γ)
+^-*-assoc α β zero    = ≈-refl
+^-*-assoc α β (suc γ) = begin-eq
+  α ^ β ^ suc γ         ≤.≡⟨⟩
+  α ^ β ^ γ * α ^ β     ≈⟨ *-congʳ (^-*-assoc α β γ) ⟩
+  α ^ (β * γ) * α ^ β   ≈˘⟨ ^-distribˡ-+-* α _ _ ⟩
+  α ^ (β * γ + β)       ≤.≡⟨⟩
+  α ^ (β * suc γ)       ∎
+^-*-assoc α β (lim f) = l≈l (^-*-assoc α β (f _))
+```
+
+### 增长性, 单调性与合同性
+
+幂运算的单调性等性质比乘法的更不规整, 需要更强的额外前提.
+
+首先相对简单的是从右侧幂运算的 ≤-单调性到左侧幂运算的弱增长性.
+
+```agda
+^-monoʳ-≤ : ∀ α → α ≥ ⌜ 1 ⌝ → ≤-monotonic (α ^_)
+^-monoʳ-≤ α α≥1 = rec-by-mono-≤ (*-monoˡ-≤ α) (*-incrˡ-≤ α α≥1)
+
+^-incrˡ-≤ : ∀ α β → α ≥ ⌜ 1 ⌝ → β ≥ ⌜ 1 ⌝ → α ≤ α ^ β
+^-incrˡ-≤ α β α≥1 β≥1 = begin-nonstrict
+  α                     ≈˘⟨ ^-identityʳ α ⟩
+  α ^ ⌜ 1 ⌝             ≤⟨ ^-monoʳ-≤ α α≥1 β≥1 ⟩
+  α ^ β                 ∎
+```
+
+**引理** 底数不为零的幂运算结果大于零.
+
+```agda
+^>0 : ∀ {α β} → α ≥ ⌜ 1 ⌝ → α ^ β > ⌜ 0 ⌝
+^>0 {α} {β} α≥1 = begin-strict
+  ⌜ 0 ⌝         <⟨ <s ⟩
+  ⌜ 1 ⌝         ≤.≡⟨⟩
+  α ^ ⌜ 0 ⌝     ≤⟨ ^-monoʳ-≤ α α≥1 z≤ ⟩
+  α ^ β         ∎
+```
+
+右侧幂运算的 <-单调性无法从 `rec-by-mono-<` 推出, 但可以直接用归纳法证明.
+
+```agda
+^-monoʳ-< : ∀ α → α > ⌜ 1 ⌝ → <-monotonic (α ^_)
+^-monoʳ-< α α>1 {β} {suc γ} < = begin-strict
+  α ^ β                         ≤⟨ ^-monoʳ-≤ α (<⇒≤ α>1) (<s⇒≤ <) ⟩
+  α ^ γ                         <⟨ *-incrˡ-< (α ^ γ) α (^>0 (<⇒≤ α>1)) α>1 ⟩
+  α ^ γ * α                     ≤.≡⟨⟩
+  α ^ suc γ                     ∎
+^-monoʳ-< α α>1 {β} {lim f} ((n , d) , ≤f) = begin-strict
+  α ^ β                         <⟨ ^-monoʳ-< α α>1 (d , ≤f) ⟩
+  α ^ f n                       ≤⟨ f≤l ⟩
+  α ^ lim f                     ∎
+```
+
+然后容易推出左侧幂运算的强增长性.
+
+```agda
+^-incrˡ-< : ∀ α β → α > ⌜ 1 ⌝ → β > ⌜ 1 ⌝ → α < α ^ β
+^-incrˡ-< α β α>1 β>1 = begin-strict
+  α                     ≈˘⟨ ^-identityʳ _ ⟩
+  α ^ ⌜ 1 ⌝             <⟨ ^-monoʳ-< α α>1 β>1 ⟩
+  α ^ β                 ∎
+```
+
+左侧幂运算的 ≤-单调性无法使用超限递归的相关引理, 需要用归纳法证明.
+
+```agda
+^-monoˡ-≤ : ∀ α → ≤-monotonic (_^ α)
+^-monoˡ-≤ zero            _   = ≤-refl
+^-monoˡ-≤ (suc α) {β} {γ} β≤γ = begin-nonstrict
+  β ^ suc α                     ≤.≡⟨⟩
+  β ^ α * β                     ≤⟨ *-monoʳ-≤ _ β≤γ ⟩
+  β ^ α * γ                     ≤⟨ *-monoˡ-≤ _ (^-monoˡ-≤ _ β≤γ) ⟩
+  γ ^ α * γ                     ∎
+^-monoˡ-≤ (lim f) {β} {γ} β≤γ = l≤ λ n → ≤f⇒≤l (^-monoˡ-≤ (f n) β≤γ)
+```
+
+右侧幂运算的弱增长性又是个特殊的性质, 它无法从 `^-monoˡ-≤` 推出, 但可以直接用归纳法证明.
+
+```agda
+^-incrʳ-≤ : ∀ α β → β > ⌜ 1 ⌝ → α ≤ β ^ α
+^-incrʳ-≤ zero    β β>1 = ≤s
+^-incrʳ-≤ (suc α) β β>1 = begin-nonstrict
+  suc α                   ≤⟨ s≤s (^-incrʳ-≤ α β β>1) ⟩
+  suc (β ^ α)             ≤.≡⟨⟩
+  β ^ α + ⌜ 1 ⌝           ≤⟨ +-monoʳ-≤ (β ^ α) (<⇒s≤ (^>0 (<⇒≤ β>1))) ⟩
+  β ^ α + β ^ α           ≈˘⟨ α*2≈α+α _ ⟩
+  β ^ α * ⌜ 2 ⌝           ≤⟨ *-monoʳ-≤ (β ^ α) (<⇒s≤ β>1) ⟩
+  β ^ α * β               ≤.≡⟨⟩
+  β ^ suc α               ∎
+^-incrʳ-≤ (lim f) β β>1 = l≤ (λ n → ≤f⇒≤l (begin-nonstrict
+  f n                     ≤⟨ ^-incrʳ-≤ (f n) β β>1 ⟩
+  β ^ f n                 ∎))
+```
+
+幂运算的合同性只有半边是无条件的, 另一半要求底数不为零.
+
+```agda
+^-congʳ : RightCongruent _^_
+^-congʳ {α} (≤ , ≥) = ^-monoˡ-≤ α ≤ , ^-monoˡ-≤ α ≥
+
+^-congˡ : ∀ {α} → α ≥ ⌜ 1 ⌝ → (α ^_) Preserves _≈_ ⟶ _≈_
+^-congˡ {α} α≥1 (≤ , ≥) = ^-monoʳ-≤ α α≥1 ≤ , ^-monoʳ-≤ α α≥1 ≥
+```
+
+### 代数结构
+
+**定理** 底数不为零的右侧幂运算 `^_` 是加法半群到乘法半群的群同态, 也是加法幺半群到乘法幺半群的群同态.
+
+```agda
+^-semigroup-morphism : ∀ {α} → α ≥ ⌜ 1 ⌝ → (α ^_) Is +-semigroup -Semigroup⟶ *-semigroup
+^-semigroup-morphism α≥1 = record
+  { ⟦⟧-cong = ^-congˡ α≥1
+  ; ∙-homo  = ^-distribˡ-+-* _
+  }
+
+^-monoid-morphism : ∀ {α} → α ≥ ⌜ 1 ⌝ → (α ^_) Is +-0-monoid -Monoid⟶ *-1-monoid
+^-monoid-morphism α≥1 = record
+  { sm-homo = ^-semigroup-morphism α≥1
+  ; ε-homo  = ≈-refl
+  }
+```
+
 ## 序数嵌入
 
 **定理** 右侧运算 `+_`, `*_`, `^_` 都是序数嵌入.
@@ -465,6 +711,9 @@ _ = refl
 
 *-normal : ∀ α → α > ⌜ 0 ⌝ → normal (α *_)
 *-normal α α>0 = *-monoʳ-≤ α , *-monoʳ-< α α>0 , rec-ct
+
+^-normal : ∀ α → α > ⌜ 1 ⌝ → normal (α ^_)
+^-normal α α>1 = ^-monoʳ-≤ α (<⇒≤ α>1) , ^-monoʳ-< α α>1 , rec-ct
 ```
 
 **注意** 左侧运算 `_+`, `_*`, `_^` 不是序数嵌入.
@@ -479,6 +728,71 @@ _ = refl
 
 *-wfp : ∀ {α} → wellFormed α → α > ⌜ 0 ⌝ → wf-preserving (α *_)
 *-wfp {α} wfα α>0 = rec-wfp tt (+-monoˡ-≤ α) (+-incrˡ-< α α>0) (λ wfx → +-wfp wfx wfα)
+
+^-wfp : ∀ {α} → wellFormed α → α > ⌜ 1 ⌝ → wf-preserving (α ^_)
+^-wfp {α} wfα α>1 {zero}  _            = tt
+^-wfp {α} wfα α>1 {suc β} wfβ          = *-wfp (^-wfp wfα α>1 wfβ) (^>0 (<⇒≤ α>1)) wfα
+^-wfp {α} wfα α>1 {lim f} (wfn , mono) = ^-wfp wfα α>1 wfn , λ m<n → ^-monoʳ-< α α>1 (mono m<n)
 ```
 
 **注意** 左侧运算 `_+`, `_*`, `_^` 不保良构.
+
+## 其他引理
+
+**引理** 加法结合律和乘法结合律可以推广到任意有限元.
+
+```agda
++-assoc-n : ∀ α n → α + α * ⌜ n ⌝ ≈ α * ⌜ n ⌝ + α
++-assoc-n α 0         = ≈-sym (+-identityˡ α)
++-assoc-n α (ℕ.suc n) = begin-eq
+  α + α * suc ⌜ n ⌝     ≤.≡⟨⟩
+  α + (α * ⌜ n ⌝ + α)   ≈˘⟨ +-assoc _ _ _ ⟩
+  α + α * ⌜ n ⌝ + α     ≈⟨ +-congʳ (+-assoc-n α n) ⟩
+  α * suc ⌜ n ⌝ + α     ∎
+
+*-assoc-n : ∀ α n → α * α ^ ⌜ n ⌝ ≈ α ^ ⌜ n ⌝ * α
+*-assoc-n α 0         = begin-eq
+  α * ⌜ 1 ⌝             ≈⟨ *-identityʳ α ⟩
+  α                     ≈˘⟨ *-identityˡ α ⟩
+  ⌜ 1 ⌝ * α             ∎
+*-assoc-n α (ℕ.suc n) = begin-eq
+  α * α ^ suc ⌜ n ⌝     ≤.≡⟨⟩
+  α * (α ^ ⌜ n ⌝ * α)   ≈˘⟨ *-assoc _ _ _ ⟩
+  α * α ^ ⌜ n ⌝ * α     ≈⟨ *-congʳ (*-assoc-n α n) ⟩
+  α ^ suc ⌜ n ⌝ * α     ∎
+```
+
+以下引理会在后续章节处理 `ω` 指数塔的时候用到, 其证明是迄今为止各种引理的集大成.
+
+**引理** ω的幂对加法有吸收律.
+
+```agda
+ω^-absorb-+ : ∀ α β → wellFormed β → α < β → ω ^ α + ω ^ β ≈ ω ^ β
+ω^-absorb-+ α (suc β) wfβ α<β =
+    l≤ (λ n →               begin-nonstrict
+      ω ^ α + ω ^ β * ⌜ n ⌝ ≤⟨ +-monoˡ-≤ _ (^-monoʳ-≤ ω (<⇒s≤ z<ω) (<s⇒≤ α<β)) ⟩
+      ω ^ β + ω ^ β * ⌜ n ⌝ ≈⟨ +-assoc-n _ _ ⟩
+      ω ^ β * ⌜ n ⌝ + ω ^ β ≤.≡⟨⟩
+      ω ^ β * suc ⌜ n ⌝     ≤⟨ *-monoʳ-≤ _ (<⇒≤ (s<ω n<ω)) ⟩
+      ω ^ β * ω             ≤.≡⟨⟩
+      ω ^ suc β             ∎)
+  , l≤ (λ n →               begin-nonstrict
+      ω ^ β * ⌜ n ⌝         ≤⟨ +-incrʳ-≤ _ _ ⟩
+      ω ^ α + ω ^ β * ⌜ n ⌝ ≤⟨ +-monoʳ-≤ _ (*-monoʳ-≤ _ (<⇒≤ n<ω)) ⟩
+      ω ^ α + ω ^ β * ω     ≤.≡⟨⟩
+      ω ^ α + ω ^ suc β     ∎)
+ω^-absorb-+ α (lim f) (wfn , mono) α<l with ∃[n]<fn mono α<l
+... | (m , α<fm) = l≤ helper , l≤ λ n → ≤f⇒≤l (+-incrʳ-≤ _ _) where
+  helper : ∀ n → ω ^ α + ω ^ f n ≤ lim (λ n → ω ^ f n)
+  helper n with (ℕ.<-cmp m n)
+  ... | tri< m<n _ _  = ≤f⇒≤l (begin-nonstrict
+        ω ^ α + ω ^ f n        ≤⟨ proj₁ (ω^-absorb-+ α (f n) wfn α<fn) ⟩
+        ω ^ f n                ∎) where α<fn = <-trans α<fm (mono m<n)
+  ... | tri≈ _ refl _ = ≤f⇒≤l (begin-nonstrict
+        ω ^ α + ω ^ f n        ≤⟨ proj₁ (ω^-absorb-+ α (f n) wfn α<fm) ⟩
+        ω ^ f n                ∎)
+  ... | tri> _ _ n<m  = ≤f⇒≤l (begin-nonstrict
+        ω ^ α + ω ^ f n        ≤⟨ +-monoʳ-≤ _ (^-monoʳ-≤ _ (<⇒≤ n<ω) (<⇒≤ (mono n<m))) ⟩
+        ω ^ α + ω ^ f m        ≤⟨ proj₁ (ω^-absorb-+ α (f m) wfn α<fm) ⟩
+        ω ^ f m ∎)
+```
