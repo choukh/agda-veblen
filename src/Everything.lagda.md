@@ -51,4 +51,10 @@ open import Ordinal.Arithmetic public
 ```
 
 - 由超限递归定义了 `_+_`, `_*_` 和 `_^_` 并证明了它们的保良构性.
-- 结合律, 分配率, 等等
+- 结合律, 分配律, 等等
+
+```agda
+open import Ordinal.Tetration public
+```
+
+- 我们展示第四级运算被锁死, 即 α ^^ β ≈ α ^^ ω 对任意 β ≥ ω.

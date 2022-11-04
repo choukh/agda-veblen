@@ -37,15 +37,15 @@
 - `_+_`, `_*_` and `_^_` are defined by recursion and their WF preserving properties are proved
 - Association law, distribution law, etc
 
-### Ordinal.Tetration.lagda.md
+### [Ordinal.Tetration.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/Tetration.lagda.md)
 
-(TODO)
+- We show that tetration is no-go since α ^^ ω⁺ ≈ α ^^ ω and, moreover, α ^^ β ≈ α ^^ ω forall β ≥ ω.
 
 ### Veblen.Fixpoint.lagda.md
 
 (TODO)
 
-### Veblen.EpsilonNumbers.lagda.md
+### Veblen.Epsilon.lagda.md
 
 (TODO)
 

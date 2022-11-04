@@ -1,6 +1,7 @@
 ---
 title: Agda大序数(5) 序数算术
 zhihu-tags: Agda, 序数, 大数数学
+zhihu-url: https://zhuanlan.zhihu.com/p/578641323
 ---
 
 # Agda大序数(5) 序数算术
@@ -41,8 +42,7 @@ open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 open import Function using (id)
 open import Relation.Binary using (_Preserves_⟶_)
 open Relation.Binary.Tri
-open import Relation.Binary.PropositionalEquality as Eq
-  using (_≡_; refl; sym; cong)
+open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl; cong)
 ```
 
 本章需要 `≤-Reasoning` 和 `≡-Reasoning` 两套推理. 由于 `step-≡` 对应的 syntax 重名, 我们加上短模块名进行区分: `≡.≡⟨⟩`, `≤.≡⟨⟩`.
@@ -201,6 +201,8 @@ module _ (α) where
   +-monoʳ-< : <-monotonic (α +_ )
   +-monoʳ-< < = rec-by-mono-< s≤s (λ _ → <s) <
 ```
+
+**注意** 只有左侧加法 `_+` 是强增长的, 右侧加法 `+_` 不保证强增长. 这就是我们在乘法的定义中使用 `_+` 的原因.
 
 由 `+-monoˡ-≤` 以及 `+-monoʳ-≤` 立即得到 `_+_` 的合同性 (congruence).
 
@@ -401,6 +403,8 @@ _ = refl
   α * ⌜ 1 ⌝             <⟨ *-monoʳ-< α α>0 β>1 ⟩
   α * β                 ∎
 ```
+
+**注意** 只有左侧乘法 `_*` 是强增长的, 右侧乘法 `*_` 不保证强增长. 这就是我们在幂运算的定义中使用 `_*` 的原因.
 
 接着是从左侧乘法的 ≤-单调性推出右侧乘法的弱增长性. 注意前者已经无法使用超限递归的相关引理了, 需要直接用归纳法证明.
 
@@ -641,6 +645,8 @@ _ = *-zeroʳ
   α ^ ⌜ 1 ⌝             <⟨ ^-monoʳ-< α α>1 β>1 ⟩
   α ^ β                 ∎
 ```
+
+**注意** 只有左侧幂运算 `_^` 是强增长的, 右侧幂运算 `^_` 不保证强增长. 我们会在下一章展示 `^_` 定义的迭代幂次会遇到不动点.
 
 左侧幂运算的 ≤-单调性无法使用超限递归的相关引理, 需要用归纳法证明.
 
