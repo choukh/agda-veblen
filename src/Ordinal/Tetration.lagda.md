@@ -109,7 +109,7 @@ _^^_ : Ord → Ord → Ord
 ^^≈^^[1]s α (lim f) α≥1 = l≈l (^^≈^^[1]s α (f _) α≥1)
 ```
 
-另外, 当迭代次数有限的时候, `α ^^[ _ ] n` 单调.
+另外, 当迭代次数有限的时候, `α ^^[_] n` 单调.
 
 ```agda
 ^^[]-mono-≤ : ∀ α n → α ≥ ⌜ 1 ⌝ → ≤-monotonic (α ^^[_] ⌜ n ⌝)
@@ -195,8 +195,8 @@ _^^_ : Ord → Ord → Ord
     α ^^ ω                                ∎
   helperˡ n | inj₂ ω<fn =                 begin
     α ^^ f n                              ≤⟨ proj₁ IH ⟩
-    α ^^ ω                                ∎ where
-    IH = ^^-stuck-forever α (f n) α>1 wfn ω<fn
+    α ^^ ω                                ∎
+    where IH = ^^-stuck-forever α (f n) α>1 wfn ω<fn
   helperʳ : ∀ n → α ^^ ⌜ n ⌝ ≤ α ^^ lim f
   helperʳ n with <ω⊎≥ω (wfn {n})
   ...       | inj₁ fn<ω =                 begin
@@ -207,8 +207,8 @@ _^^_ : Ord → Ord → Ord
     α ^^ ⌜ n ⌝                            ≤⟨ ^^-monoʳ-≤ α α>1 (<⇒≤ n<ω) ⟩
     α ^^ ω                                ≤⟨ proj₂ IH ⟩
     α ^^ f n                              ≤⟨ f≤l ⟩
-    α ^^ lim f                            ∎ where
-    IH = ^^-stuck-forever α (f n) α>1 wfn ω<fn
+    α ^^ lim f                            ∎
+    where IH = ^^-stuck-forever α (f n) α>1 wfn ω<fn
 ```
 
 现在我们陷入两难的境地. 一方面 `_^` 保证强增长, 但增长地很慢; 另一方面 `^_` 在有限层增长地很快, 但不在超限层的增长. 实际上 `α ^^ ω` 是一个 Veblen 不动点, 我们将在下一章介绍跳出不动点的方法.
