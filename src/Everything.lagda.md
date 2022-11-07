@@ -63,7 +63,7 @@ open import Ordinal.Tetration public
 open import Veblen.Fixpoint public
 ```
 
-- 定义了无穷迭代 `ω-iter`
-- 如果 `f` 是序数嵌入那么 `ω-iter f from α` 是不小于 `α` 的 Veblen 不动点
-- 递归 `ω-iter f from (suc _)` 即得 `f` 的 Veblen 不动点枚举函数, 记作 `f′`
+- 定义了无穷迭代 `ω-rec`
+- 如果 `f` 是序数嵌入那么 `ω-rec f from α` 是不小于 `α` 的 Veblen 不动点
+- 递归 `ω-rec f from (suc _)` 即得 `f` 的 Veblen 不动点枚举函数, 记作 `f′`
 - 我们证明了高阶函数 `_′` 保持序数嵌入且保持保良序性
