@@ -46,7 +46,7 @@
 - Infinite iteration `ω-iter` is defined
 - If `f` is normal then `ω-iter f from α` is a veblen fixed point not less than `α`
 - Recursion of `ω-iter f from (suc _)` is the veblen fixed point yielding function of `f`, written `f′`
-- We proved that higher order function `_′` is normal-preserving and wf-preserving-preserving.
+- We proved that higher order function `_′` is normal-preserving and wf-preserving-preserving
 
 ### Veblen.Epsilon.lagda.md
 

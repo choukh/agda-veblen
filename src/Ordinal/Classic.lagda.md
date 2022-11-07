@@ -10,7 +10,7 @@ zhihu-url: https://zhuanlan.zhihu.com/p/575362583
 > 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
 > 本文源码: [Ordinal/Classic.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/Classic.lagda.md)  
 > 高亮渲染: [Ordinal.Classic.html](https://choukh.github.io/agda-lvo/Ordinal.Classic.html)  
-> 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
+> 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 本章假设排中律并证明良构序数上的 `_≤_` 是线序, 该内容与主线无关, 仅作为学习上的参考. 因为有排中律, 所以非 `--safe`.
 

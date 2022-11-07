@@ -8,7 +8,7 @@ zhihu-tags: Agda, 序数, 大数数学
 > 交流Q群: 893531731  
 > 本文源码: [Everything.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Everything.lagda.md)  
 > 高亮渲染: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
+> 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
 {-# OPTIONS --without-K --safe #-}

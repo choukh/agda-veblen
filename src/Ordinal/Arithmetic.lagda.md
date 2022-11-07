@@ -10,7 +10,7 @@ zhihu-url: https://zhuanlan.zhihu.com/p/578641323
 > 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
 > 本文源码: [Ordinal/Arithmetic.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/Arithmetic.lagda.md)  
 > 高亮渲染: [Ordinal.Arithmetic.html](https://choukh.github.io/agda-lvo/Ordinal.Arithmetic.html)  
-> 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
+> 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 本章打开了 [*实验性有损合一化*](https://agda.readthedocs.io/en/v2.6.2.2/language/lossy-unification.html) 特性, 它可以减少显式标记隐式参数的需要, 而且跟 `--safe` 是兼容的. 当然它也有一些缺点, 具体这里不会展开.
 
