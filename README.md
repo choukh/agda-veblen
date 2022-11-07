@@ -39,11 +39,14 @@
 
 ### [Ordinal.Tetration.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/Tetration.lagda.md)
 
-- We show that tetration is no-go since α ^^ ω⁺ ≈ α ^^ ω and, moreover, α ^^ β ≈ α ^^ ω forall β ≥ ω.
+- We show that tetration is no-go since `α ^^ suc ω ≈ α ^^ ω` and, moreover, `α ^^ β ≈ α ^^ ω` forall `β ≥ ω`
 
-### Veblen.Fixpoint.lagda.md
+### [Veblen.Fixpoint.lagda.m](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Fixpoint.lagda.md)
 
-(TODO)
+- Infinite iteration `ω-iter` is defined
+- If `f` is normal then `ω-iter f from α` is a veblen fixed point not less than `α`
+- Recursion of `ω-iter f from (suc _)` is the veblen fixed point yielding function of `f`, written `f′`
+- We proved that higher order function `_′` is normal-preserving and wf-preserving-preserving.
 
 ### Veblen.Epsilon.lagda.md
 

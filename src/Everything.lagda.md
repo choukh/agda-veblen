@@ -38,23 +38,32 @@ open import Ordinal.Function public
 ```
 
 - 定义了序数函数的常用性质
-- 对序数嵌入 (normal function) 的定义做了一些改造, 使之不依赖良构条件.
+- 对序数嵌入 (normal function) 的定义做了一些改造, 使之不依赖良构条件
 
 ```agda
 open import Ordinal.Recursion public
 ```
 
-- 定义了一般形式的序数递归函数 (超限递归), 并证明了它的一般性质.
+- 定义了一般形式的序数递归函数 (超限递归), 并证明了它的一般性质
 
 ```agda
 open import Ordinal.Arithmetic public
 ```
 
-- 由超限递归定义了 `_+_`, `_*_` 和 `_^_` 并证明了它们的保良构性.
+- 由超限递归定义了 `_+_`, `_*_` 和 `_^_` 并证明了它们的保良构性
 - 结合律, 分配律, 等等
 
 ```agda
 open import Ordinal.Tetration public
 ```
 
-- 我们展示第四级运算被锁死, 即 α ^^ β ≈ α ^^ ω 对任意 β ≥ ω.
+- 我们展示第四级运算被锁死, 即 `α ^^ β ≈ α ^^ ω` 对任意 `β ≥ ω`
+
+```agda
+open import Veblen.Fixpoint public
+```
+
+- 定义了无穷迭代 `ω-iter`
+- 如果 `f` 是序数嵌入那么 `ω-iter f from α` 是不小于 `α` 的 Veblen 不动点
+- 递归 `ω-iter f from (suc _)` 即得 `f` 的 Veblen 不动点枚举函数, 记作 `f′`
+- 我们证明了高阶函数 `_′` 保持序数嵌入且保持保良序性
