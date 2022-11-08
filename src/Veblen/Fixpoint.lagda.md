@@ -205,7 +205,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
         β                             ∎
 ```
 
-**引理** `F ₛ_` ≤-单调.
+**引理** `F ₛ` ≤-单调.
 
 ```agda
   ₛ-mono-≤ : ≤-monotonic (F ₛ)
@@ -233,7 +233,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
       helper (suc m) = <-mono (helper m)
 ```
 
-**引理** `_ₛ_` 保持保良构性.
+**引理** `_ₛ` 保持保良构性.
 
 ```agda
     ₛ-wfp : wf-preserving F → wf-preserving (F ₛ)
