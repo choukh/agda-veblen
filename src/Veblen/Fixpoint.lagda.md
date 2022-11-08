@@ -58,7 +58,7 @@ _isFixpointOf_ : Ord → (Ord → Ord) → Set
 ω-rec F from α₀ = rec F from α₀ by ω
 ```
 
-我们先统一给出以下定义, 在下一小节再说明它们的合理性.
+我们先统一给出以下定义, 后面会说明它们的合理性.
 
 - 我们说 `F` 的从零开始的无穷递归是 `F` 的最小不动点, 记作 `F ₀`
 - 我们说 `F` 的从 `suc α` 开始的无穷递归是 `F` 于 `α` 的后继不动点, 记作 `(F ₛ) α`
@@ -129,8 +129,8 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
   ₀-min : ∀ {α} → α isFixpointOf F → F ₀ ≤ α
   ₀-min {α} fp = l≤ helper where
     helper : ∀ n → (rec F from zero by ⌜ n ⌝) ≤ α
-    helper zero = z≤
-    helper (suc n) =              begin
+    helper zero    = z≤
+    helper (suc n) =               begin
       rec F from zero by ⌜ suc n ⌝ ≤⟨ ≤-mono (helper n) ⟩
       F α                          ≈⟨ fp ⟩
       α                            ∎
@@ -178,7 +178,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
       F ₀                                 ∎ where
         helper : ∀ n → suc ⌜ n ⌝ ≤ F (rec F from zero by ⌜ n ⌝)
         helper zero    = <⇒s≤ z-incr
-        helper (suc n) = begin
+        helper (suc n) =                    begin
           ⌜ suc (suc n) ⌝                   ≤⟨ <⇒s≤ (s-incr ⌜ n ⌝-wellFormed) ⟩
           F ⌜ suc n ⌝                       ≤⟨ ≤-mono (helper n) ⟩
           F (F (rec F from zero by ⌜ n ⌝))  ∎
@@ -198,8 +198,8 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
   ₛ-suc : ∀ α β → α < β → β isFixpointOf F → (F ₛ) α ≤ β
   ₛ-suc α β α<β fp = l≤ helper where
     helper : ∀ n → rec F from suc α by ⌜ n ⌝ ≤ β
-    helper zero = <⇒s≤ α<β
-    helper (suc n)                  = begin
+    helper zero    = <⇒s≤ α<β
+    helper (suc n) =                  begin
         F (rec F from suc α by ⌜ n ⌝) ≤⟨ ≤-mono (helper n) ⟩
         F β                           ≈⟨ fp ⟩
         β                             ∎
@@ -223,7 +223,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 ```agda
     ₛ-mono-n : ∀ {α} → wellFormed α → monotonic (rec F from suc α by_ ∘ ⌜_⌝)
     ₛ-mono-n {α} wfα {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
-    ... | inj₁ m<n =                begin-strict
+    ... | inj₁ m<n =                 begin-strict
       rec F from suc α by ⌜ m ⌝      <⟨ ₛ-mono-n wfα m<n ⟩
       rec F from suc α by ⌜ n ⌝      ≤⟨ normal⇒≤-incr nml _ ⟩
       rec F from suc α by ⌜ suc n ⌝  ∎
@@ -317,14 +317,14 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 ′-pres-≈ᶠ {F} {G} nmlF nmlG F≈ᶠG {zero}  = l≈l helper where
   helper : ∀ {n} → rec F from zero by ⌜ n ⌝ ≈ rec G from zero by ⌜ n ⌝
   helper {zero}  = ≈-refl
-  helper {suc n} = begin-equality
+  helper {suc n} =               begin-equality
     F (rec F from zero by ⌜ n ⌝) ≈⟨ ≤-inc⇒cong (proj₁ nmlF) helper ⟩
     F (rec G from zero by ⌜ n ⌝) ≈⟨ F≈ᶠG ⟩
     G (rec G from zero by ⌜ n ⌝) ∎
 ′-pres-≈ᶠ {F} {G} nmlF nmlG F≈ᶠG {suc α} = l≈l helper where
   helper : ∀ {n} → rec F from suc ((F ′) α) by ⌜ n ⌝ ≈ rec G from suc ((G ′) α) by ⌜ n ⌝
   helper {zero}  = s≈s (′-pres-≈ᶠ nmlF nmlG F≈ᶠG)
-  helper {suc n} = begin-equality
+  helper {suc n} =                        begin-equality
     F (rec F from suc ((F ′) α) by ⌜ n ⌝) ≈⟨ ≤-inc⇒cong (proj₁ nmlF) helper ⟩
     F (rec G from suc ((G ′) α) by ⌜ n ⌝) ≈⟨ F≈ᶠG ⟩
     G (rec G from suc ((G ′) α) by ⌜ n ⌝) ∎
