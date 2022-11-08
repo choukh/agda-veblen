@@ -1,10 +1,10 @@
 ---
-title: Agda大序数(6) 序数嵌入的不动点
+title: Agda大序数(7) 序数嵌入的不动点
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/581675452
 ---
 
-# Agda大序数(6) 序数嵌入的不动点
+# Agda大序数(7) 序数嵌入的不动点
 
 > 交流Q群: 893531731  
 > 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
