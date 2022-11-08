@@ -177,7 +177,10 @@ normal⇒≤-incr {F} nml@(_ , <-mono , lim-ct) =
 **引理** 序数嵌入**尊重**序数函数的外延等价性.
 
 ```agda
-normal-resp-≈ : normal Respects (λ F G → ∀ {α} → F α ≈ G α)
+_≈ᶠ_ : (Ord → Ord) → (Ord → Ord) → Set
+F ≈ᶠ G = ∀ {α} → F α ≈ G α
+
+normal-resp-≈ : normal Respects _≈ᶠ_
 ```
 
 **证明** 我们有 `F` 和 `G` 的外延等价 `ext`, `F` 的 ≤-单调 `≤-mono`, <-单调 `<-mono` 和连续 `lim-ct`, 要证 `G` 是序数嵌入.

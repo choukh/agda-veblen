@@ -44,8 +44,8 @@
 ### [Veblen.Fixpoint.lagda.m](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Fixpoint.lagda.md)
 
 - Infinite iteration `ω-rec` is defined
-- If `f` is normal then `ω-rec f from α` is a veblen fixed point not less than `α`
-- Recursion of `ω-rec f from (suc _)` is the veblen fixed point yielding function of `f`, written `f′`
+- If `f` is normal then `ω-rec f from α` is a fixed point not less than `α`
+- Recursion of `ω-rec f from (suc _)` is the fixed point yielding function of `f`, written `f′`
 - We proved that higher order function `_′` is normal-preserving and wf-preserving-preserving
 
 ### Veblen.Epsilon.lagda.md
