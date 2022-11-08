@@ -39,7 +39,6 @@ open import Data.Unit using (tt)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 open import Function using (_∘_)
-open import Relation.Binary using (_Preserves_⟶_)
 open import Relation.Binary.PropositionalEquality as Eq using (refl)
 ```
 
