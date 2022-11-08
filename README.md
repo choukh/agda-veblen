@@ -41,7 +41,7 @@
 
 - We show that tetration is no-go since `α ^^ suc ω ≈ α ^^ ω` and, moreover, `α ^^ β ≈ α ^^ ω` forall `β ≥ ω`
 
-### [Veblen.Fixpoint.lagda.m](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Fixpoint.lagda.md)
+### [Veblen.Fixpoint.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Fixpoint.lagda.md)
 
 - Infinite iteration `ω-rec` is defined
 - If `f` is normal then `ω-rec f from α` is a fixed point not less than `α`
