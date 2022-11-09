@@ -50,7 +50,7 @@
 
 ### [Veblen.Fixpoint.Lower.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Fixpoint.Lower.lagda.md)
 
-- Trvial examples of fixed point
+- Trivial examples of fixed point
 
 ### Veblen.Epsilon.lagda.md
 
