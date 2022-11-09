@@ -48,6 +48,10 @@
 - Recursion of `ω-rec f from (suc _)` is the fixed point yielding function of `f`, written `f′`
 - We proved that higher order function `_′` is normal-preserving and wf-preserving-preserving
 
+### [Veblen.Fixpoint.Lower.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Fixpoint.Lower.lagda.md)
+
+- Trvial examples of fixed point
+
 ### Veblen.Epsilon.lagda.md
 
 (TODO)
@@ -67,3 +71,7 @@
 ### Veblen.Transfinite.lagda.md
 
 (TODO)
+
+## License
+
+[AGPL-3.0](https://github.com/choukh/agda-lvo/blob/main/LICENSE)
