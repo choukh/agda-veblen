@@ -45,16 +45,19 @@
 
 - Infinite iteration `ω-rec` is defined
 - If `f` is normal then `ω-rec f from α` is a fixed point not less than `α`
-- Recursion of `ω-rec f from (suc _)` is the fixed point yielding function of `f`, written `f′`
+- Recursion of `ω-rec f from (suc _)` is the fixed point yielding function of `f`, written `f ′`
 - We proved that higher order function `_′` is normal-preserving and wf-preserving-preserving
 
-### [Veblen.Fixpoint.Lower.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Fixpoint.Lower.lagda.md)
+### [Veblen.Fixpoint.Lower.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Fixpoint/Lower.lagda.md)
 
 - Trivial examples of fixed point
 
-### Veblen.Epsilon.lagda.md
+### [Veblen.Epsilon.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Epsilon.lagda.md)
 
-(TODO)
+- ε function is defined as `(ω ^_) ′`
+- We proved that `ε (suc α) ≈ ω ^^[ suc (ε α) ] ω` forall `α` and `ε (suc α) ≈ ε α ^^ ω` forall WF `α`
+- ζ is defined as `ε ′` and η as `ζ ′`
+- `ε`, `ζ`, `η`, ... are all normal and WF preserving
 
 ### Veblen.Function.lagda.md
 

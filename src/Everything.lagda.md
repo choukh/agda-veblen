@@ -73,3 +73,12 @@ open import Veblen.Fixpoint.Lower public
 ```
 
 - 关于不动点的一些平凡的例子
+
+```agda
+open import Veblen.Epsilon public
+```
+
+- ε函数定义为 `(ω ^_) ′`
+- 我们证明了对任意 `α` 有 `ε (suc α) ≈ ω ^^[ suc (ε α) ] ω` , 且对任意良构 `α` 有 `ε (suc α) ≈ ε α ^^ ω`
+- ζ 定义为 `ε ′` 且 η 为 `ζ ′`
+- `ε`, `ζ`, `η`, ... 都是序数嵌入且保良构

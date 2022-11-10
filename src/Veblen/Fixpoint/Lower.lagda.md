@@ -1,7 +1,7 @@
 ---
 title: Agda大序数(7*) 低阶不动点
 zhihu-tags: Agda, 序数, 大数数学
-zhihu-url: https://zhuanlan.zhihu.com/p/581675452
+zhihu-url: https://zhuanlan.zhihu.com/p/582065361
 ---
 
 # Agda大序数(7*) 低阶不动点
