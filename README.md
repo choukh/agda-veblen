@@ -55,9 +55,13 @@
 ### [Veblen.Epsilon.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Epsilon.lagda.md)
 
 - ε function is defined as `(ω ^_) ′`
-- We proved that `ε (suc α) ≈ ω ^^[ suc (ε α) ] ω` forall `α` and `ε (suc α) ≈ ε α ^^ ω` forall WF `α`
+- We have `ε (suc α) ≡ ω ^^[ suc (ε α) ] ω` forall `α`
 - ζ is defined as `ε ′` and η as `ζ ′`
 - `ε`, `ζ`, `η`, ... are all normal and WF preserving
+
+### [Veblen.Epsilon.Alternative.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Epsilon/Alternative.lagda.md)
+
+- We proved `ε (suc α) ≈ ε α ^^ ω` forall WF `α`
 
 ### Veblen.Function.lagda.md
 

@@ -79,6 +79,12 @@ open import Veblen.Epsilon public
 ```
 
 - ε函数定义为 `(ω ^_) ′`
-- 我们证明了对任意 `α` 有 `ε (suc α) ≈ ω ^^[ suc (ε α) ] ω` , 且对任意良构 `α` 有 `ε (suc α) ≈ ε α ^^ ω`
+- 对任意 `α` 有 `ε (suc α) ≡ ω ^^[ suc (ε α) ] ω`
 - ζ 定义为 `ε ′` 且 η 为 `ζ ′`
 - `ε`, `ζ`, `η`, ... 都是序数嵌入且保良构
+
+```agda
+open import Veblen.Epsilon.Alternative public
+```
+
+- 我们证明了对任意良构 `α` 有 `ε (suc α) ≈ ε α ^^ ω`

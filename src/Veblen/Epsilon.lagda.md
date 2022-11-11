@@ -124,9 +124,9 @@ _ : ∀ f → ε (lim f) ≡ lim (λ n → ε (f n))
 _ = λ f → refl
 ```
 
-## `ε` 的另类表示
+## `ε` 的另一种表示
 
-(TODO: 另开一个文件并链接到此)
+可以证明对任意良构 `α` 有 [`ε (suc α) ≈ ε α ^^ ω`](https://choukh.github.io/agda-lvo/Veblen.Epsilon.Alternative.html).
 
 ## ζ层级
 
