@@ -277,21 +277,14 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
   ′-wfp z-incr s-incr wfp = rec-wfp (₀-wf z-incr wfp) ₛ-mono-≤ ₛ-incr-< (ₛ-wfp s-incr wfp)
 ```
 
-**推论** `_′` 的迭代保持序数嵌入.
-
-```agda
-′′-normal : ∀ {F} → normal (F ′) → normal (F ′ ′)
-′′-normal = ′-normal
-```
-
-**引理** `_′` 保持零处增长性.
+**定理** `_′` 保持零处增长性.
 
 ```agda
 ′-zero-incr : ∀ {F} → zero-increasing F → zero-increasing (F ′)
 ′-zero-incr z-incr = <f⇒<l {n = 1} z-incr
 ```
 
-**引理** `_′` 保持良构后继处增长性.
+**定理** `_′` 保持良构后继处增长性.
 
 ```agda
 ′-suc-incr : ∀ {F} → normal F → suc-increasing F → suc-increasing (F ′)
@@ -300,14 +293,6 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
   rec F from suc α by ⌜ 1 ⌝         ≤⟨ f≤l ⟩
   (F ₛ) α                           ≤⟨ ₛ-mono-≤ nml (rec-by-incr-≤ (ₛ-mono-≤ nml) (ₛ-incr-< nml) α) ⟩
   (F ′) (suc α)                     ∎
-```
-
-**推论** `_′` 的迭代保持保良构性.
-
-```agda
-′′-wfp : ∀ F → normal F → zero-increasing F → suc-increasing F
-  → wf-preserving (F ′) → wf-preserving (F ′ ′)
-′′-wfp F nml z-incr s-incr = ′-wfp {F ′} (′-normal nml) (′-zero-incr z-incr) (′-suc-incr nml s-incr)
 ```
 
 **定理** `_′` 保持函数外延 `≈ᶠ`.
