@@ -103,8 +103,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
   ω-rec-fp : ∀ α₀ → (ω-rec F from α₀) isFixpointOf F
   ω-rec-fp α₀ =                            begin-equality
     F (ω-rec F from α₀)                    ≈⟨ lim-ct _ ⟩
-    lim (λ n → F (rec F from α₀ by ⌜ n ⌝)) ≈⟨ l≤ (λ n → ≤f⇒≤l {n = suc n} ≤-refl)
-                                            , l≤ (λ n → ≤f⇒≤l {n = n} (normal⇒≤-incr nml _)) ⟩
+    lim (λ n → F (rec F from α₀ by ⌜ n ⌝)) ≈˘⟨ l≈ls (normal⇒≤-incr nml _) ⟩
     ω-rec F from α₀                        ∎
 ```
 

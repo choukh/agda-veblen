@@ -125,17 +125,10 @@ module _ ⦃ ξ>1 : ξ > ⌜ 1 ⌝ ⦄ where
 
 ```agda
   ξ^ω-fp : (ξ ^ ω) isFixpointOf (ξ *_)
-  ξ^ω-fp = l≤ helperˡ , l≤ helperʳ where
-    helperˡ : ∀ n → ξ * ξ ^ ⌜ n ⌝ ≤ ξ ^ ω
-    helperˡ n =     begin
-      ξ * ξ ^ ⌜ n ⌝ ≈⟨ *-assoc-n ξ _ ⟩
-      ξ ^ ⌜ suc n ⌝ ≤⟨ f≤l {n = suc n} ⟩
-      ξ ^ ω         ∎
-    helperʳ : ∀ n → ξ ^ ⌜ n ⌝ ≤ ξ * ξ ^ ω
-    helperʳ n =     begin
-      ξ ^ ⌜ n ⌝     ≤⟨ *-incrʳ-≤ ξ _ ⟩
-      ξ * ξ ^ ⌜ n ⌝ ≤⟨ f≤l ⟩
-      ξ * ξ ^ ω     ∎
+  ξ^ω-fp =                    begin-equality
+    lim (λ n → ξ * ξ ^ ⌜ n ⌝) ≈⟨ l≈l (*-assoc-n ξ _) ⟩
+    lim (λ n → ξ ^ ⌜ suc n ⌝) ≈˘⟨ l≈ls (^-monoʳ-≤ ξ ≤s) ⟩
+    lim (λ n → ξ ^ ⌜ n ⌝)     ∎
 ```
 
 我们接下来将建立 `π` 与 `ξ ^ ω` 的联系. 首先, 乘法的最小不动点是平凡的零.

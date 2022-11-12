@@ -303,14 +303,7 @@ _ = refl
   ⌜ 1 ⌝ * suc α       ≤.≡⟨⟩
   suc (⌜ 1 ⌝ * α)     ≈⟨ s≈s (*-identityˡ α) ⟩
   suc α               ∎
-*-identityˡ (lim f) = l≤ (λ n →       begin-nonstrict
-                        ⌜ 1 ⌝ * f n   ≈⟨ *-identityˡ (f n) ⟩
-                        f n           ≤⟨ f≤l ⟩
-                        lim f         ∎)
-                    , l≤ (λ n →       begin-nonstrict
-                        f n           ≈˘⟨ *-identityˡ (f n) ⟩
-                        ⌜ 1 ⌝ * f n   ≤⟨ f≤l ⟩
-                        ⌜ 1 ⌝ * lim f ∎)
+*-identityˡ (lim f) = l≈l (*-identityˡ (f _))
 
 *-identityʳ : RightIdentity ⌜ 1 ⌝ _*_
 *-identityʳ α = begin-eq
