@@ -123,7 +123,7 @@ _ = λ f → refl
 
 ## `ε` 的另一种表示
 
-可以证明对任意良构 `α` 有 [`ε (suc α) ≈ ε α ^^ ω`](https://choukh.github.io/agda-lvo/Veblen.Epsilon.Alternative.html).
+可以证明对任意良构 `α` 有 [`ε (suc α) ≈ ε α ^^ ω`](https://choukh.github.io/agda-lvo/Veblen.Epsilon.Alternative.html#5141).
 
 ## ζ层级
 

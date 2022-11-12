@@ -23,11 +23,11 @@ module Veblen.Epsilon.Alternative where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (wellFormed; ⌜_⌝; ω; n<ω; n≤ω)
+open import Ordinal.WellFormed
 open import Ordinal.Arithmetic
-open import Ordinal.Tetration using (_^^[_]_)
+open import Ordinal.Tetration using (_^^[_]_; _^^ω; ^^≈^^[]ω)
 open import Veblen.Fixpoint.Lower using (π; π-fp; π≈)
-open import Veblen.Epsilon using (ε; ε-normal; ε-fp)
+open import Veblen.Epsilon using (ε; ε-normal; ε-fp; ε-wfp)
 
 open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
@@ -35,23 +35,30 @@ open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 ```
 
-## ε的另一种表示
+## 准备工作
 
-首先是一些准备工作. 我们一般化 `ε` 的下标, 并声明 `εα>1` 实例.
+我们一般化 `ε` 的下标, 并建立 `εα>1` 实例.
 
 ```agda
 private variable
   α : Ord
 
+εα≥ω : ε α ≥ ω
+εα≥ω {α} =  begin
+  ω         ≈˘⟨ ^-identityʳ _ ⟩
+  ω ^ ⌜ 1 ⌝ ≤⟨ ≤f⇒≤l {n = 2} ≤-refl ⟩
+  ε ⌜ 0 ⌝   ≤⟨ proj₁ ε-normal z≤ ⟩
+  ε α       ∎
+
 instance
   εα>1 : ε α > ⌜ 1 ⌝
   εα>1 {α} =  begin-strict
     ⌜ 1 ⌝     <⟨ n<ω ⟩
-    ω         ≈˘⟨ ^-identityʳ _ ⟩
-    ω ^ ⌜ 1 ⌝ ≤⟨ ≤f⇒≤l {n = 2} ≤-refl ⟩
-    ε ⌜ 0 ⌝   ≤⟨ proj₁ ε-normal z≤ ⟩
+    ω         ≤⟨ εα≥ω ⟩
     ε α       ∎
 ```
+
+## ε的另一种表示
 
 观察序列 `ω ^^[ suc (ε α) ] ⌜_⌝` 的前几项有
 
@@ -104,7 +111,70 @@ $$ω^{ω^{ω^{{ε_α}^+}}} = {ε_α}^{{ε_α}^ω}$$
       ε α ^ ω * ⌜ 1 ⌝         ≈⟨ *-identityʳ _ ⟩
       ε α ^ ω                 ∎
 ```
-&nbsp;
+
+归纳到任意 `n` 项.
+
+```agda
+module _ (wfα : wellFormed α) where
+
+  ω^^[sε]n : ∀ n → ω ^^[ suc (ε α) ] ⌜ suc (suc n) ⌝ ≈ ε α ^^[ ω ] ⌜ suc n ⌝
+  ω^^[sε]n zero    = ω^^[sε]2
+  ω^^[sε]n (suc n) =
+    let ssn = ω ^^[ suc (ε α) ] ⌜ suc (suc n) ⌝ in
+    let sn  = ω ^^[ suc (ε α) ] ⌜ suc n ⌝ in
+                                    begin-equality
+    ω ^ ssn                         ≈⟨ ^-congˡ ⦃ n≤ω ⦄ (begin-equality
+      ssn                           ≡⟨⟩
+      ω ^ sn                        ≈⟨ ^-congˡ ⦃ n≤ω ⦄ (begin-equality
+        sn                          ≈˘⟨ ω^-absorb-+ _ _ (wf n) (< n) ⟩
+        ω ^ ε α + sn                ≈⟨ +-congʳ (ε-fp _) ⟩
+        ε α + sn                    ∎) ⟩
+      ω ^ (ε α + sn)                ≈⟨ ^-distribˡ-+-* _ _ _ ⟩
+      ω ^ ε α * ω ^ sn              ≡⟨⟩
+      ω ^ ε α * ssn                 ≈⟨ *-congʳ (ε-fp _) ⟩
+      ε α * ssn                     ∎) ⟩
+    ω ^ (ε α * ssn)                 ≈˘⟨ ^-*-assoc _ _ _ ⟩
+    (ω ^ ε α) ^ ssn                 ≈⟨ ^-congʳ (ε-fp _) ⟩
+    ε α ^ ssn                       ≈⟨ ^-congˡ (ω^^[sε]n _) ⟩
+    ε α ^ (ε α ^^[ ω ] suc ⌜ n ⌝) ∎ where
+      wf : ∀ n → wellFormed (ω ^^[ suc (ε α) ] ⌜ n ⌝)
+      wf zero    = ε-wfp wfα
+      wf (suc n) = ^-wfp ω-wellFormed ⦃ n<ω ⦄ (wf n)
+      <  : ∀ n → ε α < ω ^^[ suc (ε α) ] ⌜ n ⌝
+      < zero     = <s
+      < (suc n)  =                  begin-strict
+        ε α                         <⟨ < n ⟩
+        ω ^^[ suc (ε α) ] ⌜ n ⌝     ≤⟨ ^-incrʳ-≤ _ _ ⦃ n<ω ⦄ ⟩
+        ω ^ ω ^^[ suc (ε α) ] ⌜ n ⌝ ∎
+```
+
+推广到 `ω` 项.
 
 $$ω^{ω^{ω^{.^{.^{{ε_α}^+}}}}} = {ε_α}^{{ε_α}^{.^{.^ω}}}$$
- 
+
+```agda
+  ω^^ω[sε] : ω ^^[ suc (ε α) ] ω ≈ ε α ^^[ ω ] ω
+  ω^^ω[sε] = begin-equality
+    lim (λ n → ω ^^[ suc (ε α) ] ⌜ n ⌝)           ≈⟨ l≈ls incr ⟩
+    lim (λ n → ω ^^[ suc (ε α) ] ⌜ suc n ⌝)       ≈⟨ l≈ls (^-monoʳ-≤ ω ⦃ n≤ω ⦄ incr) ⟩
+    lim (λ n → ω ^^[ suc (ε α) ] ⌜ suc (suc n) ⌝) ≈⟨ l≈l (ω^^[sε]n _) ⟩
+    lim (λ n → ε α ^^[ ω ] ⌜ suc n ⌝)             ≈˘⟨ l≈ls (^-incrʳ-≤ ω (ε α)) ⟩
+    lim (λ n → (ε α ^^[ ω ] ⌜ n ⌝))               ∎ where
+      incr : suc (ε α) ≤ ω ^ suc (ε α)
+      incr = ^-incrʳ-≤ (suc (ε α)) ω ⦃ n<ω ⦄
+```
+
+于是我们得到了 `ε` 后继项的另一种表示.
+
+$$ε_{α^+}={ε_α}^{{ε_α}^{{ε_α}^{.^{.^.}}}}$$
+
+```agda
+  εₛ : ε (suc α) ≈ ε α ^^ω
+  εₛ =                    begin-equality
+    ε (suc α)             ≡⟨⟩
+    ω ^^[ suc (ε α) ] ω   ≈⟨ ω^^ω[sε] ⟩
+    ε α ^^[ ω ] ω         ≈˘⟨ ^^≈^^[]ω _ _ εα≥ω ⦃ n≤ω ⦄ ⟩
+    ε α ^^ω               ∎
+```
+
+**注意** 这种表示只对 `ε` 成立而对 `ζ`, `η`, ... 不存在.

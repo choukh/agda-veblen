@@ -194,7 +194,7 @@ z<l : ∀ {f} → monotonic f → zero < lim f
 z<l {f} mono = begin-strict zero <⟨ z<ω ⟩ ω ≤⟨ ω≤l mono ⟩ lim f ∎
 ```
 
-`f<l` 是上一章 [`f≤l`](Ordinal.html#7727) 的 `_<_` 版, 它要求 `f` 单调.
+`f<l` 是上一章 [`f≤l`](Ordinal.html#7778) 的 `_<_` 版, 它要求 `f` 单调.
 
 ```agda
 f<l : ∀ {f n} → monotonic f → f n < lim f
