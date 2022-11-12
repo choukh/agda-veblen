@@ -1,7 +1,6 @@
 ---
 title: Agda大序数(8*) ε的另一种表示
 zhihu-tags: Agda, 序数, 大数数学
-zhihu-url: https://zhuanlan.zhihu.com/p/582661842
 ---
 
 # Agda大序数(8*) ε的另一种表示
