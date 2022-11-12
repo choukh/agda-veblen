@@ -36,7 +36,7 @@ open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 本章的所有内容都是参数化到某序数 `ξ` 上的.
 
 ```agda
-module Veblen.Fixpoint.Lower (ξ : Ord) where
+module Veblen.Fixpoint.Lower {ξ : Ord} where
 ```
 
 ## 加法不动点
@@ -98,13 +98,17 @@ module Veblen.Fixpoint.Lower (ξ : Ord) where
 与加法不动点不同的是乘法要求 `ξ` 大于 1, 不然每个序数都是平凡的不动点.
 
 ```agda
-module _ (ξ>1 : ξ > ⌜ 1 ⌝) where
+module _ ⦃ ξ>1 : ξ > ⌜ 1 ⌝ ⦄ where
 
-  ξ>0 : ξ > ⌜ 0 ⌝
-  ξ>0 = <-trans <s ξ>1
+  instance
+    ξ>0 : ξ > ⌜ 0 ⌝
+    ξ>0 = <-trans <s ξ>1
+
+    ξ≥1 : ξ ≥ ⌜ 1 ⌝
+    ξ≥1 = <⇒≤ ξ>1
 
   ξ*-normal : normal (ξ *_)
-  ξ*-normal = *-normal ξ ξ>0
+  ξ*-normal = *-normal ξ
 ```
 
 由于 `*_` 是序数嵌入, 因此存在 `*_` 的不动点, 我们记作 `π`.
@@ -129,7 +133,7 @@ module _ (ξ>1 : ξ > ⌜ 1 ⌝) where
       ξ ^ ω         ∎
     helperʳ : ∀ n → ξ ^ ⌜ n ⌝ ≤ ξ * ξ ^ ω
     helperʳ n =     begin
-      ξ ^ ⌜ n ⌝     ≤⟨ *-incrʳ-≤ ξ (<⇒≤ ξ>1) _ ⟩
+      ξ ^ ⌜ n ⌝     ≤⟨ *-incrʳ-≤ ξ _ ⟩
       ξ * ξ ^ ⌜ n ⌝ ≤⟨ f≤l ⟩
       ξ * ξ ^ ω     ∎
 ```
@@ -175,7 +179,7 @@ module _ (ξ>1 : ξ > ⌜ 1 ⌝) where
 ```agda
   πₛ : ∀ α → π (suc α) ≈ π α + ξ ^ ω
   πₛ α = ₛ-suc ξ*-normal _ _ πα<πα+ξ^ω πα+ξ^ω-fp , l≤ helper where
-    πα<πα+ξ^ω = +-incrˡ-< _ (^>0 (<⇒≤ ξ>1)) _
+    πα<πα+ξ^ω = +-incrˡ-< _ ^>0 _
     πα+ξ^ω-fp =               begin-equality
       ξ * (π α + ξ ^ ω)       ≈⟨ *-distribˡ-+ ξ _ _ ⟩
       ξ * π α + ξ * ξ ^ ω     ≈⟨ +-congˡ ξ^ω-fp ⟩

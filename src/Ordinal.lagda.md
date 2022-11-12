@@ -224,10 +224,11 @@ s≤s⇒≤ (s≤ {d = inj₂ d}  ≤∸) = ≤∸⇒≤ ≤∸
 由引理 `s≤s` 和 `≤f⇒≤l` 不难证明 `≤` 是自反的.
 
 ```agda
-≤-refl : Reflexive _≤_
-≤-refl {zero}  = z≤
-≤-refl {suc α} = s≤s ≤-refl
-≤-refl {lim f} = l≤ λ n → ≤f⇒≤l ≤-refl
+instance
+  ≤-refl : Reflexive _≤_
+  ≤-refl {zero}  = z≤
+  ≤-refl {suc α} = s≤s ≤-refl
+  ≤-refl {lim f} = l≤ λ n → ≤f⇒≤l ≤-refl
 ```
 
 传递性的证明比较麻烦, 需要讨论 `α`, 并反演两个 `≤` 式, 归结为五种情况, 其中后四种都用了归纳假设.

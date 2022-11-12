@@ -23,10 +23,11 @@ module Veblen.Epsilon.Alternative where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (wellFormed; ⌜_⌝; ω)
+open import Ordinal.WellFormed using (wellFormed; ⌜_⌝; ω; n<ω; n≤ω)
 open import Ordinal.Arithmetic
 open import Ordinal.Tetration using (_^^[_]_)
-open import Veblen.Epsilon using (ε; ε-fp; ω≥1)
+open import Veblen.Fixpoint.Lower using (π; π-fp; π≈)
+open import Veblen.Epsilon using (ε; ε-normal; ε-fp)
 
 open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
@@ -36,14 +37,23 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 
 ## ε的另一种表示
 
-我们一般化 `ε` 的下标.
+首先是一些准备工作. 我们一般化 `ε` 的下标, 并声明 `εα>1` 实例.
 
 ```agda
 private variable
   α : Ord
+
+instance
+  εα>1 : ε α > ⌜ 1 ⌝
+  εα>1 {α} =  begin-strict
+    ⌜ 1 ⌝     <⟨ n<ω ⟩
+    ω         ≈˘⟨ ^-identityʳ _ ⟩
+    ω ^ ⌜ 1 ⌝ ≤⟨ ≤f⇒≤l {n = 2} ≤-refl ⟩
+    ε ⌜ 0 ⌝   ≤⟨ proj₁ ε-normal z≤ ⟩
+    ε α       ∎
 ```
 
-首先, 观察 `ω ^^[ suc (ε α) ] ⌜ n ⌝` 的前几层有
+观察序列 `ω ^^[ suc (ε α) ] ⌜_⌝` 的前几项有
 
 $${ε_α}^+ = {ε_α}^+$$
 
@@ -51,27 +61,50 @@ $${ε_α}^+ = {ε_α}^+$$
 _ : ω ^^[ suc (ε α) ] ⌜ 0 ⌝ ≡ suc (ε α)
 _ = refl
 ```
+&nbsp;
 
 $$ω^{{ε_α}^+} = ε_α × ω$$
 
 ```agda
 ω^^[sε]1 : ω ^^[ suc (ε α) ] ⌜ 1 ⌝ ≈ ε α * ω
-ω^^[sε]1 {α} =                begin-equality
-  ω ^ ε α * ω                 ≈⟨ *-congʳ {ω} (ε-fp α) ⟩
-  ε α * ω                     ∎
+ω^^[sε]1 {α} =  begin-equality
+  ω ^ ε α * ω   ≈⟨ *-congʳ {ω} (ε-fp α) ⟩
+  ε α * ω       ∎
 ```
+&nbsp;
 
 $$ω^{ω^{{ε_α}^+}} = {ε_α}^ω$$
 
 ```agda
 ω^^[sε]2 : ω ^^[ suc (ε α) ] ⌜ 2 ⌝ ≈ ε α ^ ω
 ω^^[sε]2 {α} =                begin-equality
-  ω ^ ω ^^[ suc (ε α) ] ⌜ 1 ⌝ ≈⟨ ^-congˡ ω≥1 ω^^[sε]1 ⟩
+  ω ^ ω ^^[ suc (ε α) ] ⌜ 1 ⌝ ≈⟨ ^-congˡ ⦃ n≤ω ⦄ ω^^[sε]1 ⟩
   ω ^ (ε α * ω)               ≈˘⟨ ^-*-assoc _ _ _ ⟩
-  ω ^ ε α ^ ω                 ≈⟨ ^-congʳ {ω} (ε-fp α) ⟩
+  (ω ^ ε α) ^ ω               ≈⟨ ^-congʳ {ω} (ε-fp α) ⟩
   ε α ^ ω                     ∎
 ```
+&nbsp;
 
 $$ω^{ω^{ω^{{ε_α}^+}}} = {ε_α}^{{ε_α}^ω}$$
 
+```agda
+ω^^[sε]3 : ω ^^[ suc (ε α) ] ⌜ 3 ⌝ ≈ ε α ^ (ε α ^ ω)
+ω^^[sε]3 {α} =                begin-equality
+  ω ^ ω ^^[ suc (ε α) ] ⌜ 2 ⌝ ≈⟨ ^-congˡ ⦃ n≤ω ⦄ (begin-equality
+      ω ^^[ suc (ε α) ] ⌜ 2 ⌝ ≈⟨ ω^^[sε]2 ⟩
+      ε α ^ ω                 ≈˘⟨ π₁ ⟩
+      π ⌜ 1 ⌝                 ≈˘⟨ π-fp _ ⟩
+      ε α * π ⌜ 1 ⌝           ∎) ⟩
+  ω ^ (ε α * π ⌜ 1 ⌝)         ≈˘⟨ ^-*-assoc _ _ _ ⟩
+  (ω ^ ε α) ^ π ⌜ 1 ⌝         ≈⟨ ^-congʳ {π ⌜ 1 ⌝} (ε-fp α) ⟩
+  ε α ^ π ⌜ 1 ⌝               ≈⟨ ^-congˡ π₁ ⟩
+  ε α ^ (ε α ^ ω)             ∎ where
+    π₁ =                      begin-equality
+      π ⌜ 1 ⌝                 ≈⟨ π≈ _ ⟩
+      ε α ^ ω * ⌜ 1 ⌝         ≈⟨ *-identityʳ _ ⟩
+      ε α ^ ω                 ∎
+```
+&nbsp;
+
 $$ω^{ω^{ω^{.^{.^{{ε_α}^+}}}}} = {ε_α}^{{ε_α}^{.^{.^ω}}}$$
+ 

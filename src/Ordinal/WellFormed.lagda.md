@@ -114,9 +114,13 @@ s<ω : ∀ {α} → α < ω → suc α < ω
 s<ω {α} ((n , d) , ≤) = (suc n , inj₁ tt) ,
   (begin suc α ≤⟨ s≤s ≤ ⟩ suc (⌜ n ⌝ ∸ d) ≤⟨ s∸≤ ⟩ ⌜ n ⌝ ∎)
 
-n<ω : ∀ {n} → ⌜ n ⌝ < ω
-n<ω {zero}  = z<ω
-n<ω {suc n} = s<ω n<ω
+instance
+  n<ω : ∀ {n} → ⌜ n ⌝ < ω
+  n<ω {zero}  = z<ω
+  n<ω {suc n} = s<ω n<ω
+
+  n≤ω : ∀ {n} → ⌜ n ⌝ ≤ ω
+  n≤ω = <⇒≤ n<ω
 ```
 
 以下引理将 `monotonic` 的 `f m < f n` 结论特化到 `f n < f (suc n)`, 因为它在接下来的证明中经常用到.
@@ -190,7 +194,7 @@ z<l : ∀ {f} → monotonic f → zero < lim f
 z<l {f} mono = begin-strict zero <⟨ z<ω ⟩ ω ≤⟨ ω≤l mono ⟩ lim f ∎
 ```
 
-`f<l` 是上一章 [`f≤l`](Ordinal.html#7710) 的 `_<_` 版, 它要求 `f` 单调.
+`f<l` 是上一章 [`f≤l`](Ordinal.html#7727) 的 `_<_` 版, 它要求 `f` 单调.
 
 ```agda
 f<l : ∀ {f n} → monotonic f → f n < lim f

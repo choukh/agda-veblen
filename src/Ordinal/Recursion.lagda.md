@@ -119,7 +119,7 @@ rec-by-incr-≤          ≤-mono <-incr (lim f) = l≤ λ n → ≤f⇒≤l
 
 **注意** 即使 `F` 强增长, 我们也只能证明 `rec F from α₀ by_` 弱增长. 这里已经可以看出不动点的端倪了, 当递归达到一定次数的时候值可能就不再增长了.
 
-为了证明 `rec F from α₀ by_` 的单调性, 我们引入一个辅助概念, 叫做 **s∸单调**. 它可以看作 `F` 保持第一章的 [`s∸≤`](Ordinal.html#7558) 关系.
+为了证明 `rec F from α₀ by_` 的单调性, 我们引入一个辅助概念, 叫做 **s∸单调**. 它可以看作 `F` 保持第一章的 [`s∸≤`](Ordinal.html#7575) 关系.
 
 ```agda
 s∸-monotonic : (Ord → Ord) → Set

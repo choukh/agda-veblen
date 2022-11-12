@@ -23,7 +23,7 @@ module Veblen.Epsilon where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (wellFormed; ⌜_⌝; ω; s<ω; z<ω; n<ω; ω-wellFormed; ≡z⊎>z)
+open import Ordinal.WellFormed
 open import Ordinal.Function using (normal; wf-preserving; zero-increasing; suc-increasing)
 open import Ordinal.Recursion using (rec_from_by_)
 open import Ordinal.Arithmetic
@@ -41,14 +41,11 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 本小节统一列出本章所需关于 `ω ^_` 的一些平凡的引理.
 
 ```agda
-ω≥1 : ω ≥ ⌜ 1 ⌝
-ω≥1 = <⇒≤ n<ω
-
 ω^-normal : normal (ω ^_)
-ω^-normal = ^-normal ω n<ω
+ω^-normal = ^-normal ω
 
 ω^-wfp : wf-preserving (ω ^_)
-ω^-wfp = ^-wfp ω-wellFormed n<ω
+ω^-wfp = ^-wfp ω-wellFormed
 
 ω^-zero-incr : zero-increasing (ω ^_)
 ω^-zero-incr =        begin-strict
@@ -65,8 +62,8 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 ... | inj₂ α>0 =      begin-strict
   suc α               ≤⟨ +-monoʳ-≤ α (<⇒s≤ α>0) ⟩
   α + α               ≈˘⟨ α*2≈α+α α ⟩
-  α * ⌜ 2 ⌝           <⟨ *-monoʳ-< α α>0 (n<ω {2}) ⟩
-  α * ω               ≤⟨ *-monoˡ-≤ ω (^-incrʳ-≤ α ω n<ω) ⟩
+  α * ⌜ 2 ⌝           <⟨ *-monoʳ-< α ⦃ α>0 ⦄ (n<ω {2}) ⟩
+  α * ω               ≤⟨ *-monoˡ-≤ ω (^-incrʳ-≤ α ω) ⟩
   ω ^ α * ω           ∎
 ```
 
@@ -100,9 +97,9 @@ $$ε_{0} = ω^{ω^{.^{.^{.^{ω}}}}}$$
 ε₀ : ε ⌜ 0 ⌝ ≈ ω ^^ω
 ε₀ =                  begin-equality
   ε ⌜ 0 ⌝             ≈˘⟨ ε-fp ⌜ 0 ⌝ ⟩
-  ω ^ ω ^^ω[ ⌜ 0 ⌝ ]  ≈⟨ ^-^^[]-comm ω ⌜ 0 ⌝ ω ω≥1 ⟩
+  ω ^ ω ^^ω[ ⌜ 0 ⌝ ]  ≈⟨ ^-^^[]-comm ω ⌜ 0 ⌝ ω ⟩
   ω ^^ω[ ω ^ ⌜ 0 ⌝ ]  ≡⟨⟩
-  ω ^^ω[ ⌜ 1 ⌝ ]      ≈˘⟨ ^^≈^^[]ω ω ⌜ 1 ⌝ ω≥1 ≤-refl ⟩
+  ω ^^ω[ ⌜ 1 ⌝ ]      ≈˘⟨ ^^≈^^[]ω ω ⌜ 1 ⌝ n≤ω ⟩
   ω ^^ω           ∎
 ```
 

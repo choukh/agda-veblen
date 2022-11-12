@@ -67,18 +67,18 @@ private module NotTetration where
 
 ```agda
   naïve : ∀ α β → α ^^ β ≈ α ^ (α ^ β)
-  naïve α zero    = begin-equality
-    α ^^ zero       ≡⟨⟩
-    α               ≈˘⟨ ^-identityʳ _ ⟩
-    α ^ ⌜ 1 ⌝       ≡⟨ cong (α ^_) refl ⟩
-    α ^ (α ^ zero)  ∎
-  naïve α (suc β) = begin-equality
-    α ^^ suc β      ≡⟨⟩
-    α ^^ β ^ α      ≈⟨ ^-congʳ (naïve _ _) ⟩
-    α ^ (α ^ β) ^ α ≈⟨ ^-*-assoc _ _ _ ⟩
-    α ^ (α ^ β * α) ≡⟨⟩
-    α ^ (α ^ suc β) ∎
-  naïve α (lim f) = l≈l (naïve α (f _))
+  naïve α zero      = begin-equality
+    α ^^ zero         ≡⟨⟩
+    α                 ≈˘⟨ ^-identityʳ _ ⟩
+    α ^ ⌜ 1 ⌝         ≡⟨ cong (α ^_) refl ⟩
+    α ^ (α ^ zero)    ∎
+  naïve α (suc β)   = begin-equality
+    α ^^ suc β        ≡⟨⟩
+    α ^^ β ^ α        ≈⟨ ^-congʳ (naïve _ _) ⟩
+    (α ^ (α ^ β)) ^ α ≈⟨ ^-*-assoc _ _ _ ⟩
+    α ^ (α ^ β * α)   ≡⟨⟩
+    α ^ (α ^ suc β)   ∎
+  naïve α (lim f)   = l≈l (naïve α (f _))
 ```
 
 ## 迭代幂次
@@ -97,14 +97,14 @@ _^^[_]_ : Ord → Ord → Ord → Ord
 不难发现, `^_` 与 `^^[_]` 可交换. 直观上, ${\color{red}α}^{(α^{.^{.^{.^{τ}}}})} = α^{.^{.^{.^{({\color{red}α}^τ)}}}}$.
 
 ```agda
-^-^^[]-comm : ∀ α τ β → α ≥ ⌜ 1 ⌝ → α ^ α ^^[ τ ] β ≈ α ^^[ α ^ τ ] β
-^-^^[]-comm α τ zero    α≥1 = ≈-refl
-^-^^[]-comm α τ (suc β) α≥1 = begin-equality
-  α ^ (α ^^[ τ ] suc β)       ≡⟨⟩
-  α ^ (α ^ (α ^^[ τ ] β))     ≈⟨ ^-congˡ α≥1 (^-^^[]-comm α τ β α≥1) ⟩
-  α ^ α ^^[ α ^ τ ] β         ≡⟨⟩
-  α ^^[ α ^ τ ] (suc β)       ∎
-^-^^[]-comm α τ (lim f) α≥1 = l≈l (^-^^[]-comm α τ (f _) α≥1)
+^-^^[]-comm : ∀ α τ β → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → α ^ α ^^[ τ ] β ≈ α ^^[ α ^ τ ] β
+^-^^[]-comm α τ zero    = ≈-refl
+^-^^[]-comm α τ (suc β) = begin-equality
+  α ^ (α ^^[ τ ] suc β)   ≡⟨⟩
+  α ^ (α ^ (α ^^[ τ ] β)) ≈⟨ ^-congˡ (^-^^[]-comm α τ β) ⟩
+  α ^ α ^^[ α ^ τ ] β     ≡⟨⟩
+  α ^^[ α ^ τ ] (suc β)   ∎
+^-^^[]-comm α τ (lim f) = l≈l (^-^^[]-comm α τ (f _))
 ```
 
 `^^[_]` ≤-单调. 若迭代次数有限, 则 <-单调.
@@ -112,21 +112,21 @@ _^^[_]_ : Ord → Ord → Ord → Ord
 **思考** 为何对极限次迭代无法证 <-单调?
 
 ```agda
-^^[]-mono-≤ : ∀ α β → α ≥ ⌜ 1 ⌝ → ≤-monotonic (α ^^[_] β)
-^^[]-mono-≤ α zero    _   ≤ = ≤
-^^[]-mono-≤ α (suc β) α≥1 ≤ = ^-monoʳ-≤ α α≥1 (^^[]-mono-≤ α β α≥1 ≤)
-^^[]-mono-≤ α (lim f) α≥1 ≤ = l≤ λ n → ≤f⇒≤l (^^[]-mono-≤ α (f n) α≥1 ≤)
+^^[]-mono-≤ : ∀ α β → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → ≤-monotonic (α ^^[_] β)
+^^[]-mono-≤ α zero    ≤ = ≤
+^^[]-mono-≤ α (suc β) ≤ = ^-monoʳ-≤ α (^^[]-mono-≤ α β ≤)
+^^[]-mono-≤ α (lim f) ≤ = l≤ λ n → ≤f⇒≤l (^^[]-mono-≤ α (f n) ≤)
 
-^^[]-mono-< : ∀ α n → α > ⌜ 1 ⌝ → <-monotonic (α ^^[_] ⌜ n ⌝)
-^^[]-mono-< α zero    _   < = <
-^^[]-mono-< α (suc n) α>1 < = ^-monoʳ-< α α>1 (^^[]-mono-< α n α>1 <)
+^^[]-mono-< : ∀ α n → ⦃ α > ⌜ 1 ⌝ ⦄ → <-monotonic (α ^^[_] ⌜ n ⌝)
+^^[]-mono-< α zero    < = <
+^^[]-mono-< α (suc n) < = ^-monoʳ-< α (^^[]-mono-< α n <)
 ```
 
 由 `^^[_]` 的 ≤-单调性可得 `^^[_]` 的合同性.
 
 ```agda
-^^[]-cong : ∀ α β → α ≥ ⌜ 1 ⌝ → Congruent (α ^^[_] β)
-^^[]-cong α β α≥1 (≤ , ≥) = ^^[]-mono-≤ α β α≥1 ≤ , ^^[]-mono-≤ α β α≥1 ≥
+^^[]-cong : ∀ α β → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → Congruent (α ^^[_] β)
+^^[]-cong α β (≤ , ≥) = ^^[]-mono-≤ α β ≤ , ^^[]-mono-≤ α β ≥
 ```
 
 特别地, 若 `τ = α`, 则简记作 `α ^^ β`.
@@ -141,41 +141,41 @@ _^^_ : Ord → Ord → Ord
 `_^^_` 与 `_^^[_]_` 有如下基本关系: 幂塔的最顶层可以换成其 `⌜ 1 ⌝` 次幂而值不变. 非形式地, $α^{α^{.^{.^{.^{α}}}}}$ ≈ $α^{α^{.^{.^{.^{α^{1}}}}}}$.
 
 ```agda
-^^≈^^[1]s : ∀ α β → α ≥ ⌜ 1 ⌝ → α ^^ β ≈ α ^^[ ⌜ 1 ⌝ ] suc β
-^^≈^^[1]s α β α≥1 =   begin-equality
+^^≈^^[1]s : ∀ α β → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → α ^^ β ≈ α ^^[ ⌜ 1 ⌝ ] suc β
+^^≈^^[1]s α β       = begin-equality
   α ^^ β              ≡⟨⟩
-  α ^^[ α ] β         ≈˘⟨ ^^[]-cong α β α≥1 (^-identityʳ α) ⟩
-  α ^^[ α ^ ⌜ 1 ⌝ ] β ≈˘⟨ ^-^^[]-comm α ⌜ 1 ⌝ β α≥1 ⟩
+  α ^^[ α ] β         ≈˘⟨ ^^[]-cong α β (^-identityʳ α) ⟩
+  α ^^[ α ^ ⌜ 1 ⌝ ] β ≈˘⟨ ^-^^[]-comm α ⌜ 1 ⌝ β ⟩
   α ^^[ ⌜ 1 ⌝ ] suc β ∎
 ```
 
 由此可知将最顶层换成大于 `⌜ 1 ⌝` 的幂将使值增长.
 
 ```agda
-^^≤^^[]s : ∀ α τ n → α ≥ ⌜ 1 ⌝ → τ ≥ ⌜ 1 ⌝ → α ^^ ⌜ n ⌝ ≤ α ^^[ τ ] ⌜ suc n ⌝
-^^≤^^[]s α τ n α≥1 τ≥1  = begin
-  α ^^ ⌜ n ⌝              ≈⟨ ^^≈^^[1]s α ⌜ n ⌝ α≥1 ⟩
-  α ^^[ ⌜ 1 ⌝ ] ⌜ suc n ⌝ ≤⟨ ^^[]-mono-≤ α ⌜ suc n ⌝ α≥1 τ≥1 ⟩
-  α ^^[ τ ] ⌜ suc n ⌝     ∎
+^^≤^^[]s : ∀ α τ n → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → ⦃ τ ≥ ⌜ 1 ⌝ ⦄ → α ^^ ⌜ n ⌝ ≤ α ^^[ τ ] ⌜ suc n ⌝
+^^≤^^[]s α τ n ⦃ _ ⦄ ⦃ τ≥1 ⦄ =    begin
+  α ^^ ⌜ n ⌝                    ≈⟨ ^^≈^^[1]s α ⌜ n ⌝ ⟩
+  α ^^[ ⌜ 1 ⌝ ] ⌜ suc n ⌝       ≤⟨ ^^[]-mono-≤ α ⌜ suc n ⌝ τ≥1 ⟩
+  α ^^[ τ ] ⌜ suc n ⌝           ∎
 
-^^<^^[]s : ∀ α τ n → α > ⌜ 1 ⌝ → τ > ⌜ 1 ⌝ → α ^^ ⌜ n ⌝ < α ^^[ τ ] ⌜ suc n ⌝
-^^<^^[]s α τ n α>1 τ>1  = begin-strict
-  α ^^ ⌜ n ⌝              ≈⟨ ^^≈^^[1]s α ⌜ n ⌝ (<⇒≤ α>1) ⟩
-  α ^^[ ⌜ 1 ⌝ ] ⌜ suc n ⌝ <⟨ ^^[]-mono-< α (suc n) α>1 τ>1 ⟩
-  α ^^[ τ ] ⌜ suc n ⌝     ∎
+^^<^^[]s : ∀ α τ n → ⦃ α > ⌜ 1 ⌝ ⦄ → ⦃ τ > ⌜ 1 ⌝ ⦄ → α ^^ ⌜ n ⌝ < α ^^[ τ ] ⌜ suc n ⌝
+^^<^^[]s α τ n ⦃ α>1 ⦄ ⦃ τ>1 ⦄ =  begin-strict
+  α ^^ ⌜ n ⌝                    ≈⟨ ^^≈^^[1]s α ⌜ n ⌝ ⦃ <⇒≤ α>1 ⦄ ⟩
+  α ^^[ ⌜ 1 ⌝ ] ⌜ suc n ⌝       <⟨ ^^[]-mono-< α (suc n) τ>1 ⟩
+  α ^^[ τ ] ⌜ suc n ⌝           ∎
 ```
 
 而当迭代次数达到 `ω` 的时候, 不大于底数的初始值将无关紧要.
 
 ```agda
-^^≈^^[]ω : ∀ α τ → α ≥ τ → τ ≥ ⌜ 1 ⌝ → α ^^ ω ≈ α ^^[ τ ] ω
-^^≈^^[]ω α τ α≥τ τ≥1 =
+^^≈^^[]ω : ∀ α τ → α ≥ τ → ⦃ τ ≥ ⌜ 1 ⌝ ⦄ → α ^^ ω ≈ α ^^[ τ ] ω
+^^≈^^[]ω α τ α≥τ ⦃ τ≥1 ⦄ = let instance α≥1 = ≤-trans τ≥1 α≥τ in
     l≤ (λ n →             begin
-      α ^^ ⌜ n ⌝          ≤⟨ ^^≤^^[]s α τ n (≤-trans τ≥1 α≥τ) τ≥1 ⟩
+      α ^^ ⌜ n ⌝          ≤⟨ ^^≤^^[]s α τ n ⟩
       α ^^[ τ ] ⌜ suc n ⌝ ≤⟨ f≤l {n = suc n} ⟩
       α ^^[ τ ] ω         ∎)
   , l≤ (λ n →             begin
-      α ^^[ τ ] ⌜ n ⌝     ≤⟨ ^^[]-mono-≤ α ⌜ n ⌝ (≤-trans τ≥1 α≥τ) α≥τ ⟩
+      α ^^[ τ ] ⌜ n ⌝     ≤⟨ ^^[]-mono-≤ α ⌜ n ⌝ α≥τ ⟩
       α ^^ ⌜ n ⌝          ≤⟨ f≤l ⟩
       α ^^ ω              ∎)
 ```
@@ -183,37 +183,38 @@ _^^_ : Ord → Ord → Ord
 再加一层也无济于事.
 
 ```agda
-^^≈^^[]sω : ∀ α τ → α ≥ τ → τ ≥ ⌜ 1 ⌝ → α ^^ suc ω ≈ α ^^[ τ ] suc ω
-^^≈^^[]sω α τ α≥τ τ≥1 = ^-congˡ (≤-trans τ≥1 α≥τ) (^^≈^^[]ω α τ α≥τ τ≥1)
+^^≈^^[]sω : ∀ α τ → α ≥ τ → ⦃ τ ≥ ⌜ 1 ⌝ ⦄ → α ^^ suc ω ≈ α ^^[ τ ] suc ω
+^^≈^^[]sω α τ α≥τ ⦃ τ≥1 ⦄ = ^-congˡ ⦃ ≤-trans τ≥1 α≥τ ⦄ (^^≈^^[]ω α τ α≥τ)
 ```
 
 这就导致迭代幂次到 `ω` 层就卡住了.
 
 ```agda
-^^-stuck : ∀ α → α ≥ ⌜ 1 ⌝ → α ^^ suc ω ≈ α ^^ ω
-^^-stuck α α≥1 = begin-equality
-  α ^^ suc ω          ≈⟨ ^^≈^^[]sω α ⌜ 1 ⌝ α≥1 ≤-refl ⟩
-  α ^^[ ⌜ 1 ⌝ ] suc ω ≈˘⟨ ^^≈^^[1]s α ω α≥1 ⟩
-  α ^^ ω              ∎
+^^-stuck : ∀ α → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → α ^^ suc ω ≈ α ^^ ω
+^^-stuck α ⦃ α≥1 ⦄ =      begin-equality
+  α ^^ suc ω              ≈⟨ ^^≈^^[]sω α ⌜ 1 ⌝ α≥1 ⟩
+  α ^^[ ⌜ 1 ⌝ ] suc ω     ≈˘⟨ ^^≈^^[1]s α ω ⟩
+  α ^^ ω                  ∎
 ```
 
 而且迭代幂次的超限层全部卡住了. 这与 `^_` 不保证强增长是一致的. 我们现在知道精确的节点, 就是到 `ω` 层之后就不再增长.
 
 ```agda
-^^-monoʳ-≤ : ∀ α → α > ⌜ 1 ⌝ → ≤-monotonic (α ^^_)
-^^-monoʳ-≤ α α>1 = rec-by-mono-≤ (^-monoʳ-≤ α (<⇒≤ α>1)) (λ β → ^-incrʳ-≤ β α α>1)
+^^-monoʳ-≤ : ∀ α → ⦃ α > ⌜ 1 ⌝ ⦄ → ≤-monotonic (α ^^_)
+^^-monoʳ-≤ α ⦃ α>1 ⦄ = rec-by-mono-≤ (^-monoʳ-≤ α ⦃ <⇒≤ α>1 ⦄) (λ β → ^-incrʳ-≤ β α)
 
-^^-stuck-forever : ∀ α β → α > ⌜ 1 ⌝ → wellFormed β → β ≥ ω → α ^^ β ≈ α ^^ ω
-^^-stuck-forever α zero    α>1 wfβ β≥ω = ⊥-elim (≤⇒≯ β≥ω z<ω)
-^^-stuck-forever α (suc β) α>1 wfβ β≥ω = (begin
+^^-stuck-forever : ∀ α β → ⦃ α > ⌜ 1 ⌝ ⦄ → wellFormed β → β ≥ ω → α ^^ β ≈ α ^^ ω
+^^-stuck-forever α zero           wfβ β≥ω = ⊥-elim (≤⇒≯ β≥ω z<ω)
+^^-stuck-forever α (suc β) ⦃ α>1 ⦄ wfβ β≥ω =
+    let instance α≥1 = <⇒≤ α>1 in        (begin
     α ^^ suc β                            ≡⟨⟩
-    α ^ α ^^ β                            ≤⟨ ^-monoʳ-≤ α (<⇒≤ α>1) (proj₁ IH) ⟩
+    α ^ α ^^ β                            ≤⟨ ^-monoʳ-≤ α (proj₁ IH) ⟩
     α ^ α ^^ ω                            ≡⟨⟩
-    α ^^ suc ω                            ≈⟨ ^^-stuck α (<⇒≤ α>1) ⟩
+    α ^^ suc ω                            ≈⟨ ^^-stuck α ⟩
     α ^^ ω                                ∎)
-  , ^^-monoʳ-≤ α α>1 β≥ω
-    where IH = ^^-stuck-forever α β α>1 wfβ (ω≤s⇒ω≤ wfβ β≥ω)
-^^-stuck-forever α (lim f) α>1 (wfn , mono) β≥ω = l≤ helperˡ , l≤ helperʳ where
+  , ^^-monoʳ-≤ α β≥ω
+    where IH = ^^-stuck-forever α β wfβ (ω≤s⇒ω≤ wfβ β≥ω)
+^^-stuck-forever α (lim f) (wfn , mono) β≥ω = l≤ helperˡ , l≤ helperʳ where
   helperˡ : ∀ n → α ^^ f n ≤ α ^^ ω
   helperˡ n with <ω⊎≥ω (wfn {n})
   ...       | inj₁ fn<ω with ⌜⌝-surjective fn<ω wfn
@@ -224,19 +225,19 @@ _^^_ : Ord → Ord → Ord
   helperˡ n | inj₂ ω<fn =                 begin
     α ^^ f n                              ≤⟨ proj₁ IH ⟩
     α ^^ ω                                ∎
-    where IH = ^^-stuck-forever α (f n) α>1 wfn ω<fn
+    where IH = ^^-stuck-forever α (f n) wfn ω<fn
   helperʳ : ∀ n → α ^^ ⌜ n ⌝ ≤ α ^^ lim f
   helperʳ n with <ω⊎≥ω (wfn {n})
   ...       | inj₁ fn<ω =                 begin
-    α ^^ ⌜ n ⌝                            ≤⟨ ^^-monoʳ-≤ α α>1 (⌜n⌝≤fn mono) ⟩
+    α ^^ ⌜ n ⌝                            ≤⟨ ^^-monoʳ-≤ α (⌜n⌝≤fn mono) ⟩
     α ^^ f n                              ≤⟨ f≤l ⟩
     α ^^ lim f                            ∎
   ...       | inj₂ ω<fn = begin
-    α ^^ ⌜ n ⌝                            ≤⟨ ^^-monoʳ-≤ α α>1 (<⇒≤ n<ω) ⟩
+    α ^^ ⌜ n ⌝                            ≤⟨ ^^-monoʳ-≤ α (<⇒≤ n<ω) ⟩
     α ^^ ω                                ≤⟨ proj₂ IH ⟩
     α ^^ f n                              ≤⟨ f≤l ⟩
     α ^^ lim f                            ∎
-    where IH = ^^-stuck-forever α (f n) α>1 wfn ω<fn
+    where IH = ^^-stuck-forever α (f n) wfn ω<fn
 ```
 
 由于 `_^^_` 的第二个参数对 `ω` 之后的超限数没有意义了, 我们定义固定参数的版本.
