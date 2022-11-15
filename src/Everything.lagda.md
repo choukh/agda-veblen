@@ -63,9 +63,9 @@ open import Ordinal.Tetration public
 open import Veblen.Fixpoint public
 ```
 
-- 定义了无穷迭代 `ω-rec`
-- 如果 `f` 是序数嵌入那么 `ω-rec f from α` 是不小于 `α` 的不动点
-- 递归 `ω-rec f from (suc _)` 即得 `f` 的不动点枚举函数, 记作 `f′`
+- 定义了无穷迭代 `_⋱_`
+- 如果 `F` 是序数嵌入那么 `F ⋱ α` 是不小于 `α` 的不动点
+- 递归 `F ⋱_ ∘ suc` 即得 `F` 的不动点枚举函数, 记作 `F ′`
 - 我们证明了高阶函数 `_′` 保持序数嵌入且保持保良序性
 
 ```agda
@@ -88,3 +88,10 @@ open import Veblen.Epsilon.Alternative public
 ```
 
 - 我们证明了对任意良构 `α` 有 `ε (suc α) ≈ ε α ^^ ω`
+
+```agda
+open import Veblen.Function public
+```
+
+- 定义了二元 Veblen 函数 `φ α β`
+- Γ₀ 定义为 `φ ⋱ zero`

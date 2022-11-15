@@ -68,8 +68,8 @@ module Veblen.Fixpoint.Lower {ξ : Ord} where
 `σ α` 的下一个不动点就是 `σ α` 的后继.
 
 ```agda
-σₛ : ∀ α → σ (suc α) ≈ suc (σ α)
-σₛ α = l≤ helper , <⇒s≤ (<-mono <s) where
+σ⋱ₛ : ∀ α → σ (suc α) ≈ suc (σ α)
+σ⋱ₛ α = l≤ helper , <⇒s≤ (<-mono <s) where
   helper : ∀ n → rec (ξ +_) from suc (σ α) by ⌜ n ⌝ ≤ suc (σ α)
   helper zero    = ≤-refl
   helper (suc n) =                           begin
@@ -86,7 +86,7 @@ module Veblen.Fixpoint.Lower {ξ : Ord} where
 σ≈ : ∀ α → σ α ≈ ξ * ω + α
 σ≈ zero    = σ₀
 σ≈ (suc α) =      begin-equality
-  σ (suc α)       ≈⟨ σₛ α ⟩
+  σ (suc α)       ≈⟨ σ⋱ₛ α ⟩
   suc (σ α)       ≈⟨ s≈s (σ≈ α) ⟩
   suc (ξ * ω + α) ≡⟨⟩
   ξ * ω + suc α   ∎
@@ -148,30 +148,30 @@ module _ ⦃ ξ>1 : ξ > ⌜ 1 ⌝ ⦄ where
 
 ```agda
   π₁ : π ⌜ 1 ⌝ ≈ ξ ^ ω
-  π₁ = ₛ-suc ξ*-normal _ _ π₀<ξ^ω ξ^ω-fp , l≤ ξ^n≤π₁ where
-    π₀<ξ^ω =          begin-strict
-      π ⌜ 0 ⌝         ≈⟨ π₀ ⟩
-      ⌜ 0 ⌝           <⟨ <s ⟩
-      ξ ^ ⌜ 0 ⌝       ≤⟨ f≤l {n = 0} ⟩
-      ξ ^ ω           ∎
+  π₁ = ⋱ₛ-suc ξ*-normal _ _ π₀<ξ^ω ξ^ω-fp , l≤ ξ^n≤π₁ where
+    π₀<ξ^ω =              begin-strict
+      π ⌜ 0 ⌝             ≈⟨ π₀ ⟩
+      ⌜ 0 ⌝               <⟨ <s ⟩
+      ξ ^ ⌜ 0 ⌝           ≤⟨ f≤l {n = 0} ⟩
+      ξ ^ ω               ∎
     ξ^n≤π₁ : ∀ n → ξ ^ ⌜ n ⌝ ≤ π ⌜ 1 ⌝
-    ξ^n≤π₁ zero    =  begin
-      ⌜ 1 ⌝           ≤⟨ s≤s (proj₂ π₀) ⟩
-      suc ((ξ *_) ₀)  ≤⟨ f≤l {n = 0} ⟩
-      π ⌜ 1 ⌝         ∎
-    ξ^n≤π₁ (suc n) =  begin
-      ξ ^ suc ⌜ n ⌝   ≡⟨⟩
-      ξ ^ ⌜ n ⌝ * ξ   ≈˘⟨ *-assoc-n ξ n ⟩
-      ξ * ξ ^ ⌜ n ⌝   ≤⟨ *-monoʳ-≤ ξ (ξ^n≤π₁ n) ⟩
-      ξ * π ⌜ 1 ⌝     ≈⟨ π-fp ⌜ 1 ⌝ ⟩
-      π ⌜ 1 ⌝         ∎
+    ξ^n≤π₁ zero    =      begin
+      ⌜ 1 ⌝               ≤⟨ s≤s (proj₂ π₀) ⟩
+      suc ((ξ *_) ⋱ zero) ≤⟨ f≤l {n = 0} ⟩
+      π ⌜ 1 ⌝             ∎
+    ξ^n≤π₁ (suc n) =      begin
+      ξ ^ suc ⌜ n ⌝       ≡⟨⟩
+      ξ ^ ⌜ n ⌝ * ξ       ≈˘⟨ *-assoc-n ξ n ⟩
+      ξ * ξ ^ ⌜ n ⌝       ≤⟨ *-monoʳ-≤ ξ (ξ^n≤π₁ n) ⟩
+      ξ * π ⌜ 1 ⌝         ≈⟨ π-fp ⌜ 1 ⌝ ⟩
+      π ⌜ 1 ⌝             ∎
 ```
 
 然后, `π α` 的下一个不动点是 `π α` 与 `π ⌜ 1 ⌝` 的和.
 
 ```agda
-  πₛ : ∀ α → π (suc α) ≈ π α + ξ ^ ω
-  πₛ α = ₛ-suc ξ*-normal _ _ πα<πα+ξ^ω πα+ξ^ω-fp , l≤ helper where
+  π⋱ₛ : ∀ α → π (suc α) ≈ π α + ξ ^ ω
+  π⋱ₛ α = ⋱ₛ-suc ξ*-normal _ _ πα<πα+ξ^ω πα+ξ^ω-fp , l≤ helper where
     πα<πα+ξ^ω = +-incrˡ-< _ ^>0 _
     πα+ξ^ω-fp =               begin-equality
       ξ * (π α + ξ ^ ω)       ≈⟨ *-distribˡ-+ ξ _ _ ⟩
@@ -199,7 +199,7 @@ module _ ⦃ ξ>1 : ξ > ⌜ 1 ⌝ ⦄ where
   π≈ : ∀ α → π α ≈ ξ ^ ω * α
   π≈ zero    = π₀
   π≈ (suc α) =        begin-equality
-    π (suc α)         ≈⟨ πₛ α ⟩
+    π (suc α)         ≈⟨ π⋱ₛ α ⟩
     π α + ξ ^ ω       ≈⟨ +-congʳ {ξ ^ ω} (π≈ α) ⟩
     ξ ^ ω * α + ξ ^ ω ≡⟨⟩
     ξ ^ ω * suc α     ∎

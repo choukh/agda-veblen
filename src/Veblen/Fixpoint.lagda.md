@@ -51,47 +51,54 @@ _isFixpointOf_ : Ord → (Ord → Ord) → Set
 α isFixpointOf F = F α ≈ α
 ```
 
-我们说 `rec F from α₀ by ω` 是 `F` 从 `α₀` 开始的无穷递归, 记作 `ω-rec F from α₀`.
+我们说 `rec F from α by ω` 是 `F` 从 `α` 开始的**无穷递归**, 记作 `F ⋱ α`.
 
 ```agda
-ω-rec_from_ : (Ord → Ord) → Ord → Ord
-ω-rec F from α₀ = rec F from α₀ by ω
+_⋱_ : (Ord → Ord) → (Ord → Ord)
+F ⋱ α = rec F from α by ω
 ```
-
-我们先统一给出以下定义, 后面会说明它们的合理性.
-
-- 我们说 `F` 的从零开始的无穷递归是 `F` 的最小不动点, 记作 `F ₀`
-- 我们说 `F` 的从 `suc α` 开始的无穷递归是 `F` 于 `α` 的后继不动点, 记作 `(F ₛ) α`
-- 我们说 `F ₛ` 的从 `F ₀` 开始的递归是 `F` 的不动点枚举函数, 记作 `F ′`
-
-```agda
-_₀ : (Ord → Ord) → Ord
-F ₀ = ω-rec F from zero
-
-_ₛ : (Ord → Ord) → Ord → Ord
-F ₛ = ω-rec F from_ ∘ suc
-
-_′ : (Ord → Ord) → Ord → Ord
-F ′ = rec (F ₛ) from (F ₀) by_
-```
-
-## 无穷递归
 
 由超限递归的相关引理立即可知无穷递归保持函数的弱增长性和 ≤-单调性.
 
 ```agda
 module _ {F : Ord → Ord} where
 
-  ω-rec-pres-incr-≤ : ≤-increasing F → ≤-increasing (ω-rec F from_)
-  ω-rec-pres-incr-≤ ≤-incr = rec-from-incr-≤ ω ≤-incr
+  ⋱-pres-incr-≤ : ≤-increasing F → ≤-increasing (F ⋱_)
+  ⋱-pres-incr-≤ ≤-incr = rec-from-incr-≤ ω ≤-incr
 
-  ω-rec-pres-mono-≤ : ≤-monotonic F → ≤-monotonic (ω-rec F from_)
-  ω-rec-pres-mono-≤ ≤-mono = rec-from-mono-≤ ω ≤-mono
+  ⋱-pres-mono-≤ : ≤-monotonic F → ≤-monotonic (F ⋱_)
+  ⋱-pres-mono-≤ ≤-mono = rec-from-mono-≤ ω ≤-mono
 ```
+
+我们说 `F ∘ suc` 的从 `F zero` 开始的递归是 `F` 的**后继递归**, 记作 `F ⁺`
+
+```agda
+_⁺ : (Ord → Ord) → (Ord → Ord)
+F ⁺ = rec F ∘ suc from (F zero) by_
+```
+
+如果 `F ∘ suc` ≤-单调且强增长, 那么 `F ⁺` 是序数嵌入.
+
+```agda
+⁺-normal : ∀ F → ≤-monotonic (F ∘ suc) → <-increasing (F ∘ suc) → normal (F ⁺)
+⁺-normal F ≤-mono <-incr =
+    rec-by-mono-≤ ≤-mono (<⇒≤-incr <-incr)
+  , rec-by-mono-< ≤-mono <-incr
+  , λ _ → ≈-refl
+```
+
+我们说 `F ⋱_ ∘ suc` 的从 `F ⋱ zero` 开始的递归是 `F` 的不动点枚举函数, 记作 `F ′`.
+
+```agda
+_′ : (Ord → Ord) → Ord → Ord
+F ′ = F ⋱_ ⁺
+```
+
+我们接下来解释该定义的合理性.
 
 ## 不动点
 
-现在, 给定一个序数嵌入 `F`.
+给定一个序数嵌入 `F`.
 
 ```agda
 module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
@@ -100,33 +107,33 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **引理** `F` 的从任意初始值开始的无穷递归都是 `F` 的不动点.
 
 ```agda
-  ω-rec-fp : ∀ α₀ → (ω-rec F from α₀) isFixpointOf F
-  ω-rec-fp α₀ =                            begin-equality
-    F (ω-rec F from α₀)                    ≈⟨ lim-ct _ ⟩
+  ⋱-fp : ∀ α₀ → (F ⋱ α₀) isFixpointOf F
+  ⋱-fp α₀ =                                begin-equality
+    F (F ⋱ α₀)                             ≈⟨ lim-ct _ ⟩
     lim (λ n → F (rec F from α₀ by ⌜ n ⌝)) ≈˘⟨ l≈ls (normal⇒≤-incr nml _) ⟩
-    ω-rec F from α₀                        ∎
+    F ⋱ α₀                                 ∎
 ```
 
-**引理** `ω-rec F from_` 弱增长.  
-**证明** 用 `normal⇒≤-incr` 消掉 `ω-rec-pres-incr-≤` 的前提即可. ∎
+**引理** `F ⋱_` 弱增长.  
+**证明** 用 `normal⇒≤-incr` 消掉 `⋱-pres-incr-≤` 的前提即可. ∎
 
 ```agda
-  ω-rec-incr-≤ : ≤-increasing (ω-rec F from_)
-  ω-rec-incr-≤ = ω-rec-pres-incr-≤ (normal⇒≤-incr nml)
+  ⋱-incr-≤ : ≤-increasing (F ⋱_)
+  ⋱-incr-≤ = ⋱-pres-incr-≤ (normal⇒≤-incr nml)
 ```
 
 **注意** 上述引理说明存在 `F` 的任意大的不动点.
 
 ## 最小不动点
 
-**引理** `F` 的从零开始的无穷递归是 `F` 的最小不动点.
+**引理** `F` 的从零开始的无穷递归 `F ⋱ zero` 是 `F` 的最小不动点.
 
 ```agda
-  ₀-fp : (F ₀) isFixpointOf F
-  ₀-fp = ω-rec-fp zero
+  ⋱₀-fp : (F ⋱ zero) isFixpointOf F
+  ⋱₀-fp = ⋱-fp zero
 
-  ₀-min : ∀ {α} → α isFixpointOf F → F ₀ ≤ α
-  ₀-min {α} fp = l≤ helper where
+  ⋱₀-min : ∀ {α} → α isFixpointOf F → F ⋱ zero ≤ α
+  ⋱₀-min {α} fp = l≤ helper where
     helper : ∀ n → (rec F from zero by ⌜ n ⌝) ≤ α
     helper zero    = z≤
     helper (suc n) =               begin
@@ -144,10 +151,10 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **引理** `F` 的从零开始的有穷递归是递归次数的单调序列.
 
 ```agda
-    ₀-mono-n : monotonic (rec F from zero by_ ∘ ⌜_⌝)
-    ₀-mono-n {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
+    ⋱₀-mono-n : monotonic (rec F from zero by_ ∘ ⌜_⌝)
+    ⋱₀-mono-n {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
     ... | inj₁ m<n =                begin-strict
-      rec F from zero by ⌜ m ⌝      <⟨ ₀-mono-n m<n ⟩
+      rec F from zero by ⌜ m ⌝      <⟨ ⋱₀-mono-n m<n ⟩
       rec F from zero by ⌜ n ⌝      ≤⟨ normal⇒≤-incr nml _ ⟩
       rec F from zero by ⌜ suc n ⌝  ∎
     ... | inj₂ refl = helper m where
@@ -156,11 +163,11 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
       helper (suc m) = <-mono (helper m)
 ```
 
-**引理** 如果 `F` 保良构, 那么 `F ₀` 良构.
+**引理** 如果 `F` 保良构, 那么 `F ⋱ zero` 良构.
 
 ```agda
-    ₀-wf : wf-preserving F → wellFormed (F ₀)
-    ₀-wf wfp = helper , ₀-mono-n where
+    ⋱₀-wf : wf-preserving F → wellFormed (F ⋱ zero)
+    ⋱₀-wf wfp = helper , ⋱₀-mono-n where
       helper : ∀ {n} → wellFormed (rec F from zero by ⌜ n ⌝)
       helper {zero}  = tt
       helper {suc n} = wfp helper
@@ -169,12 +176,12 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **事实** 如果 `F` 还在良构后继处增长, 那么 `F` 的最小不动点严格大于 `F` 在有限序数处的值.
 
 ```agda
-    ₀-transcendent : suc-increasing F → ∀ n → F ⌜ n ⌝ < F ₀
-    ₀-transcendent s-incr n =             begin-strict
-      F ⌜ n ⌝                             <⟨ <-mono <s ⟩
-      F ⌜ suc n ⌝                         ≤⟨ ≤-mono (helper n) ⟩
-      rec F from zero by ⌜ suc (suc n) ⌝  ≤⟨ f≤l ⟩
-      F ₀                                 ∎ where
+    Fn<F⋱₀ : suc-increasing F → ∀ n → F ⌜ n ⌝ < F ⋱ zero
+    Fn<F⋱₀ s-incr n =                       begin-strict
+      F ⌜ n ⌝                               <⟨ <-mono <s ⟩
+      F ⌜ suc n ⌝                           ≤⟨ ≤-mono (helper n) ⟩
+      rec F from zero by ⌜ suc (suc n) ⌝    ≤⟨ f≤l ⟩
+      F ⋱ zero                              ∎ where
         helper : ∀ n → suc ⌜ n ⌝ ≤ F (rec F from zero by ⌜ n ⌝)
         helper zero    = <⇒s≤ z-incr
         helper (suc n) =                    begin
@@ -188,14 +195,14 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **引理** `F` 的从 `suc α` 开始的无穷递归是 `F` 的大于 `α` 的最小不动点, 叫做 `F` 于 `α` 的后继不动点.
 
 ```agda
-  ₛ-fp : ∀ α → (F ₛ) α isFixpointOf F
-  ₛ-fp α = ω-rec-fp (suc α)
+  ⋱ₛ-fp : ∀ α → (F ⋱ suc α) isFixpointOf F
+  ⋱ₛ-fp α = ⋱-fp (suc α)
 
-  ₛ-incr-< : <-increasing (F ₛ)
-  ₛ-incr-< α = s≤⇒< (ω-rec-incr-≤ (suc α))
+  ⋱ₛ-incr-< : <-increasing (F ⋱_ ∘ suc)
+  ⋱ₛ-incr-< α = s≤⇒< (⋱-incr-≤ (suc α))
 
-  ₛ-suc : ∀ α β → α < β → β isFixpointOf F → (F ₛ) α ≤ β
-  ₛ-suc α β α<β fp = l≤ helper where
+  ⋱ₛ-suc : ∀ α β → α < β → β isFixpointOf F → F ⋱ suc α ≤ β
+  ⋱ₛ-suc α β α<β fp = l≤ helper where
     helper : ∀ n → rec F from suc α by ⌜ n ⌝ ≤ β
     helper zero    = <⇒s≤ α<β
     helper (suc n) =                  begin
@@ -204,11 +211,11 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
         β                             ∎
 ```
 
-**引理** `F ₛ` ≤-单调.
+**引理** `F ⋱_ ∘ suc` ≤-单调.
 
 ```agda
-  ₛ-mono-≤ : ≤-monotonic (F ₛ)
-  ₛ-mono-≤ α≤β = ω-rec-pres-mono-≤ ≤-mono (s≤s α≤β)
+  ⋱ₛ-mono-≤ : ≤-monotonic (F ⋱_ ∘ suc)
+  ⋱ₛ-mono-≤ α≤β = ⋱-pres-mono-≤ ≤-mono (s≤s α≤β)
 ```
 
 现在, 假设 `F` 在良构后继处增长.
@@ -220,10 +227,10 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **引理** `F` 的从 `suc α` 开始的有穷递归是递归次数的单调序列.
 
 ```agda
-    ₛ-mono-n : ∀ {α} → wellFormed α → monotonic (rec F from suc α by_ ∘ ⌜_⌝)
-    ₛ-mono-n {α} wfα {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
+    ⋱ₛ-mono-n : ∀ {α} → wellFormed α → monotonic (rec F from suc α by_ ∘ ⌜_⌝)
+    ⋱ₛ-mono-n {α} wfα {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
     ... | inj₁ m<n =                 begin-strict
-      rec F from suc α by ⌜ m ⌝      <⟨ ₛ-mono-n wfα m<n ⟩
+      rec F from suc α by ⌜ m ⌝      <⟨ ⋱ₛ-mono-n wfα m<n ⟩
       rec F from suc α by ⌜ n ⌝      ≤⟨ normal⇒≤-incr nml _ ⟩
       rec F from suc α by ⌜ suc n ⌝  ∎
     ... | inj₂ refl = helper m where
@@ -232,11 +239,11 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
       helper (suc m) = <-mono (helper m)
 ```
 
-**引理** `_ₛ` 保持保良构性.
+**引理** 如果 `F` 保良构, 那么 `F ⋱_ ∘ suc` 也保良构.
 
 ```agda
-    ₛ-wfp : wf-preserving F → wf-preserving (F ₛ)
-    ₛ-wfp wfp {α} wfα = helper , ₛ-mono-n wfα where
+    ⋱ₛ-wfp : wf-preserving F → wf-preserving (F ⋱_ ∘ suc)
+    ⋱ₛ-wfp wfp {α} wfα = helper , ⋱ₛ-mono-n wfα where
       helper : ∀ {n} → wellFormed (rec F from suc α by ⌜ n ⌝)
       helper {zero}  = wfα
       helper {suc n} = wfp helper
@@ -244,12 +251,12 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 ## 不动点的枚举
 
-**引理** `F ₛ` 的从 `F ₀` 开始的递归是 `F` 的不动点枚举函数.
+**引理** `F ⋱_ ∘ suc` 的从 `F ⋱ zero` 开始的递归是 `F` 的不动点枚举函数.
 
 ```agda
   ′-fp : ∀ α → (F ′) α isFixpointOf F
-  ′-fp zero    = ₀-fp
-  ′-fp (suc α) = ₛ-fp _
+  ′-fp zero    = ⋱₀-fp
+  ′-fp (suc α) = ⋱ₛ-fp _
   ′-fp (lim f) =                begin-equality
     F ((F ′) (lim f))           ≈⟨ lim-ct _ ⟩
     lim (λ n → F ((F ′) (f n))) ≈⟨ l≈l (′-fp (f _)) ⟩
@@ -262,9 +269,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 ```agda
   ′-normal : normal (F ′)
-  ′-normal = rec-by-mono-≤ ₛ-mono-≤ (<⇒≤-incr ₛ-incr-<)
-           , rec-by-mono-< ₛ-mono-≤ ₛ-incr-<
-           , λ _ → ≈-refl
+  ′-normal = ⁺-normal (F ⋱_) ⋱ₛ-mono-≤ ⋱ₛ-incr-<
 ```
 
 **注意** 这意味着 `_′` 也可以一直迭代下去, 得到高阶不动点.
@@ -273,7 +278,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 ```agda
   ′-wfp : zero-increasing F → suc-increasing F → wf-preserving F → wf-preserving (F ′)
-  ′-wfp z-incr s-incr wfp = rec-wfp (₀-wf z-incr wfp) ₛ-mono-≤ ₛ-incr-< (ₛ-wfp s-incr wfp)
+  ′-wfp z-incr s-incr wfp = rec-wfp (⋱₀-wf z-incr wfp) ⋱ₛ-mono-≤ ⋱ₛ-incr-< (⋱ₛ-wfp s-incr wfp)
 ```
 
 **定理** `_′` 保持零处增长性.
@@ -290,7 +295,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 ′-suc-incr {F} nml s-incr {α} wfα = begin-strict
   suc α                             <⟨ s-incr wfα ⟩
   rec F from suc α by ⌜ 1 ⌝         ≤⟨ f≤l ⟩
-  (F ₛ) α                           ≤⟨ ₛ-mono-≤ nml (rec-by-incr-≤ (ₛ-mono-≤ nml) (ₛ-incr-< nml) α) ⟩
+  F ⋱ suc α                         ≤⟨ ⋱ₛ-mono-≤ nml (rec-by-incr-≤ (⋱ₛ-mono-≤ nml) (⋱ₛ-incr-< nml) α) ⟩
   (F ′) (suc α)                     ∎
 ```
 
@@ -313,4 +318,16 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
     F (rec G from suc ((G ′) α) by ⌜ n ⌝) ≈⟨ F≈ᶠG ⟩
     G (rec G from suc ((G ′) α) by ⌜ n ⌝) ∎
 ′-pres-≈ᶠ {F} {G} nmlF nmlG F≈ᶠG {lim f} = l≈l (′-pres-≈ᶠ nmlF nmlG F≈ᶠG)
+```
+
+## 高阶性质
+
+`_′` 也具有类似增长性的性质, 只不过是高阶的.
+
+```agda
+′-incr-≤ : ∀ F α → normal F → F α ≤ (F ′) α
+′-incr-≤ F α nml@(≤-mono , _ , _) = begin
+  F α                           ≤⟨ ≤-mono (normal⇒≤-incr (′-normal nml) α) ⟩
+  F ((F ′) α)                   ≈⟨ ′-fp nml α ⟩
+  (F ′) α                       ∎
 ```
