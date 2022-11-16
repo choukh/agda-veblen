@@ -67,7 +67,6 @@ $$φ_{0}(α) = ω^α$$
 _ : φ zero ≡ ω ^_
 _ = refl
 ```
-&nbsp;
 
 $$φ_{1}(α) = ε_α$$
 
@@ -75,7 +74,6 @@ $$φ_{1}(α) = ε_α$$
 _ : φ ⌜ 1 ⌝ ≡ ε
 _ = refl
 ```
-&nbsp;
 
 $$φ_{2}(α) = ζ_α$$
 
@@ -83,7 +81,6 @@ $$φ_{2}(α) = ζ_α$$
 _ : φ ⌜ 2 ⌝ ≡ ζ
 _ = refl
 ```
-&nbsp;
 
 $$φ_{3}(α) = η_α$$
 
@@ -91,7 +88,6 @@ $$φ_{3}(α) = η_α$$
 _ : φ ⌜ 3 ⌝ ≡ η
 _ = refl
 ```
-&nbsp;
 
 $$φ_{α+1}(β) = {φ_{α}}'(β)$$
 
@@ -170,45 +166,68 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 ```agda
   veblen-monoˡ-≤ : ∀ γ → ≤-monotonic (λ α → veblen F α γ)
+  veblen-monoˡ-≤l : ∀ γ α β n → α ≤ β n → veblen F α γ ≤ veblen F (lim β) γ
+
+  veblen-monoˡ-≤l zero    α β n α≤βn =          begin
+    veblen F α zero                             ≤⟨ veblen-monoˡ-≤ zero α≤βn ⟩
+    veblen F (β n) zero                         ≤⟨ f≤l ⟩
+    (F ∘ₗ β) zero                               ∎
+  veblen-monoˡ-≤l (suc γ) α β n α≤βn = begin
+    veblen F α (suc γ)                          ≤⟨ veblen-monoˡ-≤ (suc γ) α≤βn ⟩
+    veblen F (β n) (suc γ)                      ≤⟨ proj₁ (veblen-normal (β n)) (s≤s ≤) ⟩
+    veblen F (β n) (suc (veblen F (lim β) γ))   ≤⟨ f≤l ⟩
+    (F ∘ₗ β) (suc (veblen F (lim β) γ))         ∎ where
+      ≤ : γ ≤ veblen F (lim β) γ
+      ≤ = normal⇒≤-incr (veblen-normal (lim β)) γ
+  veblen-monoˡ-≤l (lim γ) zero    β n α≤βn = {!   !}
+  veblen-monoˡ-≤l (lim γ) (suc α) β n α≤βn = {!   !}
+  veblen-monoˡ-≤l (lim γ) (lim α) β n (l≤ α≤βn) = ⁺-monoʰ-≤ {F ∘ₗ α} {F ∘ₗ β}
+    (λ ≤ → l≤l λ _ → proj₁ (veblen-normal (α _)) ≤)
+    (l≤ (λ n₁ → ≤f⇒≤l {n = n} {!   !})) {lim γ}
+
   veblen-monoˡ-≤ γ {zero} {zero}  z≤ =          ≤-refl
   veblen-monoˡ-≤ γ {zero} {suc β} z≤ =          begin
     veblen F zero γ                             ≤⟨ veblen-monoˡ-≤ γ z≤ ⟩
     veblen F β γ                                ≤⟨ ′-incrʰ-≤ (veblen-normal β) γ ⟩
     veblen F (suc β) γ                          ∎
 
-  veblen-monoˡ-≤ γ {zero} {lim f} z≤ = z≤l γ where
-    z≤l : ∀ γ → F γ ≤ veblen F (lim f) γ
+  veblen-monoˡ-≤ γ {zero} {lim β} z≤ = z≤l γ where
+    z≤l : ∀ γ → F γ ≤ veblen F (lim β) γ
     z≤l zero    =                               begin
       veblen F zero zero                        ≤⟨ veblen-monoˡ-≤ zero z≤ ⟩
-      veblen F (f 0) zero                       ≤⟨ f≤l ⟩
-      (F ∘ₗ f) zero                             ∎
-    z≤l (suc α) =                               begin
-      veblen F zero (suc α)                     ≤⟨ veblen-monoˡ-≤ (suc α) z≤ ⟩
-      veblen F (f 0) (suc α)                    ≤⟨ proj₁ (veblen-normal (f 0)) (s≤s ≤) ⟩
-      veblen F (f 0) (suc (veblen F (lim f) α)) ≤⟨ f≤l ⟩
-      (F ∘ₗ f) (suc (veblen F (lim f) α))       ∎ where
-        ≤ : α ≤ veblen F (lim f) α
-        ≤ = normal⇒≤-incr (veblen-normal (lim f)) α
+      veblen F (β 0) zero                       ≤⟨ f≤l ⟩
+      (F ∘ₗ β) zero                             ∎
+    z≤l (suc γ) =                               begin
+      veblen F zero (suc γ)                     ≤⟨ veblen-monoˡ-≤ (suc γ) z≤ ⟩
+      veblen F (β 0) (suc γ)                    ≤⟨ proj₁ (veblen-normal (β 0)) (s≤s ≤) ⟩
+      veblen F (β 0) (suc (veblen F (lim β) γ)) ≤⟨ f≤l ⟩
+      (F ∘ₗ β) (suc (veblen F (lim β) γ))       ∎ where
+        ≤ : γ ≤ veblen F (lim β) γ
+        ≤ = normal⇒≤-incr (veblen-normal (lim β)) γ
     z≤l (lim γ) =                               begin
       F (lim γ)                                 ≈⟨ lim-ct γ ⟩
       lim (λ n → F (γ n))                       ≤⟨ l≤l (λ n → z≤l (γ n)) ⟩
-      lim (λ n → veblen F (lim f) (γ n))        ∎
+      lim (λ n → veblen F (lim β) (γ n))        ∎
 
   veblen-monoˡ-≤ γ {suc α} {suc β} (s≤ α<s) =   begin
     veblen F (suc α) γ                          ≤⟨ ′-monoʰ-≤ (proj₁ (veblen-normal α)) IH ⟩
     veblen F (suc β) γ                          ∎ where
       IH = λ {γ} → veblen-monoˡ-≤ γ (<s⇒≤ (_ , α<s))
 
-  veblen-monoˡ-≤ γ {suc α} {lim f} (s≤ {d = n , d} α<fn) = s≤l γ where
-    s≤l : ∀ γ → veblen F (suc α) γ ≤ veblen F (lim f) γ
+  veblen-monoˡ-≤ γ {suc α} {lim β} (s≤ {d = n , d} α<βn) = s≤l γ where
+    s≤l : ∀ γ → veblen F (suc α) γ ≤ veblen F (lim β) γ
     s≤l zero    =                               begin
-      veblen F (suc α) zero                     ≤⟨ veblen-monoˡ-≤ zero (<⇒s≤ (d , α<fn)) ⟩
-      veblen F (f n) zero                       ≤⟨ f≤l ⟩
-      (F ∘ₗ f) zero                             ∎
-    s≤l (suc γ) = {!   !}
+      veblen F (suc α) zero                     ≤⟨ veblen-monoˡ-≤ zero (<⇒s≤ (d , α<βn)) ⟩
+      veblen F (β n) zero                       ≤⟨ f≤l ⟩
+      (F ∘ₗ β) zero                             ∎
+    s≤l (suc γ) = begin
+      veblen F (suc α) (suc γ)                  ≤⟨ {!   !} ⟩
+      veblen F (β n) (suc γ)                    ≤⟨ {!   !} ⟩
+      veblen F (β n) (suc (veblen F (lim β) γ)) ≤⟨ {!   !} ⟩
+      (F ∘ₗ β) (suc (veblen F (lim β) γ))       ∎
     s≤l (lim γ) = {!   !}
 
-  veblen-monoˡ-≤ γ {lim f} {β} (l≤ f≤β) = {!   !}
+  veblen-monoˡ-≤ γ {lim α} {β} (l≤ αn≤β) = {!   !}
 ```
 
 最后, 我们将 `veblen` 的性质实例化到 `φ`.
@@ -237,3 +256,4 @@ $$φ_α(φ_{α+1}(β))=φ_{α+1}(β)$$
 φ-monoˡ-≤ : ∀ γ → ≤-monotonic (λ α → φ α γ)
 φ-monoˡ-≤ = veblen-monoˡ-≤
 ```
+ 
