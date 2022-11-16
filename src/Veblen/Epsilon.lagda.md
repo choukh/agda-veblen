@@ -49,9 +49,9 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 
 ω^-zero-incr : zero-increasing (ω ^_)
 ω^-zero-incr =        begin-strict
-  ⌜ 0 ⌝               <⟨ <s ⟩
+  zero                <⟨ <s ⟩
   ⌜ 1 ⌝               ≡⟨⟩
-  ω ^ ⌜ 0 ⌝           ∎
+  ω ^ zero            ∎
 
 ω^-suc-incr : suc-increasing (ω ^_)
 ω^-suc-incr {α} wfα with ≡z⊎>z wfα
@@ -89,18 +89,18 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 ε-wfp = ′-wfp ω^-normal ω^-zero-incr ω^-suc-incr ω^-wfp
 ```
 
-`ε ⌜ 0 ⌝` 是无穷层的 ω 指数塔.
+`ε zero` 是无穷层的 ω 指数塔.
 
 $$ε_{0} = ω^{ω^{.^{.^{.^{ω}}}}}$$
 
 ```agda
-ε₀ : ε ⌜ 0 ⌝ ≈ ω ^^ω
+ε₀ : ε zero ≈ ω ^^ω
 ε₀ =                  begin-equality
-  ε ⌜ 0 ⌝             ≈˘⟨ ε-fp ⌜ 0 ⌝ ⟩
-  ω ^ ω ^^ω[ ⌜ 0 ⌝ ]  ≈⟨ ^-^^[]-comm ω ⌜ 0 ⌝ ω ⟩
-  ω ^^ω[ ω ^ ⌜ 0 ⌝ ]  ≡⟨⟩
+  ε zero              ≈˘⟨ ε-fp zero ⟩
+  ω ^ ω ^^ω[ zero ]   ≈⟨ ^-^^[]-comm ω zero ω ⟩
+  ω ^^ω[ ω ^ zero ]   ≡⟨⟩
   ω ^^ω[ ⌜ 1 ⌝ ]      ≈˘⟨ ^^≈^^[]ω ω ⌜ 1 ⌝ n≤ω ⟩
-  ω ^^ω           ∎
+  ω ^^ω               ∎
 ```
 
 后继的情况:
@@ -123,7 +123,7 @@ _ = λ f → refl
 
 ## `ε` 的另一种表示
 
-可以证明对任意良构 `α` 有 [`ε (suc α) ≈ ε α ^^ ω`](https://choukh.github.io/agda-lvo/Veblen.Epsilon.Alternative.html#5141).
+可以证明对任意良构 `α` 有 [`ε (suc α) ≈ ε α ^^ ω`](Veblen.Epsilon.Alternative.html#5147).
 
 ## ζ层级
 
@@ -160,7 +160,7 @@ _ = λ f → refl
 $$ζ_0 = ε_{ε_{._{._{ε_0}}}}$$
 
 ```agda
-_ : ζ ⌜ 0 ⌝ ≡ ε ⋱ zero
+_ : ζ zero ≡ ε ⋱ zero
 _ = refl
 ```
 
@@ -213,7 +213,7 @@ _ = λ f → refl
 $$η_0 = ζ_{ζ_{._{._{ζ_0}}}}$$
 
 ```agda
-_ : η ⌜ 0 ⌝ ≡ ζ ⋱ zero
+_ : η zero ≡ ζ ⋱ zero
 _ = refl
 ```
 

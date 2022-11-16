@@ -51,15 +51,15 @@ module Veblen.Fixpoint.Lower {ξ : Ord} where
 σ-fp α = ′-fp (+-normal ξ) α
 ```
 
-`+_` 的最小不动点可以表示为序数乘法. 非形式地, `σ ⌜ 0 ⌝` ≈ $... + ξ + ξ$ ≈ $ξ * ω$.
+`+_` 的最小不动点可以表示为序数乘法. 非形式地, `σ zero` ≈ $... + ξ + ξ$ ≈ $ξ * ω$.
 
 ```agda
-σ₀ : σ ⌜ 0 ⌝ ≈ ξ * ω
+σ₀ : σ zero ≈ ξ * ω
 σ₀ = l≈l helper where
-  helper : ∀ {n} → rec _+_ ξ from ⌜ 0 ⌝ by ⌜ n ⌝ ≈ ξ * ⌜ n ⌝
+  helper : ∀ {n} → rec _+_ ξ from zero by ⌜ n ⌝ ≈ ξ * ⌜ n ⌝
   helper {zero}  = ≈-refl
   helper {suc n} =                        begin-equality
-    ξ + (rec (ξ +_) from ⌜ 0 ⌝ by ⌜ n ⌝)  ≈⟨ +-congˡ helper ⟩
+    ξ + (rec (ξ +_) from zero by ⌜ n ⌝)   ≈⟨ +-congˡ helper ⟩
     ξ + ξ * ⌜ n ⌝                         ≈⟨ +-assoc-n ξ n ⟩
     ξ * ⌜ n ⌝ + ξ                         ≡⟨⟩
     ξ * suc ⌜ n ⌝                         ∎
@@ -101,7 +101,7 @@ module Veblen.Fixpoint.Lower {ξ : Ord} where
 module _ ⦃ ξ>1 : ξ > ⌜ 1 ⌝ ⦄ where
 
   instance
-    ξ>0 : ξ > ⌜ 0 ⌝
+    ξ>0 : ξ > zero
     ξ>0 = <-trans <s ξ>1
 
     ξ≥1 : ξ ≥ ⌜ 1 ⌝
@@ -134,14 +134,14 @@ module _ ⦃ ξ>1 : ξ > ⌜ 1 ⌝ ⦄ where
 我们接下来将建立 `π` 与 `ξ ^ ω` 的联系. 首先, 乘法的最小不动点是平凡的零.
 
 ```agda
-  π₀ : π ⌜ 0 ⌝ ≈ ⌜ 0 ⌝
+  π₀ : π zero ≈ zero
   π₀ = l≤ helper , z≤ where
-    helper : ∀ n → rec _*_ ξ from ⌜ 0 ⌝ by ⌜ n ⌝ ≤ ⌜ 0 ⌝
+    helper : ∀ n → rec _*_ ξ from zero by ⌜ n ⌝ ≤ zero
     helper zero    = ≤-refl
-    helper (suc n) =                      begin
-      ξ * (rec _*_ ξ from ⌜ 0 ⌝ by ⌜ n ⌝) ≤⟨ *-monoʳ-≤ ξ (helper n) ⟩
-      ξ * ⌜ 0 ⌝                           ≡⟨⟩
-      ⌜ 0 ⌝                               ∎
+    helper (suc n) =                     begin
+      ξ * (rec _*_ ξ from zero by ⌜ n ⌝) ≤⟨ *-monoʳ-≤ ξ (helper n) ⟩
+      ξ * zero                           ≡⟨⟩
+      zero                               ∎
 ```
 
 因此我们还要额外考察 `π ⌜ 1 ⌝`.
@@ -150,9 +150,9 @@ module _ ⦃ ξ>1 : ξ > ⌜ 1 ⌝ ⦄ where
   π₁ : π ⌜ 1 ⌝ ≈ ξ ^ ω
   π₁ = ⋱ₛ-suc ξ*-normal _ _ π₀<ξ^ω ξ^ω-fp , l≤ ξ^n≤π₁ where
     π₀<ξ^ω =              begin-strict
-      π ⌜ 0 ⌝             ≈⟨ π₀ ⟩
-      ⌜ 0 ⌝               <⟨ <s ⟩
-      ξ ^ ⌜ 0 ⌝           ≤⟨ f≤l {n = 0} ⟩
+      π zero              ≈⟨ π₀ ⟩
+      zero                <⟨ <s ⟩
+      ξ ^ zero            ≤⟨ f≤l {n = 0} ⟩
       ξ ^ ω               ∎
     ξ^n≤π₁ : ∀ n → ξ ^ ⌜ n ⌝ ≤ π ⌜ 1 ⌝
     ξ^n≤π₁ zero    =      begin
