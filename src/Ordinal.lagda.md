@@ -222,6 +222,13 @@ s≤s⇒≤ (s≤ {d = inj₂ d}  ≤∸) = ≤∸⇒≤ ≤∸
 ≤⇔s≤s = mk⇔ s≤s s≤s⇒≤
 ```
 
+两边都是极限的情况有类似的, 但逆命题不成立.
+
+```agda
+l≤l : ∀ {f g} → (∀ n → f n ≤ g n) → lim f ≤ lim g
+l≤l f≤g = l≤ (λ n → ≤f⇒≤l (f≤g n))
+```
+
 由引理 `s≤s` 和 `≤f⇒≤l` 不难证明 `≤` 是自反的.
 
 ```agda
@@ -318,8 +325,8 @@ s≈s⇒≈ (sα≤sβ , sβ≤sα) = s≤s⇒≤ sα≤sβ , s≤s⇒≤ sβ≤
 
 ```agda
 l≈l : ∀ {f g} → (∀ {n} → f n ≈ g n) → lim f ≈ lim g
-l≈l ext = l≤ (λ n → ≤f⇒≤l (proj₁ ext))
-        , l≤ (λ n → ≤f⇒≤l (proj₂ ext))
+l≈l ext = l≤l (λ _ → proj₁ ext)
+        , l≤l (λ _ → proj₂ ext)
 ```
 
 序列极限与起始项无关.

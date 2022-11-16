@@ -25,7 +25,7 @@ open import Ordinal
 open Ordinal.≤-Reasoning
 open import Ordinal.WellFormed
 open import Ordinal.Arithmetic
-open import Ordinal.Tetration using (_^^[_]_; _^^ω; ^^≈^^[]ω)
+open import Ordinal.Tetration using (_^^[_]_; _^^ω; _^^ω[_]; ^^≈^^[]ω)
 open import Veblen.Fixpoint.Lower using (π; π-fp; π≈)
 open import Veblen.Epsilon using (ε; ε-normal; ε-fp; ε-wfp)
 
@@ -153,7 +153,7 @@ module _ (wfα : wellFormed α) where
 $$ω^{ω^{ω^{.^{.^{{ε_α}+1}}}}} = {ε_α}^{{ε_α}^{.^{.^ω}}}$$
 
 ```agda
-  ω^^ω[sε] : ω ^^[ suc (ε α) ] ω ≈ ε α ^^[ ω ] ω
+  ω^^ω[sε] : ω ^^ω[ suc (ε α) ] ≈ ε α ^^ω[ ω ]
   ω^^ω[sε] = begin-equality
     lim (λ n → ω ^^[ suc (ε α) ] ⌜ n ⌝)           ≈⟨ l≈ls incr ⟩
     lim (λ n → ω ^^[ suc (ε α) ] ⌜ suc n ⌝)       ≈⟨ l≈ls (^-monoʳ-≤ ω ⦃ n≤ω ⦄ incr) ⟩

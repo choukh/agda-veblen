@@ -666,9 +666,9 @@ _ = *-zeroʳ
   β ^ α * ⌜ 2 ⌝               ≤⟨ *-monoʳ-≤ (β ^ α) (<⇒s≤ β>1) ⟩
   β ^ α * β                   ≤.≡⟨⟩
   β ^ suc α                   ∎
-^-incrʳ-≤ (lim f) β         = l≤ (λ n → ≤f⇒≤l (begin-nonstrict
+^-incrʳ-≤ (lim f) β         = l≤l (λ n → begin-nonstrict
   f n                         ≤⟨ ^-incrʳ-≤ (f n) β ⟩
-  β ^ f n                     ∎))
+  β ^ f n                     ∎)
 ```
 
 幂运算的合同性只有半边是无条件的, 另一半要求底数不为零.

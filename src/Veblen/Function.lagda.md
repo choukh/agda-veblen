@@ -14,7 +14,7 @@ zhihu-tags: Agda, 序数, 大数数学
 **(本章施工中)**
 
 ```agda
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
 
 module Veblen.Function where
 ```
@@ -135,31 +135,98 @@ _ = λ _ _ → refl
 
 ## 性质
 
-如所期望的那样, 每个 `φ α` 都是序数嵌入.
+给定一个序数嵌入 `F`.
+
+```agda
+module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
+```
+
+对 `veblen` 来说, 如果初始函数 `F` 是序数嵌入, 那么每个迭代 `veblen F α` 都是序数嵌入.
+
+```agda
+  veblen-normal : ∀ α → normal (veblen F α)
+  veblen-normal zero    = nml
+  veblen-normal (suc α) = ′-normal (veblen-normal α)
+  veblen-normal (lim f) = ⁺-normal (F ∘ₗ f) mono incr where
+    mono : ≤-monotonic (F ∘ₗ f)
+    mono {α} {β} ≤ = l≤l (λ n → begin
+      veblen F (f n) (α)        ≤⟨ proj₁ (veblen-normal (f n)) ≤ ⟩
+      veblen F (f n) (β)        ∎)
+    incr : ≤-increasing (F ∘ₗ f)
+    incr α =                    begin
+      α                         ≤⟨ normal⇒≤-incr (veblen-normal (f 0)) α ⟩
+      veblen F (f 0) α          ≤⟨ f≤l ⟩
+      (F ∘ₗ f) α                ∎
+```
+
+由此可知每个 `veblen F (suc α) γ` 也是 `veblen F α` 的不动点.
+
+```agda
+  veblen-fp-suc : ∀ α γ → (veblen F (suc α) γ) isFixpointOf (veblen F α)
+  veblen-fp-suc α γ = ′-fp (veblen-normal α) γ
+```
+
+我们想把上面的事实推广到任意满足 `α < β` 的两个序数. 这需要一系列引理. 首先最基本的是 `veblen F` 对第一个参数的合同性, 而这又直接依赖于单调性.
+
+```agda
+  interleaved mutual
+    veblen-monoˡ-≤ : ∀ γ → ≤-monotonic (λ α → veblen F α γ)
+    veblen-monoˡ-≤l : ∀ f α → F α ≤ veblen F (lim f) α
+
+    veblen-monoˡ-≤ γ {zero} {zero}  z≤ =        ≤-refl
+    veblen-monoˡ-≤ γ {zero} {suc β} z≤ =        begin
+      veblen F ⌜ 0 ⌝ γ                          ≤⟨ veblen-monoˡ-≤ γ z≤ ⟩
+      veblen F β γ                              ≤⟨ ′-incrʰ-≤ (veblen-normal β) γ ⟩
+      veblen F (suc β) γ                        ∎
+
+    veblen-monoˡ-≤ γ {zero} {lim f} z≤ =        veblen-monoˡ-≤l f γ
+    veblen-monoˡ-≤l f zero    =                 begin
+      veblen F ⌜ 0 ⌝ ⌜ 0 ⌝                      ≤⟨ veblen-monoˡ-≤ ⌜ 0 ⌝ z≤ ⟩
+      veblen F (f 0) ⌜ 0 ⌝                      ≤⟨ f≤l ⟩
+      (F ∘ₗ f) ⌜ 0 ⌝                            ∎
+    veblen-monoˡ-≤l f (suc α) =                 begin
+      veblen F ⌜ 0 ⌝ (suc α)                    ≤⟨ veblen-monoˡ-≤ (suc α) z≤ ⟩
+      veblen F (f 0) (suc α)                    ≤⟨ proj₁ (veblen-normal (f 0)) (s≤s ≤) ⟩
+      veblen F (f 0) (suc (veblen F (lim f) α)) ≤⟨ f≤l ⟩
+      (F ∘ₗ f) (suc (veblen F (lim f) α))       ∎ where
+        ≤ : α ≤ veblen F (lim f) α
+        ≤ = normal⇒≤-incr (veblen-normal (lim f)) α
+    veblen-monoˡ-≤l f (lim g) =                 begin
+      F (lim g)                                 ≈⟨ lim-ct g ⟩
+      lim (λ n → F (g n))                       ≤⟨ l≤l (λ n → veblen-monoˡ-≤l f (g n)) ⟩
+      lim (λ n → veblen F (lim f) (g n))        ∎
+
+    veblen-monoˡ-≤ γ {suc α} {suc β} (s≤ α≤β) = begin
+      veblen F (suc α) γ                        ≤⟨ ′-monoʰ-≤ (proj₁ (veblen-normal α)) IH ⟩
+      veblen F (suc β) γ                        ∎ where
+        IH = λ {γ} → veblen-monoˡ-≤ γ (<s⇒≤ (_ , α≤β))
+    veblen-monoˡ-≤ γ {suc α} {lim f} (s≤ α<f) = {!   !}
+    veblen-monoˡ-≤ γ {lim f} {β}     (l≤ f≤β) = {!   !}
+```
+
+最后, 我们将 `veblen` 的性质实例化到 `φ`.
+
+```agda
+open Properties (ω ^_) ω^-normal
+```
+
+每个 `φ α` 都是序数嵌入.
 
 ```agda
 φ-normal : ∀ α → normal (φ α)
-φ-normal zero    = ω^-normal
-φ-normal (suc α) = ′-normal (φ-normal α)
-φ-normal (lim f) = ⁺-normal ((ω ^_) ∘ₗ f) ≤-mono <-incr where
-  ≤-mono : ≤-monotonic ((ω ^_) ∘ₗ f ∘ suc)
-  ≤-mono {α} {β} ≤ = l≤ (λ n →  begin
-    φ (f n) (suc α)             ≤⟨ proj₁ (φ-normal (f n)) (s≤s ≤) ⟩
-    φ (f n) (suc β)             ≤⟨ f≤l ⟩
-    ((ω ^_) ∘ₗ f) (suc β)       ∎)
-  <-incr : <-increasing ((ω ^_) ∘ₗ f ∘ suc)
-  <-incr α =                    begin-strict
-    α                           <⟨ <s ⟩
-    suc α                       ≤⟨ normal⇒≤-incr (φ-normal (f 0)) (suc α) ⟩
-    φ (f 0) (suc α)             ≤⟨ f≤l ⟩
-    ((ω ^_) ∘ₗ f) (suc α)       ∎
+φ-normal = veblen-normal
 ```
-
-由此可知每个 `φ (suc α) β` 也是 `φ α` 的不动点.
 
 $$φ_α(φ_{α+1}(β))=φ_{α+1}(β)$$
 
 ```agda
 φ-fp-suc : ∀ α β → (φ (suc α) β) isFixpointOf (φ α)
-φ-fp-suc α β = ′-fp (φ-normal α) β
+φ-fp-suc = veblen-fp-suc
+```
+
+`φ` 对第一个参数的单调性.
+
+```agda
+φ-monoˡ-≤ : ∀ γ → ≤-monotonic (λ α → φ α γ)
+φ-monoˡ-≤ = veblen-monoˡ-≤
 ```
