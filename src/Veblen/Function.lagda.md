@@ -137,7 +137,7 @@ _ = λ _ _ → refl
 module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 ```
 
-对 `veblen` 来说, 如果初始函数 `F` 是序数嵌入, 那么每个迭代 `veblen F α` 都是序数嵌入.
+**引理** 对 `veblen` 来说, 如果初始函数 `F` 是序数嵌入, 那么每个迭代 `veblen F α` 都是序数嵌入.
 
 ```agda
   veblen-normal : ∀ α → normal (veblen F α)
@@ -155,21 +155,29 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
       (F ∘ₗ f) α                ∎
 ```
 
-由此可知每个 `veblen F (suc α) γ` 也是 `veblen F α` 的不动点.
+**引理** 每个 `veblen F (suc α) γ` 也是 `veblen F α` 的不动点.
 
 ```agda
   veblen-fp-suc : ∀ α γ → (veblen F (suc α) γ) isFixpointOf (veblen F α)
   veblen-fp-suc α γ = ′-fp (veblen-normal α) γ
 ```
 
-我们想把以上事实推广到任意满足 `α < β` 的两个序数. 这需要一系列引理. 首先最基本的是 `veblen F` 对第一个参数的合同性, 而这又直接依赖于单调性.
+我们想把上述事实推广到任意满足 `α < β` 的两个序数. 这需要一系列引理. 其中最基本的是 `veblen F` 对第一个参数的合同性, 而这又直接依赖于单调性.
+
+**引理** `veblen F` 对第一个 (良构) 参数满足单调性.
+
+该命题较为繁琐. 首先在表述上, 参数要求是良构序数. 证明上, 要同时讨论 `_≤_` 的两边, 这就分出了九种情况, 然后还衍生出一个互递归命题又分出五种情况.
 
 ```agda
   veblen-monoˡ-≤ : ∀ {α β γ} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ →
     α ≤ β → veblen F α γ ≤ veblen F β γ
   veblen-monoˡ-≤l : ∀ {α f n γ} → ⦃ wellFormed α ⦄ → ⦃ ∀ {n} → wellFormed (f n) ⦄ →
     α ≤ f n → veblen F α γ ≤ veblen F (lim f) γ
+```
 
+**证明** 我们先证衍生出的互递归命题. (TODO)
+
+```agda
   veblen-monoˡ-≤l {α} {f} {n} {zero} α≤fn =   begin
     veblen F α zero                           ≤⟨ veblen-monoˡ-≤ α≤fn ⟩
     veblen F (f n) zero                       ≤⟨ f≤l ⟩
@@ -235,6 +243,8 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
       (F ∘ₗ β) ξ                              ∎
 ```
 
+**推论** `veblen F` 对第一个 (良构) 参数满足合同性.
+
 ```agda
   module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
     veblen-congˡ-≤ : α ≈ β → veblen F α γ ≈ veblen F β γ
@@ -261,7 +271,7 @@ $$φ_α(φ_{α+1}(β))=φ_{α+1}(β)$$
 φ-fp-suc = veblen-fp-suc
 ```
 
-`φ` 对第一个参数的单调性.
+`φ` 对第一个参数的单调性与合同性.
 
 ```agda
 module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
