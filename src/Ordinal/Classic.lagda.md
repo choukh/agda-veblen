@@ -25,7 +25,7 @@ module Ordinal.Classic where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (wellFormed; z<l; s<l; f<l; fn<fsn)
+open import Ordinal.WellFormed using (wellFormed; z<l; f<l; <l⇒s<l; fn<fsn; l≤s⇒l≤)
 open import Data.Nat using (ℕ)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Unit using (⊤; tt)
@@ -98,14 +98,14 @@ postulate
 左边是后继右边是极限的情况, 用归纳假设得到两个分支.
 
 - 若 `α ≤ lim f`, 对它用 `≤-split`, 注意这里是互递归调用
-  - 若 `α < lim f`, 由上一章的 `s<l` 可知 `suc α < lim f`, 所以 `suc α ≤ lim f`
+  - 若 `α < lim f`, 由上一章的 `<l⇒s<l` 可知 `suc α < lim f`, 所以 `suc α ≤ lim f`
   - 若 `α ≈ lim f`, 有 `lim f ≤ α ≤ suc α`
 - 若 `lim f ≤ α`, 有 `lim f ≤ α ≤ suc α`
 
 ```agda
 ≤-total {suc α} {lim f} wfα wfβ with ≤-total wfα wfβ
 ... | inj₁ α≤l with ≤-split wfα wfβ α≤l
-...   | inj₁ α<l = inj₁ (begin suc α <⟨ s<l (proj₂ wfβ) α<l ⟩ lim f ∎)
+...   | inj₁ α<l = inj₁ (begin suc α <⟨ <l⇒s<l (proj₂ wfβ) α<l ⟩ lim f ∎)
 ...   | inj₂ α≈l = inj₂ (begin lim f ≤⟨ proj₂ α≈l ⟩ α ≤⟨ ≤s ⟩ suc α ∎)
 ≤-total {suc α} {lim f} wfα wfβ
     | inj₂ l≤α = inj₂ (≤⇒≤s l≤α)
@@ -117,7 +117,7 @@ postulate
 ≤-total {lim f} {suc β} wfα wfβ with ≤-total wfα wfβ
 ... | inj₁ l≤β = inj₁ (≤⇒≤s l≤β)
 ... | inj₂ β≤l with ≤-split wfβ wfα β≤l
-...   | inj₁ β<l = inj₂ (begin suc β <⟨ s<l (proj₂ wfα) β<l ⟩ lim f ∎)
+...   | inj₁ β<l = inj₂ (begin suc β <⟨ <l⇒s<l (proj₂ wfα) β<l ⟩ lim f ∎)
 ...   | inj₂ β≈l = inj₁ (begin lim f ≤⟨ proj₂ β≈l ⟩ β ≤⟨ ≤s ⟩ suc β ∎)
 ```
 
@@ -146,13 +146,13 @@ postulate
 ... | inj₂ ≥ = ≥
 ```
 
-下面是第二章 [`<ω⊎≥ω`](Ordinal.WellFormed.html#6476) 的推广, 前两个分支的证法与之类似.
+下面是第二章 [`<ω⊎≥ω`](Ordinal.WellFormed.html#7258) 的推广, 前两个分支的证法与之类似.
 
 ```agda
 <l⊎≥l : ∀ {α g} → wellFormed α → wellFormed (lim g) → α < lim g ⊎ α ≥ lim g
 <l⊎≥l {zero} _ (_ , mono) = inj₁ (z<l mono)
 <l⊎≥l {suc α} wfα wfβ with <l⊎≥l wfα wfβ
-... | inj₁ <l = inj₁ (s<l (proj₂ wfβ) <l)
+... | inj₁ <l = inj₁ (<l⇒s<l (proj₂ wfβ) <l)
 ... | inj₂ ≥l = inj₂ (≤⇒≤s ≥l)
 ```
 
@@ -172,15 +172,6 @@ postulate
 ...     | inj₂ l≤gn = inj₁ (begin-strict lim f ≤⟨ l≤gn ⟩
                                          g n   <⟨ f<l (proj₂ wfβ) ⟩
                                          lim g ∎)
-```
-
-下面是第二章 [`ω≤s⇒ω≤`](Ordinal.WellFormed.html#6803) 的推广, 证法也与它完全一样.
-
-```agda
-l≤s⇒l≤ : ∀ {α f} → wellFormed α → wellFormed (lim f) → lim f ≤ suc α → lim f ≤ α
-l≤s⇒l≤ wfα wfβ l≤s with <l⊎≥l wfα wfβ
-... | inj₁ <l = ⊥-elim (≤⇒≯ l≤s (s<l (proj₂ wfβ) <l))
-... | inj₂ ≥l = ≥l
 ```
 
 终于, 可以证明 `≤-split` 了. 首先是比较简单的五种情况.
@@ -210,8 +201,8 @@ l≤s⇒l≤ wfα wfβ l≤s with <l⊎≥l wfα wfβ
 ```agda
 ≤-split {suc α} {lim f} wfα (wfn , mono) (s≤ α≤fn∸d)
   with ≤-split wfα wfn (≤∸⇒≤ α≤fn∸d)
-... | inj₁ α<fn = inj₁ (s<l mono (<f⇒<l α<fn))
-... | inj₂ α≈fn = inj₁ (s<l mono (begin-strict α ≤⟨ proj₁ α≈fn ⟩ _ <⟨ f<l mono ⟩ lim f ∎))
+... | inj₁ α<fn = inj₁ (<l⇒s<l mono (<f⇒<l α<fn))
+... | inj₂ α≈fn = inj₁ (<l⇒s<l mono (begin-strict α ≤⟨ proj₁ α≈fn ⟩ _ <⟨ f<l mono ⟩ lim f ∎))
 ```
 
 左边是极限右边是后继的情况, 对 `lim f ≤ suc β` 使用引理 `l≤s⇒l≤` 得到 `lim f ≤ β`, 对它使用归纳假设得到两个分支.
@@ -221,7 +212,7 @@ l≤s⇒l≤ wfα wfβ l≤s with <l⊎≥l wfα wfβ
 
 ```agda
 ≤-split {lim f} {suc β} wfα wfβ l≤β
-  with ≤-split wfα wfβ (l≤s⇒l≤ wfβ wfα l≤β)
+  with ≤-split wfα wfβ (l≤s⇒l≤ (proj₂ wfα) l≤β)
 ... | inj₁ l<β = inj₁ (begin-strict lim f <⟨ l<β ⟩ β <⟨ <s ⟩ suc β ∎)
 ... | inj₂ l≈β = inj₁ (≤⇒<s (proj₁ l≈β))
 ```

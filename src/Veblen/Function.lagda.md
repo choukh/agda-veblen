@@ -24,7 +24,7 @@ module Veblen.Function where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (ω; ⌜_⌝)
+open import Ordinal.WellFormed using (wellFormed; ω; ⌜_⌝; ≤z⇒≡z; l≤s⇒l≤; ∃[m]fn<gm)
 open import Ordinal.Function
 open import Ordinal.Recursion
 open import Ordinal.Arithmetic using (_^_)
@@ -145,9 +145,9 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
   veblen-normal (suc α) = ′-normal (veblen-normal α)
   veblen-normal (lim f) = ⁺-normal (F ∘ₗ f) mono incr where
     mono : ≤-monotonic (F ∘ₗ f)
-    mono {α} {β} ≤ = l≤l (λ n → begin
+    mono {α} {β} ≤ = l≤l λ n → begin
       veblen F (f n) (α)        ≤⟨ proj₁ (veblen-normal (f n)) ≤ ⟩
-      veblen F (f n) (β)        ∎)
+      veblen F (f n) (β)        ∎
     incr : ≤-increasing (F ∘ₗ f)
     incr α =                    begin
       α                         ≤⟨ normal⇒≤-incr (veblen-normal (f 0)) α ⟩
@@ -162,56 +162,83 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
   veblen-fp-suc α γ = ′-fp (veblen-normal α) γ
 ```
 
-我们想把上面的事实推广到任意满足 `α < β` 的两个序数. 这需要一系列引理. 首先最基本的是 `veblen F` 对第一个参数的合同性, 而这又直接依赖于单调性.
+我们想把以上事实推广到任意满足 `α < β` 的两个序数. 这需要一系列引理. 首先最基本的是 `veblen F` 对第一个参数的合同性, 而这又直接依赖于单调性.
 
 ```agda
-  veblen-monoˡ-≤ : ∀ γ → ≤-monotonic (λ α → veblen F α γ)
-  veblen-monoˡ-≤l : ∀ γ α f n → α ≤ f n → veblen F α γ ≤ veblen F (lim f) γ
+  veblen-monoˡ-≤ : ∀ {α β γ} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ →
+    α ≤ β → veblen F α γ ≤ veblen F β γ
+  veblen-monoˡ-≤l : ∀ {α f n γ} → ⦃ wellFormed α ⦄ → ⦃ ∀ {n} → wellFormed (f n) ⦄ →
+    α ≤ f n → veblen F α γ ≤ veblen F (lim f) γ
 
-  veblen-monoˡ-≤l zero    α f n α≤fn =          begin
-    veblen F α zero                             ≤⟨ veblen-monoˡ-≤ zero α≤fn ⟩
-    veblen F (f n) zero                         ≤⟨ f≤l ⟩
-    (F ∘ₗ f) zero                               ∎
+  veblen-monoˡ-≤l {α} {f} {n} {zero} α≤fn =   begin
+    veblen F α zero                           ≤⟨ veblen-monoˡ-≤ α≤fn ⟩
+    veblen F (f n) zero                       ≤⟨ f≤l ⟩
+    (F ∘ₗ f) zero                             ∎
 
-  veblen-monoˡ-≤l (suc γ) α f n α≤fn = begin
-    veblen F α (suc γ)                          ≤⟨ veblen-monoˡ-≤ (suc γ) α≤fn ⟩
-    veblen F (f n) (suc γ)                      ≤⟨ proj₁ (veblen-normal (f n)) (s≤s ≤) ⟩
-    veblen F (f n) (suc (veblen F (lim f) γ))   ≤⟨ f≤l ⟩
-    (F ∘ₗ f) (suc (veblen F (lim f) γ))         ∎ where
+  veblen-monoˡ-≤l {α} {f} {n} {suc γ} α≤fn =  begin
+    veblen F α (suc γ)                        ≤⟨ veblen-monoˡ-≤ α≤fn ⟩
+    veblen F (f n) (suc γ)                    ≤⟨ proj₁ (veblen-normal (f n)) (s≤s ≤) ⟩
+    veblen F (f n) (suc (veblen F (lim f) γ)) ≤⟨ f≤l ⟩
+    (F ∘ₗ f) (suc (veblen F (lim f) γ))       ∎ where
       ≤ : γ ≤ veblen F (lim f) γ
       ≤ = normal⇒≤-incr (veblen-normal (lim f)) γ
 
-  veblen-monoˡ-≤l (lim γ) zero    f n z≤fn =    begin
-    F (lim γ)                                   ≈⟨ lim-ct γ ⟩
-    lim (λ n → F (γ n))                         ≤⟨ l≤l (λ n → veblen-monoˡ-≤l (γ n) zero f n z≤) ⟩
-    lim (λ n → veblen F (lim f) (γ n))          ∎
-  veblen-monoˡ-≤l (lim γ) (suc α) f n sα≤fn =   l≤l λ m → begin
-    veblen F (suc α) (γ m)                      ≤⟨ veblen-monoˡ-≤ (γ m) sα≤fn ⟩
-    veblen F (f n) (γ m)                        ≤⟨ veblen-monoˡ-≤l (γ m) (f n) f n ≤-refl ⟩
-    veblen F (lim f) (γ m)                      ∎
-  veblen-monoˡ-≤l (lim γ) (lim α) β n (l≤ α≤βn) = ⁺-monoʰ-≤ mono F≤F {lim γ} where
+  veblen-monoˡ-≤l {zero} {f} {n} {lim γ} z≤fn = begin
+    F (lim γ)                                 ≈⟨ lim-ct γ ⟩
+    lim (λ n → F (γ n))                       ≤⟨ l≤l (λ n → veblen-monoˡ-≤l {n = n} z≤) ⟩
+    lim (λ n → veblen F (lim f) (γ n))        ∎
+  veblen-monoˡ-≤l {suc α} {f} {n} {lim γ} sα≤fn = l≤l λ m → begin
+    veblen F (suc α) (γ m)                    ≤⟨ veblen-monoˡ-≤ sα≤fn ⟩
+    veblen F (f n) (γ m)                      ≤⟨ veblen-monoˡ-≤l ≤-refl ⟩
+    veblen F (lim f) (γ m)                    ∎
+  veblen-monoˡ-≤l {lim α} {β} {n} ⦃ wfα ⦄ (l≤ α≤βn) = ⁺-monoʰ-≤ mono (l≤ ≤) where
     mono : ≤-monotonic (F ∘ₗ α)
     mono ≤ = l≤l λ _ → proj₁ (veblen-normal (α _)) ≤
-    F≤F : ∀ {ξ} → (F ∘ₗ α) ξ ≤ (F ∘ₗ β) ξ
-    F≤F = l≤ (λ m → ≤f⇒≤l (veblen-monoˡ-≤ _ (α≤βn m)))
+    ≤ : ∀ {ξ} m → veblen F (α m) ξ ≤ (F ∘ₗ β) ξ
+    ≤ {ξ} m =                                 begin
+      veblen F (α m) ξ                        ≤⟨ veblen-monoˡ-≤ ⦃ proj₁ wfα ⦄ (α≤βn m) ⟩
+      veblen F (β n) ξ                        ≤⟨ f≤l ⟩
+      (F ∘ₗ β) ξ                              ∎
 
-  veblen-monoˡ-≤ γ {zero} {zero}  z≤ =          ≤-refl
-  veblen-monoˡ-≤ γ {zero} {suc β} z≤ =          begin
-    veblen F zero γ                             ≤⟨ veblen-monoˡ-≤ γ z≤ ⟩
-    veblen F β γ                                ≤⟨ ′-incrʰ-≤ (veblen-normal β) γ ⟩
-    veblen F (suc β) γ                          ∎
+  veblen-monoˡ-≤ {zero} {zero}      z≤ =      ≤-refl
+  veblen-monoˡ-≤ {zero} {suc β} {γ} z≤ =      begin
+    veblen F zero γ                           ≤⟨ veblen-monoˡ-≤ z≤ ⟩
+    veblen F β γ                              ≤⟨ ′-incrʰ-≤ (veblen-normal β) γ ⟩
+    veblen F (suc β) γ                        ∎
 
-  veblen-monoˡ-≤ γ {zero} {lim f} z≤ = veblen-monoˡ-≤l γ zero f 0 z≤
+  veblen-monoˡ-≤ {zero} {lim f} ⦃ _ ⦄ ⦃ wfβ ⦄ z≤
+    = veblen-monoˡ-≤l {n = 0} ⦃ _ ⦄ ⦃ proj₁ wfβ ⦄ z≤
 
-  veblen-monoˡ-≤ γ {suc α} {suc β} (s≤ α<s) =   begin
-    veblen F (suc α) γ                          ≤⟨ ′-monoʰ-≤ (proj₁ (veblen-normal α)) IH ⟩
-    veblen F (suc β) γ                          ∎
-    where IH = λ {γ} → veblen-monoˡ-≤ γ (<s⇒≤ (_ , α<s))
+  veblen-monoˡ-≤ {suc α} {suc β} {γ} (s≤ α<s) = begin
+    veblen F (suc α) γ                        ≤⟨ ′-monoʰ-≤ (proj₁ (veblen-normal α)) IH ⟩
+    veblen F (suc β) γ                        ∎ where
+      IH : ∀ {γ} → veblen F α γ ≤ veblen F β γ
+      IH = veblen-monoˡ-≤ (<s⇒≤ (_ , α<s))
 
-  veblen-monoˡ-≤ γ {suc α} {lim f} (s≤ {d = n , d} α<fn) = veblen-monoˡ-≤l γ (suc α) f n sα≤fn
-    where sα≤fn = <⇒s≤ (d , α<fn)
+  veblen-monoˡ-≤ {suc α} {lim f} ⦃ wfα ⦄ ⦃ wfβ ⦄ (s≤ {d = n , d} α<fn)
+    = veblen-monoˡ-≤l {suc α} ⦃ wfα ⦄ ⦃ proj₁ wfβ ⦄ (<⇒s≤ (d , α<fn))
 
-  veblen-monoˡ-≤ γ {lim α} {β} (l≤ αn≤β) = {!   !}
+  veblen-monoˡ-≤ {lim α} {zero}      ⦃ wfα ⦄ (l≤ αn≤β) with ≤z⇒≡z wfα (l≤ αn≤β)
+  ... | ()
+  veblen-monoˡ-≤ {lim α} {suc β} {γ} ⦃ wfα ⦄ (l≤ αn≤β) = begin
+    veblen F (lim α) γ                        ≤⟨ veblen-monoˡ-≤ (l≤s⇒l≤ (proj₂ wfα) (l≤ αn≤β)) ⟩
+    veblen F β γ                              ≤⟨ ′-incrʰ-≤ (veblen-normal β) γ ⟩
+    veblen F (suc β) γ                        ∎
+  veblen-monoˡ-≤ {lim α} {lim β} ⦃ wfα , mα ⦄ ⦃ wfβ , mβ ⦄ (l≤ αn≤β) = ⁺-monoʰ-≤ mono (l≤ ≤) where
+    mono : ≤-monotonic (F ∘ₗ α)
+    mono ≤ = l≤l λ _ → proj₁ (veblen-normal (α _)) ≤
+    ≤ : ∀ {ξ} n → veblen F (α n) ξ ≤ (F ∘ₗ β) ξ
+    ≤ {ξ} n with ∃[m]fn<gm mα mβ (l≤ αn≤β) n
+    ... | (m , <) =                           begin
+      veblen F (α n) ξ                        ≤⟨ veblen-monoˡ-≤ ⦃ wfα ⦄ ⦃ wfβ ⦄ (<⇒≤ <) ⟩
+      veblen F (β m) ξ                        ≤⟨ f≤l ⟩
+      (F ∘ₗ β) ξ                              ∎
+```
+
+```agda
+  module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
+    veblen-congˡ-≤ : α ≈ β → veblen F α γ ≈ veblen F β γ
+    veblen-congˡ-≤ (≤ , ≥) = (veblen-monoˡ-≤ ≤) , (veblen-monoˡ-≤ ≥)
 ```
 
 最后, 我们将 `veblen` 的性质实例化到 `φ`.
@@ -237,7 +264,11 @@ $$φ_α(φ_{α+1}(β))=φ_{α+1}(β)$$
 `φ` 对第一个参数的单调性.
 
 ```agda
-φ-monoˡ-≤ : ∀ γ → ≤-monotonic (λ α → φ α γ)
-φ-monoˡ-≤ = veblen-monoˡ-≤
+module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
+
+  φ-monoˡ-≤ : α ≤ β → φ α γ ≤ φ β γ
+  φ-monoˡ-≤ = veblen-monoˡ-≤
+
+  φ-congˡ-≤ : α ≈ β → φ α γ ≈ φ β γ
+  φ-congˡ-≤ = veblen-congˡ-≤
 ```
- 

@@ -213,7 +213,7 @@ _^^_ : Ord → Ord → Ord
     α ^^ suc ω                            ≈⟨ ^^-stuck α ⟩
     α ^^ ω                                ∎)
   , ^^-monoʳ-≤ α β≥ω
-    where IH = ^^-stuck-forever α β wfβ (ω≤s⇒ω≤ wfβ β≥ω)
+    where IH = ^^-stuck-forever α β wfβ (ω≤s⇒ω≤ β≥ω)
 ^^-stuck-forever α (lim f) (wfn , mono) β≥ω = l≤ helperˡ , l≤ helperʳ where
   helperˡ : ∀ n → α ^^ f n ≤ α ^^ ω
   helperˡ n with <ω⊎≥ω (wfn {n})

@@ -212,20 +212,51 @@ f<l {f} {n} mono = begin-strict f n <⟨ fn<fsn mono ⟩ f (suc n) ≤⟨ f≤l 
 ∃[n]<fn : ∀ {α f} → monotonic f → α < lim f → ∃[ n ] α < f n
 ∃[n]<fn {zero}  {f} mono _ = 1 ,
   (begin-strict zero ≤⟨ z≤ ⟩ f 0 <⟨ fn<fsn mono ⟩ f 1 ∎)
-∃[n]<fn {suc α} {f} mono s<l
-  with ∃[n]<fn mono (begin-strict α <⟨ <s ⟩ suc α <⟨ s<l ⟩ lim f ∎)
+∃[n]<fn {suc α} {f} mono <l⇒s<l
+  with ∃[n]<fn mono (begin-strict α <⟨ <s ⟩ suc α <⟨ <l⇒s<l ⟩ lim f ∎)
 ... | n , <f = suc n ,
   (begin-strict suc α ≤⟨ <⇒s≤ <f ⟩ f n <⟨ fn<fsn mono ⟩ f (suc n) ∎)
 ∃[n]<fn {lim g} mono ((n , d) , l<f) = n , d , l<f
 ```
 
-**引理** 可以将 `s<ω` 的结论一般化到任意单调极限序数.  
-**证明** 由上一条, 存在 `n` 使得 `α < f n`, 即 `suc α ≤ f n`, 又 `f n < f (suc n) < lim f`, 由传递性即证. ∎
+**推论** 两个单调极限序数的序关系可以反演到它们的序列项.  
+**证明** 由 `lim f ≤ lim g` 有 `f n < f (suc n) ≤ lim g`, 套入上一条即得. ∎
 
 ```agda
-s<l : ∀ {α f} → monotonic f → α < lim f → suc α < lim f
-s<l {α} {f} mono < with ∃[n]<fn mono <
+module _ {f g} (f-mono : monotonic f) (g-mono : monotonic g) where
+  ∃[m]fn<gm : lim f ≤ lim g → ∀ n → ∃[ m ] f n < g m
+  ∃[m]fn<gm (l≤ fn≤l) n = ∃[n]<fn g-mono (begin-strict
+    f n       <⟨ fn<fsn f-mono ⟩
+    f (suc n) ≤⟨ fn≤l (suc n) ⟩
+    lim g     ∎)
+```
+
+**推论** 可以将 `s<ω` 的结论一般化到任意单调极限序数.  
+**证明** 由 `∃[n]<fn`, 存在 `n` 使得 `α < f n`, 即 `suc α ≤ f n`, 又 `f n < f (suc n) < lim f`, 由传递性即证. ∎
+
+```agda
+<l⇒s<l : ∀ {α f} → monotonic f → α < lim f → suc α < lim f
+<l⇒s<l {α} {f} mono < with ∃[n]<fn mono <
 ... | n , <f = begin-strict suc α ≤⟨ <⇒s≤ <f ⟩ f n <⟨ f<l mono ⟩ lim f ∎
+```
+
+**引理** 上一条的逆否命题成立.  
+**证明** 与 `∃[m]fn<gm` 类似的思路. ∎
+
+```agda
+l≤s⇒l≤ : ∀ {f α} → monotonic f → lim f ≤ suc α → lim f ≤ α
+l≤s⇒l≤ {f} {α} mono (l≤ fn≤s) = l≤ λ n → <s⇒≤ (begin-strict
+  f n       <⟨ fn<fsn mono ⟩
+  f (suc n) ≤⟨ fn≤s (suc n) ⟩
+  suc α     ∎)
+```
+
+**推论** 后继无限序数的直接前驱也是无限序数.  
+**证明** 这是上一条的直接推论. ∎
+
+```agda
+ω≤s⇒ω≤ : ∀ {α} → ω ≤ suc α → ω ≤ α
+ω≤s⇒ω≤ ω≤s = l≤s⇒l≤ ⌜⌝-monotonic ω≤s
 ```
 
 ## 良构序数的性质
@@ -277,16 +308,6 @@ s<l {α} {f} mono < with ∃[n]<fn mono <
 ...                 | inj₁ <ω  = inj₁ (s<ω <ω)
 ...                 | inj₂ ≥ω  = inj₂ (≤⇒≤s ≥ω)
 <ω⊎≥ω {lim f} (_ , mono)       = inj₂ (ω≤l mono)
-```
-
-**引理** 良构无限后继序数的直接前驱也是无限序数.  
-**证明** 这是上一条的简单推论. ∎
-
-```agda
-ω≤s⇒ω≤ : ∀ {α} → wellFormed α → ω ≤ suc α → ω ≤ α
-ω≤s⇒ω≤ wf ω≤s with <ω⊎≥ω wf
-...                  | inj₁ <ω = ⊥-elim (≤⇒≯ ω≤s (s<ω <ω))
-...                  | inj₂ ≥ω = ≥ω
 ```
 
 ## 经典序数
