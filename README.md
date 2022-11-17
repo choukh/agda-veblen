@@ -63,7 +63,7 @@
 
 - We proved `ε (suc α) ≈ ε α ^^ ω` forall WF `α`
 
-### Veblen.Function.lagda.md
+### [Veblen.Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Function.lagda.md)
 
 - Veblen function `φ α β` is defined
 - Γ₀ is defined as `φ ⋱ zero`

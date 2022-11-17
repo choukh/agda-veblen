@@ -164,7 +164,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 我们想把上述事实推广到任意满足 `α < β` 的两个序数. 这需要一系列引理. 其中最基本的是 `veblen F` 对第一个参数的合同性, 而这又直接依赖于单调性.
 
-**引理** `veblen F` 对第一个 (良构) 参数满足单调性.
+**引理** `veblen F` 对第一个参数满足单调性.
 
 该命题较为繁琐. 首先在表述上, 参数要求是良构序数. 证明上, 要同时讨论 `_≤_` 的两边, 这就分出了九种情况, 然后还衍生出一个互递归命题又分出五种情况.
 
@@ -175,7 +175,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
     α ≤ f n → veblen F α γ ≤ veblen F (lim f) γ
 ```
 
-**证明** 我们先证衍生出的互递归命题. (TODO)
+**证明** 我们先证衍生出的命题. `γ` 为零或后继时都要递归调用主命题, 后继的情况还用到了第二个参数的序数嵌入条件.
 
 ```agda
   veblen-monoˡ-≤l {α} {f} {n} {zero} α≤fn =   begin
@@ -190,7 +190,11 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
     (F ∘ₗ f) (suc (veblen F (lim f) γ))       ∎ where
       ≤ : γ ≤ veblen F (lim f) γ
       ≤ = normal⇒≤-incr (veblen-normal (lim f)) γ
+```
 
+`γ` 为极限时要看 `α`. `α` 为零或后继时都要递归调用衍生命题, 为后继时还要递归调用主命题. `α` 为极限的情况使用 `_⁺` 的高阶单调性得证.
+
+```agda
   veblen-monoˡ-≤l {zero} {f} {n} {lim γ} z≤fn = begin
     F (lim γ)                                 ≈⟨ lim-ct γ ⟩
     lim (λ n → F (γ n))                       ≤⟨ l≤l (λ n → veblen-monoˡ-≤l {n = n} z≤) ⟩
@@ -207,31 +211,56 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
       veblen F (α m) ξ                        ≤⟨ veblen-monoˡ-≤ ⦃ proj₁ wfα ⦄ (α≤βn m) ⟩
       veblen F (β n) ξ                        ≤⟨ f≤l ⟩
       (F ∘ₗ β) ξ                              ∎
+```
 
+接着证明主命题. `α` 和 `β` 都为零时显然成立. `α` 为零 `β` 为后继时递归调用自身, 并使用 `_′` 的高阶增长性得证.
+
+```agda
   veblen-monoˡ-≤ {zero} {zero}      z≤ =      ≤-refl
   veblen-monoˡ-≤ {zero} {suc β} {γ} z≤ =      begin
     veblen F zero γ                           ≤⟨ veblen-monoˡ-≤ z≤ ⟩
     veblen F β γ                              ≤⟨ ′-incrʰ-≤ (veblen-normal β) γ ⟩
     veblen F (suc β) γ                        ∎
+```
 
+以下两种情况递归调用衍生命题得证.
+
+```agda
   veblen-monoˡ-≤ {zero} {lim f} ⦃ _ ⦄ ⦃ wfβ ⦄ z≤
     = veblen-monoˡ-≤l {n = 0} ⦃ _ ⦄ ⦃ proj₁ wfβ ⦄ z≤
+  veblen-monoˡ-≤ {suc α} {lim f} ⦃ wfα ⦄ ⦃ wfβ ⦄ (s≤ {d = n , d} α<fn)
+    = veblen-monoˡ-≤l {suc α} ⦃ wfα ⦄ ⦃ proj₁ wfβ ⦄ (<⇒s≤ (d , α<fn))
+```
 
+`α` 和 `β` 都为后继时使用 `_′` 的高阶单调性得证.
+
+```agda
   veblen-monoˡ-≤ {suc α} {suc β} {γ} (s≤ α<s) = begin
     veblen F (suc α) γ                        ≤⟨ ′-monoʰ-≤ (proj₁ (veblen-normal α)) IH ⟩
     veblen F (suc β) γ                        ∎ where
       IH : ∀ {γ} → veblen F α γ ≤ veblen F β γ
       IH = veblen-monoˡ-≤ (<s⇒≤ (_ , α<s))
+```
 
-  veblen-monoˡ-≤ {suc α} {lim f} ⦃ wfα ⦄ ⦃ wfβ ⦄ (s≤ {d = n , d} α<fn)
-    = veblen-monoˡ-≤l {suc α} ⦃ wfα ⦄ ⦃ proj₁ wfβ ⦄ (<⇒s≤ (d , α<fn))
+后继小于等于零的情况不存在, 且对良构序数来说极限小于等于零的情况也不存在.
 
+```agda
   veblen-monoˡ-≤ {lim α} {zero}      ⦃ wfα ⦄ (l≤ αn≤β) with ≤z⇒≡z wfα (l≤ αn≤β)
   ... | ()
+```
+
+`α` 为极限 `β` 为后继的情况与 `α` 为零 `β` 为后继的情况类似. 递归调用自身, 并使用 `_′` 的高阶增长性得证. 注意这里使用了良构序数特有的性质 `l≤s⇒l≤`.
+
+```agda
   veblen-monoˡ-≤ {lim α} {suc β} {γ} ⦃ wfα ⦄ (l≤ αn≤β) = begin
     veblen F (lim α) γ                        ≤⟨ veblen-monoˡ-≤ (l≤s⇒l≤ (proj₂ wfα) (l≤ αn≤β)) ⟩
     veblen F β γ                              ≤⟨ ′-incrʰ-≤ (veblen-normal β) γ ⟩
     veblen F (suc β) γ                        ∎
+```
+
+`α` 和 `β` 都为极限时使用 `_⁺` 的高阶单调性得证. 注意这里使用了良构序数特有的性质 `∃[m]fn<gm`. ∎
+
+```agda
   veblen-monoˡ-≤ {lim α} {lim β} ⦃ wfα , mα ⦄ ⦃ wfβ , mβ ⦄ (l≤ αn≤β) = ⁺-monoʰ-≤ mono (l≤ ≤) where
     mono : ≤-monotonic (F ∘ₗ α)
     mono ≤ = l≤l λ _ → proj₁ (veblen-normal (α _)) ≤
@@ -243,7 +272,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
       (F ∘ₗ β) ξ                              ∎
 ```
 
-**推论** `veblen F` 对第一个 (良构) 参数满足合同性.
+**推论** `veblen F` 对第一个参数满足合同性.
 
 ```agda
   module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
@@ -257,21 +286,21 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 open Properties (ω ^_) ω^-normal
 ```
 
-每个 `φ α` 都是序数嵌入.
+**事实** 每个 `φ α` 都是序数嵌入.
 
 ```agda
 φ-normal : ∀ α → normal (φ α)
 φ-normal = veblen-normal
 ```
 
-$$φ_α(φ_{α+1}(β))=φ_{α+1}(β)$$
+**事实** $φ_α(φ_{α+1}(β))=φ_{α+1}(β)$.
 
 ```agda
 φ-fp-suc : ∀ α β → (φ (suc α) β) isFixpointOf (φ α)
 φ-fp-suc = veblen-fp-suc
 ```
 
-`φ` 对第一个参数的单调性与合同性.
+**事实** `φ` 对第一个参数满足单调性与合同性.
 
 ```agda
 module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
