@@ -14,6 +14,7 @@ zhihu-url: https://zhuanlan.zhihu.com/p/575766146
 
 ```agda
 {-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --no-qualified-instances #-}
 
 module Ordinal.Function where
 ```
@@ -25,7 +26,7 @@ module Ordinal.Function where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (wellFormed; ∃[n]<fn; f<l)
+open import Ordinal.WellFormed using (wellFormed; ∃[n]<fn; f<l; wrap)
 ```
 
 标准库依赖除了乘积类型之外, 我们还将使用函数复合 `_∘_`, 恒等函数 `id`, 函数的单调性 `Monotonic₁`, 以及函数**尊重**二元关系 `_Respects_`.
@@ -93,7 +94,7 @@ zero-increasing : (Ord → Ord) → Set
 zero-increasing F = zero < F zero
 
 suc-increasing : (Ord → Ord) → Set
-suc-increasing F = ∀ {α} → wellFormed α → suc α < F (suc α)
+suc-increasing F = ∀ α → ⦃ wellFormed α ⦄ → suc α < F (suc α)
 ```
 
 以下两条称为 F 的单调性, 分别叫做 **≤-单调** 和 **<-单调**.
@@ -249,10 +250,10 @@ open import Function.Definitions (_≈_) (_≈_) using (Congruent)
 
 ```agda
 wf-<-monotonic : (Ord → Ord) → Set
-wf-<-monotonic F = ∀ {α β} → wellFormed α → wellFormed β → α < β → F α < F β
+wf-<-monotonic F = ∀ {α β} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ → α < β → F α < F β
 
 wf-suc-monotonic : (Ord → Ord) → Set
-wf-suc-monotonic F = ∀ {α} → wellFormed α → F α < F (suc α)
+wf-suc-monotonic F = ∀ α → ⦃ wellFormed α ⦄ → F α < F (suc α)
 
 wf-normal : (Ord → Ord) → Set
 wf-normal F = ≤-monotonic F × wf-suc-monotonic F × lim-continuous F
@@ -261,20 +262,20 @@ wf-normal F = ≤-monotonic F × wf-suc-monotonic F × lim-continuous F
 **事实** 用 `wf-suc-monotonic` 取代 `<-monotonic` 定义的 `wf-normal` 蕴含 `wf-<-monotonic`.
 
 ```agda
-wf-nml⇒<-mono : wf-normal F → wf-<-monotonic F
+module _ (nml@(≤-mono , suc-mono , lim-ct) : wf-normal F) where
+  wf-nml⇒<-mono : wf-<-monotonic F
 
-wf-nml⇒<-mono {F} nml@(≤-mono , suc-mono , _) {α} {suc β} wfα wfβ α<s = begin-strict
-  F α       ≤⟨ ≤-mono (<s⇒≤ α<s) ⟩
-  F β       <⟨ suc-mono wfβ ⟩
-  F (suc β) ∎
+  wf-nml⇒<-mono {α} {suc β} α<s = begin-strict
+    F α           ≤⟨ ≤-mono (<s⇒≤ α<s) ⟩
+    F β           <⟨ suc-mono β ⟩
+    F (suc β)     ∎
 
-wf-nml⇒<-mono {F} nml@(_ , _ , lim-ct) {α} {lim f} wfα wfβ@(wfn , mono) α<l
-  with ∃[n]<fn mono α<l
-... | (n , α<fn) = begin-strict
-      F α          <⟨ wf-nml⇒<-mono nml wfα wfn α<fn ⟩
-      F (f n)      <⟨ f<l (λ m<n → wf-nml⇒<-mono nml wfn wfn (mono m<n)) ⟩
-      lim (F ∘ f)  ≈˘⟨ lim-ct f ⟩
-      F (lim f)    ∎
+  wf-nml⇒<-mono {α} {lim f} ⦃ _ ⦄ ⦃ wfn , wrap mono ⦄ α<l with ∃[n]<fn ⦃ wrap mono ⦄ α<l
+  ... | (n , α<fn) = let instance wfn = wfn in begin-strict
+    F α           <⟨ wf-nml⇒<-mono α<fn ⟩
+    F (f n)       <⟨ f<l ⦃ wrap λ m<n → wf-nml⇒<-mono (mono m<n) ⦄ ⟩
+    lim (F ∘ f)   ≈˘⟨ lim-ct f ⟩
+    F (lim f)     ∎
 ```
 
 也就是说, 限定在良构序数的情况下[^2], 传统定义蕴含我们的定义. 另一方面, 显然地, 由 `<-monotonic` 蕴含 `suc-monotonic`, 我们的定义也蕴含传统定义. 这就说明了两者的等价性.

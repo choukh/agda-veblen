@@ -14,6 +14,7 @@ zhihu-url: https://zhuanlan.zhihu.com/p/581675452
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
+{-# OPTIONS --no-qualified-instances #-}
 
 module Veblen.Fixpoint where
 ```
@@ -25,7 +26,7 @@ module Veblen.Fixpoint where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed
+open import Ordinal.WellFormed hiding (wf⇒wf)
 open import Ordinal.Function
 open import Ordinal.Recursion
 ```
@@ -153,16 +154,18 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **引理** `F` 的从零开始的有穷递归是递归次数的单调序列.
 
 ```agda
-    ⋱₀-mono-n : monotonic (rec F from zero by_ ∘ ⌜_⌝)
-    ⋱₀-mono-n {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
-    ... | inj₁ m<n =                begin-strict
-      rec F from zero by ⌜ m ⌝      <⟨ ⋱₀-mono-n m<n ⟩
-      rec F from zero by ⌜ n ⌝      ≤⟨ ≤-incr _ ⟩
-      rec F from zero by ⌜ suc n ⌝  ∎
-    ... | inj₂ refl = helper m where
-      helper : ∀ m → rec F from zero by ⌜ m ⌝ < rec F from zero by ⌜ suc m ⌝
-      helper zero    = z-incr
-      helper (suc m) = <-mono (helper m)
+    ⋱₀-mono-n : Monotonic (rec F from zero by_ ∘ ⌜_⌝)
+    ⋱₀-mono-n = wrap mono where
+      mono : monotonic _
+      mono {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
+      ... | inj₁ m<n =                begin-strict
+        rec F from zero by ⌜ m ⌝      <⟨ mono m<n ⟩
+        rec F from zero by ⌜ n ⌝      ≤⟨ ≤-incr _ ⟩
+        rec F from zero by ⌜ suc n ⌝  ∎
+      ... | inj₂ refl = helper m where
+        helper : ∀ m → rec F from zero by ⌜ m ⌝ < rec F from zero by ⌜ suc m ⌝
+        helper zero    = z-incr
+        helper (suc m) = <-mono (helper m)
 ```
 
 **引理** 如果 `F` 保良构, 那么 `F ⋱ zero` 良构.
@@ -187,7 +190,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
         helper : ∀ n → suc ⌜ n ⌝ ≤ F (rec F from zero by ⌜ n ⌝)
         helper zero    = <⇒s≤ z-incr
         helper (suc n) =                    begin
-          ⌜ suc (suc n) ⌝                   ≤⟨ <⇒s≤ (s-incr ⌜ n ⌝-wellFormed) ⟩
+          ⌜ suc (suc n) ⌝                   ≤⟨ <⇒s≤ (s-incr ⌜ n ⌝ ⦃ ⌜ n ⌝-wellFormed ⦄) ⟩
           F ⌜ suc n ⌝                       ≤⟨ ≤-mono (helper n) ⟩
           F (F (rec F from zero by ⌜ n ⌝))  ∎
 ```
@@ -229,23 +232,25 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **引理** `F` 的从 `suc α` 开始的有穷递归是递归次数的单调序列.
 
 ```agda
-    ⋱ₛ-mono-n : ∀ {α} → wellFormed α → monotonic (rec F from suc α by_ ∘ ⌜_⌝)
-    ⋱ₛ-mono-n {α} wfα {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
-    ... | inj₁ m<n =                 begin-strict
-      rec F from suc α by ⌜ m ⌝      <⟨ ⋱ₛ-mono-n wfα m<n ⟩
-      rec F from suc α by ⌜ n ⌝      ≤⟨ ≤-incr _ ⟩
-      rec F from suc α by ⌜ suc n ⌝  ∎
-    ... | inj₂ refl = helper m where
-      helper : ∀ m → rec F from suc α by ⌜ m ⌝ < rec F from suc α by ⌜ suc m ⌝
-      helper zero    = s-incr wfα
-      helper (suc m) = <-mono (helper m)
+    ⋱ₛ-mono-n : ∀ α → ⦃ wellFormed α ⦄ → Monotonic (rec F from suc α by_ ∘ ⌜_⌝)
+    ⋱ₛ-mono-n α = wrap mono where
+      mono : monotonic _
+      mono {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
+      ... | inj₁ m<n =                 begin-strict
+        rec F from suc α by ⌜ m ⌝      <⟨ mono m<n ⟩
+        rec F from suc α by ⌜ n ⌝      ≤⟨ ≤-incr _ ⟩
+        rec F from suc α by ⌜ suc n ⌝  ∎
+      ... | inj₂ refl = helper m where
+        helper : ∀ m → rec F from suc α by ⌜ m ⌝ < rec F from suc α by ⌜ suc m ⌝
+        helper zero    = s-incr α
+        helper (suc m) = <-mono (helper m)
 ```
 
 **引理** 如果 `F` 保良构, 那么 `F ⋱_ ∘ suc` 也保良构.
 
 ```agda
     ⋱ₛ-wfp : wf-preserving F → wf-preserving (F ⋱_ ∘ suc)
-    ⋱ₛ-wfp wfp {α} wfα = helper , ⋱ₛ-mono-n wfα where
+    ⋱ₛ-wfp wfp {α} wfα = helper , ⋱ₛ-mono-n α ⦃ wfα ⦄ where
       helper : ∀ {n} → wellFormed (rec F from suc α by ⌜ n ⌝)
       helper {zero}  = wfα
       helper {suc n} = wfp helper
@@ -295,8 +300,8 @@ module _ {F} where
 
 ```agda
   ′-suc-incr : normal F → suc-increasing F → suc-increasing (F ′)
-  ′-suc-incr nml s-incr {α} wfα = begin-strict
-    suc α                             <⟨ s-incr wfα ⟩
+  ′-suc-incr nml s-incr α =           begin-strict
+    suc α                             <⟨ s-incr α ⟩
     rec F from suc α by ⌜ 1 ⌝         ≤⟨ f≤l ⟩
     F ⋱ suc α                         ≤⟨ ⋱ₛ-mono-≤ nml (rec-by-incr-≤ (⋱ₛ-mono-≤ nml) (⋱ₛ-incr-< nml) α) ⟩
     (F ′) (suc α)                     ∎

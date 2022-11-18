@@ -253,8 +253,8 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 `α` 为极限 `β` 为后继的情况与 `α` 为零 `β` 为后继的情况类似. 递归调用自身, 并使用 `_′` 的高阶增长性得证. 注意这里使用了良构序数特有的性质 `l≤s⇒l≤`.
 
 ```agda
-  veblen-monoˡ-≤ {lim α} {suc β} {γ} ⦃ wfα ⦄ (l≤ αn≤β) = begin
-    veblen F (lim α) γ                        ≤⟨ veblen-monoˡ-≤ (l≤s⇒l≤ (proj₂ wfα) (l≤ αn≤β)) ⟩
+  veblen-monoˡ-≤ {lim α} {suc β} {γ} (l≤ αn≤β) = begin
+    veblen F (lim α) γ                        ≤⟨ veblen-monoˡ-≤ (l≤s⇒l≤ (l≤ αn≤β)) ⟩
     veblen F β γ                              ≤⟨ ′-incrʰ-≤ (veblen-normal β) γ ⟩
     veblen F (suc β) γ                        ∎
 ```
@@ -262,13 +262,13 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 `α` 和 `β` 都为极限时使用 `_⁺` 的高阶单调性得证. 注意这里使用了良构序数特有的性质 `∃[m]fn<gm`. ∎
 
 ```agda
-  veblen-monoˡ-≤ {lim α} {lim β} ⦃ wfα , mα ⦄ ⦃ wfβ , mβ ⦄ (l≤ αn≤β) = ⁺-monoʰ-≤ mono (l≤ ≤) where
+  veblen-monoˡ-≤ {lim α} {lim β} (l≤ αn≤β) = ⁺-monoʰ-≤ mono (l≤ ≤) where
     mono : ≤-monotonic (F ∘ₗ α)
     mono ≤ = l≤l λ _ → proj₁ (veblen-normal (α _)) ≤
     ≤ : ∀ {ξ} n → veblen F (α n) ξ ≤ (F ∘ₗ β) ξ
-    ≤ {ξ} n with ∃[m]fn<gm mα mβ (l≤ αn≤β) n
+    ≤ {ξ} n with ∃[m]fn<gm (l≤ αn≤β) n
     ... | (m , <) =                           begin
-      veblen F (α n) ξ                        ≤⟨ veblen-monoˡ-≤ ⦃ wfα ⦄ ⦃ wfβ ⦄ (<⇒≤ <) ⟩
+      veblen F (α n) ξ                        ≤⟨ veblen-monoˡ-≤ (<⇒≤ <) ⟩
       veblen F (β m) ξ                        ≤⟨ f≤l ⟩
       (F ∘ₗ β) ξ                              ∎
 ```
@@ -312,4 +312,3 @@ module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ wh
   φ-congˡ-≤ : α ≈ β → φ α γ ≈ φ β γ
   φ-congˡ-≤ = veblen-congˡ-≤
 ```
- 

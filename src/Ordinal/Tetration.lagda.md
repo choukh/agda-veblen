@@ -16,6 +16,7 @@ zhihu-url: https://zhuanlan.zhihu.com/p/580526275
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
+{-# OPTIONS --overlapping-instances #-}
 
 module Ordinal.Tetration where
 ```
@@ -183,8 +184,8 @@ _^^_ : Ord → Ord → Ord
 再加一层也无济于事.
 
 ```agda
-^^≈^^[]sω : ∀ α τ → α ≥ τ → ⦃ τ ≥ ⌜ 1 ⌝ ⦄ → α ^^ suc ω ≈ α ^^[ τ ] suc ω
-^^≈^^[]sω α τ α≥τ ⦃ τ≥1 ⦄ = ^-congˡ ⦃ ≤-trans τ≥1 α≥τ ⦄ (^^≈^^[]ω α τ α≥τ)
+^^≈^^[]sω : ∀ α τ → α ≥ τ → τ ≥ ⌜ 1 ⌝ → α ^^ suc ω ≈ α ^^[ τ ] suc ω
+^^≈^^[]sω α τ α≥τ τ≥1 = ^-congˡ ⦃ ≤-trans τ≥1 α≥τ ⦄ (^^≈^^[]ω α τ α≥τ ⦃ τ≥1 ⦄)
 ```
 
 这就导致迭代幂次到 `ω` 层就卡住了.
@@ -192,7 +193,7 @@ _^^_ : Ord → Ord → Ord
 ```agda
 ^^-stuck : ∀ α → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → α ^^ suc ω ≈ α ^^ ω
 ^^-stuck α ⦃ α≥1 ⦄ =      begin-equality
-  α ^^ suc ω              ≈⟨ ^^≈^^[]sω α ⌜ 1 ⌝ α≥1 ⟩
+  α ^^ suc ω              ≈⟨ ^^≈^^[]sω α ⌜ 1 ⌝ α≥1 ≤-refl ⟩
   α ^^[ ⌜ 1 ⌝ ] suc ω     ≈˘⟨ ^^≈^^[1]s α ω ⟩
   α ^^ ω                  ∎
 ```
@@ -203,9 +204,9 @@ _^^_ : Ord → Ord → Ord
 ^^-monoʳ-≤ : ∀ α → ⦃ α > ⌜ 1 ⌝ ⦄ → ≤-monotonic (α ^^_)
 ^^-monoʳ-≤ α ⦃ α>1 ⦄ = rec-by-mono-≤ (^-monoʳ-≤ α ⦃ <⇒≤ α>1 ⦄) (λ β → ^-incrʳ-≤ β α)
 
-^^-stuck-forever : ∀ α β → ⦃ α > ⌜ 1 ⌝ ⦄ → wellFormed β → β ≥ ω → α ^^ β ≈ α ^^ ω
-^^-stuck-forever α zero           wfβ β≥ω = ⊥-elim (≤⇒≯ β≥ω z<ω)
-^^-stuck-forever α (suc β) ⦃ α>1 ⦄ wfβ β≥ω =
+^^-stuck-forever : ∀ α β → ⦃ α > ⌜ 1 ⌝ ⦄ → ⦃ wellFormed β ⦄ → β ≥ ω → α ^^ β ≈ α ^^ ω
+^^-stuck-forever α zero           β≥ω = ⊥-elim (≤⇒≯ β≥ω z<ω)
+^^-stuck-forever α (suc β) ⦃ α>1 ⦄ β≥ω =
     let instance α≥1 = <⇒≤ α>1 in        (begin
     α ^^ suc β                            ≡⟨⟩
     α ^ α ^^ β                            ≤⟨ ^-monoʳ-≤ α (proj₁ IH) ⟩
@@ -213,11 +214,11 @@ _^^_ : Ord → Ord → Ord
     α ^^ suc ω                            ≈⟨ ^^-stuck α ⟩
     α ^^ ω                                ∎)
   , ^^-monoʳ-≤ α β≥ω
-    where IH = ^^-stuck-forever α β wfβ (ω≤s⇒ω≤ β≥ω)
-^^-stuck-forever α (lim f) (wfn , mono) β≥ω = l≤ helperˡ , l≤ helperʳ where
+    where IH = ^^-stuck-forever α β (ω≤s⇒ω≤ β≥ω)
+^^-stuck-forever α (lim f) β≥ω = l≤ helperˡ , l≤ helperʳ where
   helperˡ : ∀ n → α ^^ f n ≤ α ^^ ω
-  helperˡ n with <ω⊎≥ω (wfn {n})
-  ...       | inj₁ fn<ω with ⌜⌝-surjective fn<ω wfn
+  helperˡ n with <ω⊎≥ω (f n)
+  ...       | inj₁ fn<ω with ⌜⌝-surjective fn<ω
   ...                   | (m , eq) =      begin
     α ^^ f n                              ≡⟨ cong (α ^^_) eq ⟩
     α ^^ ⌜ m ⌝                            ≤⟨ f≤l ⟩
@@ -225,11 +226,11 @@ _^^_ : Ord → Ord → Ord
   helperˡ n | inj₂ ω<fn =                 begin
     α ^^ f n                              ≤⟨ proj₁ IH ⟩
     α ^^ ω                                ∎
-    where IH = ^^-stuck-forever α (f n) wfn ω<fn
+    where IH = ^^-stuck-forever α (f n) ω<fn
   helperʳ : ∀ n → α ^^ ⌜ n ⌝ ≤ α ^^ lim f
-  helperʳ n with <ω⊎≥ω (wfn {n})
+  helperʳ n with <ω⊎≥ω (f n)
   ...       | inj₁ fn<ω =                 begin
-    α ^^ ⌜ n ⌝                            ≤⟨ ^^-monoʳ-≤ α (⌜n⌝≤fn mono) ⟩
+    α ^^ ⌜ n ⌝                            ≤⟨ ^^-monoʳ-≤ α ⌜n⌝≤fn ⟩
     α ^^ f n                              ≤⟨ f≤l ⟩
     α ^^ lim f                            ∎
   ...       | inj₂ ω<fn = begin
@@ -237,7 +238,7 @@ _^^_ : Ord → Ord → Ord
     α ^^ ω                                ≤⟨ proj₂ IH ⟩
     α ^^ f n                              ≤⟨ f≤l ⟩
     α ^^ lim f                            ∎
-    where IH = ^^-stuck-forever α (f n) wfn ω<fn
+    where IH = ^^-stuck-forever α (f n) ω<fn
 ```
 
 由于 `_^^_` 的第二个参数对 `ω` 之后的超限数没有意义了, 我们定义固定参数的版本.

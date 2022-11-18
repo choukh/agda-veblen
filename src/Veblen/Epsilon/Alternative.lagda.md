@@ -126,7 +126,7 @@ module _ (wfα : wellFormed α) where
     ω ^ ssn                         ≈⟨ ^-congˡ ⦃ n≤ω ⦄ (begin-equality
       ssn                           ≡⟨⟩
       ω ^ sn                        ≈⟨ ^-congˡ ⦃ n≤ω ⦄ (begin-equality
-        sn                          ≈˘⟨ ω^-absorb-+ _ _ (wf n) (< n) ⟩
+        sn                          ≈˘⟨ ω^-absorb-+ ⦃ wf n ⦄ (< n) ⟩
         ω ^ ε α + sn                ≈⟨ +-congʳ (ε-fp _) ⟩
         ε α + sn                    ∎) ⟩
       ω ^ (ε α + sn)                ≈⟨ ^-distribˡ-+-* _ _ _ ⟩

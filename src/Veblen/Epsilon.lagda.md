@@ -14,6 +14,7 @@ zhihu-url: https://zhuanlan.zhihu.com/p/582661842
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
+{-# OPTIONS --no-qualified-instances #-}
 
 module Veblen.Epsilon where
 ```
@@ -23,7 +24,7 @@ module Veblen.Epsilon where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed
+open import Ordinal.WellFormed hiding (wf⇒wf)
 open import Ordinal.Function using (normal; wf-preserving; zero-increasing; suc-increasing)
 open import Ordinal.Recursion using (rec_from_by_)
 open import Ordinal.Arithmetic
@@ -54,7 +55,7 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
   ω ^ zero            ∎
 
 ω^-suc-incr : suc-increasing (ω ^_)
-ω^-suc-incr {α} wfα with ≡z⊎>z wfα
+ω^-suc-incr α with ≡z⊎>z α
 ... | inj₁ refl =     begin-strict
   ⌜ 1 ⌝               <⟨ n<ω ⟩
   ω                   ≈˘⟨ ^-identityʳ ω ⟩
@@ -99,7 +100,7 @@ $$ε_{0} = ω^{ω^{.^{.^{.^{ω}}}}}$$
   ε zero              ≈˘⟨ ε-fp zero ⟩
   ω ^ ω ^^ω[ zero ]   ≈⟨ ^-^^[]-comm ω zero ω ⟩
   ω ^^ω[ ω ^ zero ]   ≡⟨⟩
-  ω ^^ω[ ⌜ 1 ⌝ ]      ≈˘⟨ ^^≈^^[]ω ω ⌜ 1 ⌝ n≤ω ⟩
+  ω ^^ω[ ⌜ 1 ⌝ ]      ≈˘⟨ ^^≈^^[]ω ω ⌜ 1 ⌝ n≤ω ⦃ ≤-refl ⦄ ⟩
   ω ^^ω               ∎
 ```
 
@@ -123,7 +124,7 @@ _ = λ f → refl
 
 ## `ε` 的另一种表示
 
-可以证明对任意良构 `α` 有 [`ε (suc α) ≈ ε α ^^ ω`](Veblen.Epsilon.Alternative.html#5147).
+可以证明对任意良构 `α` 有 [`ε (suc α) ≈ ε α ^^ ω`](Veblen.Epsilon.Alternative.html#5145).
 
 ## ζ层级
 

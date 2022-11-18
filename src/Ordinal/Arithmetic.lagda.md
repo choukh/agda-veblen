@@ -730,7 +730,7 @@ _ = *-zeroʳ
 ^-wfp : ∀ {α} → wellFormed α → ⦃ α > ⌜ 1 ⌝ ⦄ → wf-preserving (α ^_)
 ^-wfp {α} wfα {zero} _ = tt
 ^-wfp {α} wfα ⦃ α>1 ⦄ {suc β} wfβ = *-wfp (^-wfp wfα wfβ) (^>0 ⦃ <⇒≤ α>1 ⦄) wfα
-^-wfp {α} wfα {lim f} (wfn , mono) = ^-wfp wfα wfn , λ m<n → ^-monoʳ-< α (mono m<n)
+^-wfp {α} wfα {lim f} (wfn , wrap mono) = ^-wfp wfα wfn , wrap λ m<n → ^-monoʳ-< α (mono m<n)
 ```
 
 **注意** 左侧运算 `_+`, `_*`, `_^` 不保良构.
@@ -765,8 +765,8 @@ _ = *-zeroʳ
 **引理** ω的幂对加法有吸收律.
 
 ```agda
-ω^-absorb-+ : ∀ α β → wellFormed β → α < β → ω ^ α + ω ^ β ≈ ω ^ β
-ω^-absorb-+ α (suc β) wfβ α<β =
+ω^-absorb-+ : ∀ {α β} → ⦃ wellFormed β ⦄ → α < β → ω ^ α + ω ^ β ≈ ω ^ β
+ω^-absorb-+ {α} {suc β} α<β =
     l≤ (λ n →                   begin-nonstrict
       ω ^ α + ω ^ β * ⌜ n ⌝     ≤⟨ +-monoˡ-≤ _ (^-monoʳ-≤ ω (<s⇒≤ α<β)) ⟩
       ω ^ β + ω ^ β * ⌜ n ⌝     ≈⟨ +-assoc-n _ _ ⟩
@@ -779,18 +779,20 @@ _ = *-zeroʳ
       ω ^ α + ω ^ β * ⌜ n ⌝     ≤⟨ +-monoʳ-≤ _ (*-monoʳ-≤ _ (<⇒≤ n<ω)) ⟩
       ω ^ α + ω ^ β * ω         ≤.≡⟨⟩
       ω ^ α + ω ^ suc β         ∎)
-ω^-absorb-+ α (lim f) (wfn , mono) α<l with ∃[n]<fn mono α<l
+ω^-absorb-+ {α} {lim f} ⦃ wf ⦄ α<l with ∃[n]<fn α<l
 ... | (m , α<fm) = l≤ helper , l≤ λ n → ≤f⇒≤l (+-incrʳ-≤ _ _) where
   helper : ∀ n → ω ^ α + ω ^ f n ≤ lim (λ n → ω ^ f n)
   helper n with (ℕ.<-cmp m n)
   ... | tri< m<n _ _  = ≤f⇒≤l ( begin-nonstrict
-        ω ^ α + ω ^ f n         ≤⟨ proj₁ (ω^-absorb-+ α (f n) wfn α<fn) ⟩
-        ω ^ f n                 ∎) where α<fn = <-trans α<fm (mono m<n)
+        ω ^ α + ω ^ f n         ≤⟨ proj₁ (ω^-absorb-+ {β = f n} α<fn) ⟩
+        ω ^ f n                 ∎)
+    where α<fn = let (_ , wrap mono) = wf in <-trans α<fm (mono m<n)
   ... | tri≈ _ refl _ = ≤f⇒≤l ( begin-nonstrict
-        ω ^ α + ω ^ f n         ≤⟨ proj₁ (ω^-absorb-+ α (f n) wfn α<fm) ⟩
+        ω ^ α + ω ^ f n         ≤⟨ proj₁ (ω^-absorb-+ α<fm) ⟩
         ω ^ f n                 ∎)
   ... | tri> _ _ n<m  = ≤f⇒≤l ( begin-nonstrict
-        ω ^ α + ω ^ f n         ≤⟨ +-monoʳ-≤ _ (^-monoʳ-≤ _ (<⇒≤ (mono n<m))) ⟩
-        ω ^ α + ω ^ f m         ≤⟨ proj₁ (ω^-absorb-+ α (f m) wfn α<fm) ⟩
+        ω ^ α + ω ^ f n         ≤⟨ +-monoʳ-≤ _ (^-monoʳ-≤ _ fn≤fm) ⟩
+        ω ^ α + ω ^ f m         ≤⟨ proj₁ (ω^-absorb-+ α<fm) ⟩
         ω ^ f m                 ∎)
+    where fn≤fm = let (_ , wrap mono) = wf in <⇒≤ (mono n<m)
 ```
