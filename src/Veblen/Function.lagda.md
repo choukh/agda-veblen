@@ -176,7 +176,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
     α ≤ f n → veblen F α γ ≤ veblen F (lim f) γ
 ```
 
-**证明** 我们先证衍生出的命题. `γ` 为零或后继时都要递归调用主命题, 后继的情况还用到了第二个参数的序数嵌入条件.
+**证明** 我们先证衍生命题. `γ` 为零或后继时都要递归调用主命题, 后继的情况还用到了第二个参数的序数嵌入条件.
 
 ```agda
   veblen-monoˡ-≤l {α} {f} {n} {zero} α≤fn =   begin

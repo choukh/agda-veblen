@@ -52,7 +52,7 @@ monotonic : (ℕ → Ord) → Set
 monotonic = Monotonic₁ ℕ._<_ _<_
 ```
 
-由于要作为 (instance参数)[https://agda.readthedocs.io/en/v2.6.2.2.20221106/language/instance-arguments.html], 形式上做了一层 record 封装.
+由于要作为 [instance参数](https://agda.readthedocs.io/en/v2.6.2.2.20221106/language/instance-arguments.html), 形式上做了一层 record 封装.
 
 ```agda
 record Monotonic (f : ℕ → Ord) : Set where
@@ -69,7 +69,7 @@ wellFormed (suc α) = wellFormed α
 wellFormed (lim f) = (∀ {n} → wellFormed (f n)) × Monotonic f
 ```
 
-以下是从良构极限序数到序列每一项良构以及序列单调的 instance 推理规则.
+以下 instance 用于从良构极限序数推出其序列每一项良构以及序列单调.
 
 ```agda
 instance
