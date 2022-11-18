@@ -1,5 +1,5 @@
 ---
-title: Agda大序数(9) 二元Ψ函数
+title: Agda大序数(9) 二元Veblen函数
 zhihu-tags: Agda, 序数, 大数数学
 ---
 
@@ -7,8 +7,8 @@ zhihu-tags: Agda, 序数, 大数数学
 
 > 交流Q群: 893531731  
 > 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Ψ/Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ψ/Function.lagda.md)  
-> 高亮渲染: [Ψ.Function.html](https://choukh.github.io/agda-lvo/Ψ.Function.html)  
+> 本文源码: [Veblen/Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Function.lagda.md)  
+> 高亮渲染: [Veblen.Function.html](https://choukh.github.io/agda-lvo/Veblen.Function.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 **(本章施工中)**
@@ -307,7 +307,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
     Ψ F α (Ψ F β (Ψ F (suc β) γ))     ≈⟨ Ψ-fp (d , ≤) ⟩
     Ψ F β (Ψ F (suc β) γ)             ≈⟨ Ψ-fp-suc β γ ⟩
     Ψ F (suc β) γ                     ∎
-  Ψ-fp {α} {lim f} {γ} α<β = {!   !}
+  Ψ-fp {α} {lim f} {γ} α<l = {!   !}
 ```
 
 ## 特化
