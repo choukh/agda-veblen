@@ -60,6 +60,12 @@ wellFormed (suc α) = wellFormed α
 wellFormed (lim f) = (∀ {n} → wellFormed (f n)) × monotonic f
 ```
 
+```agda
+instance
+  wf⇒wf : ∀ {f} → ⦃ wellFormed (lim f) ⦄ → ∀ {n} → wellFormed (f n)
+  wf⇒wf ⦃ wf ⦄ = proj₁ wf
+```
+
 ## 有限序数与 `ω`
 
 我们看几个简单的例子. 把 `ℕ` 嵌入到 `Ord` 可以得到有限序数 `⌜n⌝`.
@@ -284,8 +290,8 @@ l≤s⇒l≤ {f} {α} mono (l≤ fn≤s) = l≤ λ n → <s⇒≤ (begin-strict
 **引理** 小于等于零的良构序数就是零.
 
 ```agda
-≤z⇒≡z : ∀ {α} → wellFormed α → α ≤ zero → α ≡ zero
-≤z⇒≡z wf ≤z = ≈z⇒≡z wf (≤z , z≤)
+≤z⇒≡z : ∀ {α} → ⦃ wellFormed α ⦄ → α ≤ zero → α ≡ zero
+≤z⇒≡z ⦃ wf ⦄ ≤z = ≈z⇒≡z wf (≤z , z≤)
 ```
 
 良构序数还允许我们证明貌似要排中律才能得到的结果. 如:

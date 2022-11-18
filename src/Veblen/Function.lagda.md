@@ -15,6 +15,7 @@ zhihu-tags: Agda, 序数, 大数数学
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
+{-# OPTIONS --overlapping-instances #-}
 
 module Veblen.Function where
 ```
@@ -203,12 +204,12 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
     veblen F (suc α) (γ m)                    ≤⟨ veblen-monoˡ-≤ sα≤fn ⟩
     veblen F (f n) (γ m)                      ≤⟨ veblen-monoˡ-≤l ≤-refl ⟩
     veblen F (lim f) (γ m)                    ∎
-  veblen-monoˡ-≤l {lim α} {β} {n} ⦃ wfα ⦄ (l≤ α≤βn) = ⁺-monoʰ-≤ mono (l≤ ≤) where
+  veblen-monoˡ-≤l {lim α} {β} {n} (l≤ α≤βn) = ⁺-monoʰ-≤ mono (l≤ ≤) where
     mono : ≤-monotonic (F ∘ₗ α)
     mono ≤ = l≤l λ _ → proj₁ (veblen-normal (α _)) ≤
     ≤ : ∀ {ξ} m → veblen F (α m) ξ ≤ (F ∘ₗ β) ξ
     ≤ {ξ} m =                                 begin
-      veblen F (α m) ξ                        ≤⟨ veblen-monoˡ-≤ ⦃ proj₁ wfα ⦄ (α≤βn m) ⟩
+      veblen F (α m) ξ                        ≤⟨ veblen-monoˡ-≤ (α≤βn m) ⟩
       veblen F (β n) ξ                        ≤⟨ f≤l ⟩
       (F ∘ₗ β) ξ                              ∎
 ```
@@ -226,10 +227,10 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 以下两种情况递归调用衍生命题得证.
 
 ```agda
-  veblen-monoˡ-≤ {zero} {lim f} ⦃ _ ⦄ ⦃ wfβ ⦄ z≤
-    = veblen-monoˡ-≤l {n = 0} ⦃ _ ⦄ ⦃ proj₁ wfβ ⦄ z≤
-  veblen-monoˡ-≤ {suc α} {lim f} ⦃ wfα ⦄ ⦃ wfβ ⦄ (s≤ {d = n , d} α<fn)
-    = veblen-monoˡ-≤l {suc α} ⦃ wfα ⦄ ⦃ proj₁ wfβ ⦄ (<⇒s≤ (d , α<fn))
+  veblen-monoˡ-≤ {zero} {lim f} z≤
+    = veblen-monoˡ-≤l {n = 0} z≤
+  veblen-monoˡ-≤ {suc α} {lim f} (s≤ {d = n , d} α<fn)
+    = veblen-monoˡ-≤l {suc α} (<⇒s≤ (d , α<fn))
 ```
 
 `α` 和 `β` 都为后继时使用 `_′` 的高阶单调性得证.
@@ -245,7 +246,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 后继小于等于零的情况不存在, 且对良构序数来说极限小于等于零的情况也不存在.
 
 ```agda
-  veblen-monoˡ-≤ {lim α} {zero}      ⦃ wfα ⦄ (l≤ αn≤β) with ≤z⇒≡z wfα (l≤ αn≤β)
+  veblen-monoˡ-≤ {lim α} {zero} (l≤ αn≤β) with ≤z⇒≡z (l≤ αn≤β)
   ... | ()
 ```
 
@@ -311,3 +312,4 @@ module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ wh
   φ-congˡ-≤ : α ≈ β → φ α γ ≈ φ β γ
   φ-congˡ-≤ = veblen-congˡ-≤
 ```
+ 
