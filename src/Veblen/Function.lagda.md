@@ -1,14 +1,14 @@
 ---
-title: Agda大序数(9) 二元Veblen函数
+title: Agda大序数(9) 二元Ψ函数
 zhihu-tags: Agda, 序数, 大数数学
 ---
 
-# Agda大序数(9) 二元Veblen函数
+# Agda大序数(9) 二元Ψ函数
 
 > 交流Q群: 893531731  
 > 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Veblen/Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Function.lagda.md)  
-> 高亮渲染: [Veblen.Function.html](https://choukh.github.io/agda-lvo/Veblen.Function.html)  
+> 本文源码: [Ψ/Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ψ/Function.lagda.md)  
+> 高亮渲染: [Ψ.Function.html](https://choukh.github.io/agda-lvo/Ψ.Function.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 **(本章施工中)**
@@ -41,23 +41,23 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 
 ## 定义
 
-上一章讲到, 将 `ω ^_`, `ε`, `ζ`, `η` 分别看作第0, 1, 2, 3层级, 可以推广到任意序数层级, 从而得到二元 Veblen 函数.
+上一章讲到, 将 `ω ^_`, `ε`, `ζ`, `η` 分别看作第0, 1, 2, 3层级, 可以推广到任意序数层级, 从而得到二元 Ψ 函数.
 
-形式上, 我们需要辅助函数 `veblen`, 它是一个高阶函数, 接受一个序数函数 `F` 作为初始值, 并接受一个序数 `α` 作为 `_′` 的迭代次数, 返回迭代后的序数函数. 于是 `φ` 就定义为以 `ω ^_` 为初始值的 `_′` 迭代.
+形式上, 我们需要辅助函数 `Ψ`, 它是一个高阶函数, 接受一个序数函数 `F` 作为初始值, 并接受一个序数 `α` 作为 `_′` 的迭代次数, 返回迭代后的序数函数. 于是 `φ` 就定义为以 `ω ^_` 为初始值的 `_′` 迭代.
 
 **注意** 极限情况下的形式较为复杂. naive地看似乎 `F ∘ₗ f` 就够了, 但为了更好的性质以及更高的增长率要再套一层 `_⁺`.
 
 ```agda
-veblen : (Ord → Ord) → Ord → (Ord → Ord)
+Ψ : (Ord → Ord) → Ord → (Ord → Ord)
 _∘ₗ_ : (Ord → Ord) → (ℕ → Ord) → (Ord → Ord)
 
-veblen F zero    = F
-veblen F (suc α) = (veblen F α) ′
-veblen F (lim f) = (F ∘ₗ f) ⁺
-F ∘ₗ f = λ α → lim (λ n → veblen F (f n) α)
+Ψ F zero    = F
+Ψ F (suc α) = (Ψ F α) ′
+Ψ F (lim f) = (F ∘ₗ f) ⁺
+F ∘ₗ f = λ α → lim (λ n → Ψ F (f n) α)
 
 φ : Ord → Ord → Ord
-φ = veblen (ω ^_)
+φ = Ψ (ω ^_)
 ```
 
 由定义有
@@ -138,150 +138,181 @@ _ = λ _ _ → refl
 module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 ```
 
-**引理** 对 `veblen` 来说, 如果初始函数 `F` 是序数嵌入, 那么每个迭代 `veblen F α` 都是序数嵌入.
+### 嵌入性, 单调性
+
+**引理** 对 `Ψ` 来说, 如果初始函数 `F` 是序数嵌入, 那么每个迭代 `Ψ F α` 都是序数嵌入.
 
 ```agda
-  veblen-normal : ∀ α → normal (veblen F α)
-  veblen-normal zero    = nml
-  veblen-normal (suc α) = ′-normal (veblen-normal α)
-  veblen-normal (lim f) = ⁺-normal (F ∘ₗ f) mono incr where
+  Ψ-normal : ∀ α → normal (Ψ F α)
+  Ψ-normal zero    = nml
+  Ψ-normal (suc α) = ′-normal (Ψ-normal α)
+  Ψ-normal (lim f) = ⁺-normal (F ∘ₗ f) mono incr where
     mono : ≤-monotonic (F ∘ₗ f)
     mono {α} {β} ≤ = l≤l λ n → begin
-      veblen F (f n) (α)        ≤⟨ proj₁ (veblen-normal (f n)) ≤ ⟩
-      veblen F (f n) (β)        ∎
+      Ψ F (f n) (α)        ≤⟨ proj₁ (Ψ-normal (f n)) ≤ ⟩
+      Ψ F (f n) (β)        ∎
     incr : ≤-increasing (F ∘ₗ f)
     incr α =                    begin
-      α                         ≤⟨ normal⇒≤-incr (veblen-normal (f 0)) α ⟩
-      veblen F (f 0) α          ≤⟨ f≤l ⟩
+      α                         ≤⟨ normal⇒≤-incr (Ψ-normal (f 0)) α ⟩
+      Ψ F (f 0) α          ≤⟨ f≤l ⟩
       (F ∘ₗ f) α                ∎
 ```
 
-**引理** 每个 `veblen F (suc α) γ` 也是 `veblen F α` 的不动点.
+**引理** 每个 `Ψ F (suc α) γ` 也是 `Ψ F α` 的不动点.
 
 ```agda
-  veblen-fp-suc : ∀ α γ → (veblen F (suc α) γ) isFixpointOf (veblen F α)
-  veblen-fp-suc α γ = ′-fp (veblen-normal α) γ
+  Ψ-fp-suc : ∀ α γ → (Ψ F (suc α) γ) isFixpointOf (Ψ F α)
+  Ψ-fp-suc α γ = ′-fp (Ψ-normal α) γ
 ```
 
-我们想把上述事实推广到任意满足 `α < β` 的两个序数. 这需要一系列引理. 其中最基本的是 `veblen F` 对第一个参数的合同性, 而这又直接依赖于单调性.
+我们想把上述事实推广到任意满足 `α < β` 的两个序数, 这需要先证明 `Ψ F` 对第一个参数的单调性.
 
-**引理** `veblen F` 对第一个参数满足单调性.
+**引理** `Ψ F` 对第一个参数满足单调性.
 
 该命题较为繁琐. 首先在表述上, 参数要求是良构序数. 证明上, 要同时讨论 `_≤_` 的两边, 这就分出了九种情况, 然后还衍生出一个互递归命题又分出五种情况.
 
 ```agda
-  veblen-monoˡ-≤ : ∀ {α β γ} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ →
-    α ≤ β → veblen F α γ ≤ veblen F β γ
-  veblen-monoˡ-≤l : ∀ {α f n γ} → ⦃ wellFormed α ⦄ → ⦃ ∀ {n} → wellFormed (f n) ⦄ →
-    α ≤ f n → veblen F α γ ≤ veblen F (lim f) γ
+  Ψ-monoˡ-≤ : ∀ {α β γ} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ →
+    α ≤ β → Ψ F α γ ≤ Ψ F β γ
+  Ψ-monoˡ-≤l : ∀ {α f n γ} → ⦃ wellFormed α ⦄ → ⦃ ∀ {n} → wellFormed (f n) ⦄ →
+    α ≤ f n → Ψ F α γ ≤ Ψ F (lim f) γ
 ```
 
 **证明** 我们先证衍生命题. `γ` 为零或后继时都要递归调用主命题, 后继的情况还用到了第二个参数的序数嵌入条件.
 
 ```agda
-  veblen-monoˡ-≤l {α} {f} {n} {zero} α≤fn =   begin
-    veblen F α zero                           ≤⟨ veblen-monoˡ-≤ α≤fn ⟩
-    veblen F (f n) zero                       ≤⟨ f≤l ⟩
-    (F ∘ₗ f) zero                             ∎
+  Ψ-monoˡ-≤l {α} {f} {n} {zero} α≤fn =    begin
+    Ψ F α zero                            ≤⟨ Ψ-monoˡ-≤ α≤fn ⟩
+    Ψ F (f n) zero                        ≤⟨ f≤l ⟩
+    (F ∘ₗ f) zero                         ∎
 
-  veblen-monoˡ-≤l {α} {f} {n} {suc γ} α≤fn =  begin
-    veblen F α (suc γ)                        ≤⟨ veblen-monoˡ-≤ α≤fn ⟩
-    veblen F (f n) (suc γ)                    ≤⟨ proj₁ (veblen-normal (f n)) (s≤s ≤) ⟩
-    veblen F (f n) (suc (veblen F (lim f) γ)) ≤⟨ f≤l ⟩
-    (F ∘ₗ f) (suc (veblen F (lim f) γ))       ∎ where
-      ≤ : γ ≤ veblen F (lim f) γ
-      ≤ = normal⇒≤-incr (veblen-normal (lim f)) γ
+  Ψ-monoˡ-≤l {α} {f} {n} {suc γ} α≤fn =   begin
+    Ψ F α (suc γ)                         ≤⟨ Ψ-monoˡ-≤ α≤fn ⟩
+    Ψ F (f n) (suc γ)                     ≤⟨ proj₁ (Ψ-normal (f n)) (s≤s ≤) ⟩
+    Ψ F (f n) (suc (Ψ F (lim f) γ))       ≤⟨ f≤l ⟩
+    (F ∘ₗ f) (suc (Ψ F (lim f) γ))        ∎ where
+      ≤ : γ ≤ Ψ F (lim f) γ
+      ≤ = normal⇒≤-incr (Ψ-normal (lim f)) γ
 ```
 
 `γ` 为极限时要看 `α`. `α` 为零或后继时都要递归调用衍生命题, 为后继时还要递归调用主命题. `α` 为极限的情况使用 `_⁺` 的高阶单调性得证.
 
 ```agda
-  veblen-monoˡ-≤l {zero} {f} {n} {lim γ} z≤fn = begin
-    F (lim γ)                                 ≈⟨ lim-ct γ ⟩
-    lim (λ n → F (γ n))                       ≤⟨ l≤l (λ n → veblen-monoˡ-≤l {n = n} z≤) ⟩
-    lim (λ n → veblen F (lim f) (γ n))        ∎
-  veblen-monoˡ-≤l {suc α} {f} {n} {lim γ} sα≤fn = l≤l λ m → begin
-    veblen F (suc α) (γ m)                    ≤⟨ veblen-monoˡ-≤ sα≤fn ⟩
-    veblen F (f n) (γ m)                      ≤⟨ veblen-monoˡ-≤l ≤-refl ⟩
-    veblen F (lim f) (γ m)                    ∎
-  veblen-monoˡ-≤l {lim α} {β} {n} (l≤ α≤βn) = ⁺-monoʰ-≤ mono (l≤ ≤) where
+  Ψ-monoˡ-≤l {zero} {f} {n} {lim γ} z≤fn = begin
+    F (lim γ)                             ≈⟨ lim-ct γ ⟩
+    lim (λ n → F (γ n))                   ≤⟨ l≤l (λ n → Ψ-monoˡ-≤l {n = n} z≤) ⟩
+    lim (λ n → Ψ F (lim f) (γ n))         ∎
+  Ψ-monoˡ-≤l {suc α} {f} {n} {lim γ} sα≤fn = l≤l λ m → begin
+    Ψ F (suc α) (γ m)                     ≤⟨ Ψ-monoˡ-≤ sα≤fn ⟩
+    Ψ F (f n) (γ m)                       ≤⟨ Ψ-monoˡ-≤l ≤-refl ⟩
+    Ψ F (lim f) (γ m)                     ∎
+  Ψ-monoˡ-≤l {lim α} {β} {n} (l≤ α≤βn) = ⁺-monoʰ-≤ mono (l≤ ≤) where
     mono : ≤-monotonic (F ∘ₗ α)
-    mono ≤ = l≤l λ _ → proj₁ (veblen-normal (α _)) ≤
-    ≤ : ∀ {ξ} m → veblen F (α m) ξ ≤ (F ∘ₗ β) ξ
-    ≤ {ξ} m =                                 begin
-      veblen F (α m) ξ                        ≤⟨ veblen-monoˡ-≤ (α≤βn m) ⟩
-      veblen F (β n) ξ                        ≤⟨ f≤l ⟩
-      (F ∘ₗ β) ξ                              ∎
+    mono ≤ = l≤l λ _ → proj₁ (Ψ-normal (α _)) ≤
+    ≤ : ∀ {ξ} m → Ψ F (α m) ξ ≤ (F ∘ₗ β) ξ
+    ≤ {ξ} m =                             begin
+      Ψ F (α m) ξ                         ≤⟨ Ψ-monoˡ-≤ (α≤βn m) ⟩
+      Ψ F (β n) ξ                         ≤⟨ f≤l ⟩
+      (F ∘ₗ β) ξ                          ∎
 ```
 
 接着证明主命题. `α` 和 `β` 都为零时显然成立. `α` 为零 `β` 为后继时递归调用自身, 并使用 `_′` 的高阶增长性得证.
 
 ```agda
-  veblen-monoˡ-≤ {zero} {zero}      z≤ =      ≤-refl
-  veblen-monoˡ-≤ {zero} {suc β} {γ} z≤ =      begin
-    veblen F zero γ                           ≤⟨ veblen-monoˡ-≤ z≤ ⟩
-    veblen F β γ                              ≤⟨ ′-incrʰ-≤ (veblen-normal β) γ ⟩
-    veblen F (suc β) γ                        ∎
+  Ψ-monoˡ-≤ {zero} {zero}      z≤ =       ≤-refl
+  Ψ-monoˡ-≤ {zero} {suc β} {γ} z≤ =       begin
+    Ψ F zero γ                            ≤⟨ Ψ-monoˡ-≤ z≤ ⟩
+    Ψ F β γ                               ≤⟨ ′-incrʰ-≤ (Ψ-normal β) γ ⟩
+    Ψ F (suc β) γ                         ∎
 ```
 
 以下两种情况递归调用衍生命题得证.
 
 ```agda
-  veblen-monoˡ-≤ {zero} {lim f} z≤
-    = veblen-monoˡ-≤l {n = 0} z≤
-  veblen-monoˡ-≤ {suc α} {lim f} (s≤ {d = n , d} α<fn)
-    = veblen-monoˡ-≤l {suc α} (<⇒s≤ (d , α<fn))
+  Ψ-monoˡ-≤ {zero} {lim f} z≤
+    = Ψ-monoˡ-≤l {n = 0} z≤
+  Ψ-monoˡ-≤ {suc α} {lim f} (s≤ {d = n , d} α<fn)
+    = Ψ-monoˡ-≤l {suc α} (<⇒s≤ (d , α<fn))
 ```
 
 `α` 和 `β` 都为后继时使用 `_′` 的高阶单调性得证.
 
 ```agda
-  veblen-monoˡ-≤ {suc α} {suc β} {γ} (s≤ α<s) = begin
-    veblen F (suc α) γ                        ≤⟨ ′-monoʰ-≤ (proj₁ (veblen-normal α)) IH ⟩
-    veblen F (suc β) γ                        ∎ where
-      IH : ∀ {γ} → veblen F α γ ≤ veblen F β γ
-      IH = veblen-monoˡ-≤ (<s⇒≤ (_ , α<s))
+  Ψ-monoˡ-≤ {suc α} {suc β} {γ} (s≤ α<s) = begin
+    Ψ F (suc α) γ                         ≤⟨ ′-monoʰ-≤ (proj₁ (Ψ-normal α)) IH ⟩
+    Ψ F (suc β) γ                         ∎ where
+      IH : ∀ {γ} → Ψ F α γ ≤ Ψ F β γ
+      IH = Ψ-monoˡ-≤ (<s⇒≤ (_ , α<s))
 ```
 
 后继小于等于零的情况不存在, 且对良构序数来说极限小于等于零的情况也不存在.
 
 ```agda
-  veblen-monoˡ-≤ {lim α} {zero} (l≤ αn≤β) with ≤z⇒≡z (l≤ αn≤β)
+  Ψ-monoˡ-≤ {lim α} {zero} (l≤ αn≤β) with ≤z⇒≡z (l≤ αn≤β)
   ... | ()
 ```
 
 `α` 为极限 `β` 为后继的情况与 `α` 为零 `β` 为后继的情况类似. 递归调用自身, 并使用 `_′` 的高阶增长性得证. 注意这里使用了良构序数特有的性质 `l≤s⇒l≤`.
 
 ```agda
-  veblen-monoˡ-≤ {lim α} {suc β} {γ} (l≤ αn≤β) = begin
-    veblen F (lim α) γ                        ≤⟨ veblen-monoˡ-≤ (l≤s⇒l≤ (l≤ αn≤β)) ⟩
-    veblen F β γ                              ≤⟨ ′-incrʰ-≤ (veblen-normal β) γ ⟩
-    veblen F (suc β) γ                        ∎
+  Ψ-monoˡ-≤ {lim α} {suc β} {γ} (l≤ αn≤β) = begin
+    Ψ F (lim α) γ                         ≤⟨ Ψ-monoˡ-≤ (l≤s⇒l≤ (l≤ αn≤β)) ⟩
+    Ψ F β γ                               ≤⟨ ′-incrʰ-≤ (Ψ-normal β) γ ⟩
+    Ψ F (suc β) γ                         ∎
 ```
 
 `α` 和 `β` 都为极限时使用 `_⁺` 的高阶单调性得证. 注意这里使用了良构序数特有的性质 `∃[m]fn<gm`. ∎
 
 ```agda
-  veblen-monoˡ-≤ {lim α} {lim β} (l≤ αn≤β) = ⁺-monoʰ-≤ mono (l≤ ≤) where
+  Ψ-monoˡ-≤ {lim α} {lim β} (l≤ αn≤β) = ⁺-monoʰ-≤ mono (l≤ ≤) where
     mono : ≤-monotonic (F ∘ₗ α)
-    mono ≤ = l≤l λ _ → proj₁ (veblen-normal (α _)) ≤
-    ≤ : ∀ {ξ} n → veblen F (α n) ξ ≤ (F ∘ₗ β) ξ
+    mono ≤ = l≤l λ _ → proj₁ (Ψ-normal (α _)) ≤
+    ≤ : ∀ {ξ} n → Ψ F (α n) ξ ≤ (F ∘ₗ β) ξ
     ≤ {ξ} n with ∃[m]fn<gm (l≤ αn≤β) n
-    ... | (m , <) =                           begin
-      veblen F (α n) ξ                        ≤⟨ veblen-monoˡ-≤ (<⇒≤ <) ⟩
-      veblen F (β m) ξ                        ≤⟨ f≤l ⟩
-      (F ∘ₗ β) ξ                              ∎
+    ... | (m , <) =                       begin
+      Ψ F (α n) ξ                         ≤⟨ Ψ-monoˡ-≤ (<⇒≤ <) ⟩
+      Ψ F (β m) ξ                         ≤⟨ f≤l ⟩
+      (F ∘ₗ β) ξ                          ∎
 ```
 
-**推论** `veblen F` 对第一个参数满足合同性.
+**推论** `Ψ F` 对第一个参数满足合同性.
 
 ```agda
   module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
-    veblen-congˡ-≤ : α ≈ β → veblen F α γ ≈ veblen F β γ
-    veblen-congˡ-≤ (≤ , ≥) = (veblen-monoˡ-≤ ≤) , (veblen-monoˡ-≤ ≥)
+    Ψ-congˡ : α ≈ β → Ψ F α γ ≈ Ψ F β γ
+    Ψ-congˡ (≤ , ≥) = (Ψ-monoˡ-≤ ≤) , (Ψ-monoˡ-≤ ≥)
 ```
 
-最后, 我们将 `veblen` 的性质实例化到 `φ`.
+### 不动点性
+
+**引理** 对任意良构 `α ≤ β`, 每个 `Ψ F (suc β) γ` 也是 `Ψ F α` 的不动点.
+
+```agda
+    Ψ-fp-≤ : α ≤ β → (Ψ F (suc β) γ) isFixpointOf (Ψ F α)
+    Ψ-fp-≤ ≤ = helper , normal⇒≤-incr (Ψ-normal α) _ where
+      helper =                        begin
+        Ψ F α ((Ψ F β ′) γ)           ≤⟨ Ψ-monoˡ-≤ ≤ ⟩
+        Ψ F β ((Ψ F β ′) γ)           ≈⟨ Ψ-fp-suc β γ ⟩
+        (Ψ F β ′) γ                   ∎
+```
+
+**定理** 对任意良构 `α < β`, 每个 `Ψ F β γ` 也是 `Ψ F α` 的不动点.
+
+```agda
+  Ψ-fp : ∀ {α β γ} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄
+    → α < β → (Ψ F β γ) isFixpointOf (Ψ F α)
+  Ψ-fp {α} {suc β}     (inj₁ _ , ≤) = Ψ-fp-≤ ≤
+  Ψ-fp {α} {suc β} {γ} (inj₂ d , ≤) = begin-equality
+    Ψ F α (Ψ F (suc β) γ)             ≈˘⟨ ≤-mono⇒cong (proj₁ (Ψ-normal α)) (Ψ-fp-suc β γ) ⟩
+    Ψ F α (Ψ F β (Ψ F (suc β) γ))     ≈⟨ Ψ-fp (d , ≤) ⟩
+    Ψ F β (Ψ F (suc β) γ)             ≈⟨ Ψ-fp-suc β γ ⟩
+    Ψ F (suc β) γ                     ∎
+  Ψ-fp {α} {lim f} {γ} α<β = {!   !}
+```
+
+## 特化
+
+我们将 `Ψ` 的性质特化到 `φ`.
 
 ```agda
 open Properties (ω ^_) ω^-normal
@@ -291,14 +322,14 @@ open Properties (ω ^_) ω^-normal
 
 ```agda
 φ-normal : ∀ α → normal (φ α)
-φ-normal = veblen-normal
+φ-normal = Ψ-normal
 ```
 
 **事实** $φ_α(φ_{α+1}(β))=φ_{α+1}(β)$.
 
 ```agda
 φ-fp-suc : ∀ α β → (φ (suc α) β) isFixpointOf (φ α)
-φ-fp-suc = veblen-fp-suc
+φ-fp-suc = Ψ-fp-suc
 ```
 
 **事实** `φ` 对第一个参数满足单调性与合同性.
@@ -307,8 +338,18 @@ open Properties (ω ^_) ω^-normal
 module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
 
   φ-monoˡ-≤ : α ≤ β → φ α γ ≤ φ β γ
-  φ-monoˡ-≤ = veblen-monoˡ-≤
+  φ-monoˡ-≤ = Ψ-monoˡ-≤
 
   φ-congˡ-≤ : α ≈ β → φ α γ ≈ φ β γ
-  φ-congˡ-≤ = veblen-congˡ-≤
+  φ-congˡ-≤ = Ψ-congˡ
+```
+
+**事实** 高阶不动点同时也是低阶不动点.
+
+```agda
+  φ-fp-≤ : α ≤ β → (φ (suc β) γ) isFixpointOf (φ α)
+  φ-fp-≤ = Ψ-fp-≤
+
+  φ-fp : α < β → (φ β γ) isFixpointOf (φ α)
+  φ-fp = Ψ-fp
 ```

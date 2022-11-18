@@ -236,8 +236,8 @@ normal-resp-≈ {F} {G} ext (≤-mono , <-mono , lim-ct)
 ```agda
 open import Function.Definitions (_≈_) (_≈_) using (Congruent)
 
-≤-inc⇒cong : ≤-monotonic F → Congruent F
-≤-inc⇒cong ≤-mono = λ { (≤ , ≥) → ≤-mono ≤ , ≤-mono ≥ }
+≤-mono⇒cong : ≤-monotonic F → Congruent F
+≤-mono⇒cong ≤-mono = λ { (≤ , ≥) → ≤-mono ≤ , ≤-mono ≥ }
 ```
 
 从根本上可以说, ≤-单调的必要性来源于本构筑所依赖的类型论基础的构造主义性和内涵性.
