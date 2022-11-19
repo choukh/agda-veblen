@@ -281,17 +281,26 @@ l≤s⇒l≤ {f} {α} ⦃ mono ⦄ (l≤ fn≤s) = l≤ λ n → <s⇒≤ (begin
 
 ### ≤-单调
 
+还有一种更弱的单调序列, 叫做非严格单调. 由于很少用到, 而且容易重名, 我们把它放在独立的模块.
+
 ```agda
 module NonStrictMono where
 
   ≤-monotonic : (ℕ → Ord) → Set
   ≤-monotonic = Monotonic₁ ℕ._≤_ _≤_
+```
 
+**事实** 非严格单调蕴含严格单调.
+
+```agda
   <⇒≤-mono : ∀ {f} → ⦃ Monotonic f ⦄ → ≤-monotonic f
   <⇒≤-mono ⦃ wrap mono ⦄ ≤ with m≤n⇒m<n∨m≡n ≤
   ... | inj₁ < = <⇒≤ (mono <)
   ... | inj₂ refl = ≤-refl
 ```
+
+**事实** 非严格单调序列的极限与起始无关.  
+**证明** 这可看作是上一章 `l≈ls` 的推广, 用类似思路可证. ∎
 
 ```agda
   module _ {f h} (≤-mono : ≤-monotonic f) (incr : ∀ n → n ℕ.< h n) where

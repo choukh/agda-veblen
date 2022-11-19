@@ -323,11 +323,19 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 ```agda
   Ψ-fp : ∀ {α β γ} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄
     → α < β → (Ψ F β γ) isFixpointOf (Ψ F α)
+```
 
+**证明** 这是一个三重互递归证明. 我们需要以下两个衍生命题.
+
+```agda
   module _ f n ⦃ (_ , wrap mono) : wellFormed (lim f) ⦄ where
     Ψ-fp-lim : ∀ γ → (Ψ F (lim f) γ) isFixpointOf (Ψ F (f n))
     Ψ-fp-fn : ∀ γ → lim (λ n → Ψ F (f n) γ) isFixpointOf (Ψ F (f n))
+```
 
+先证 `Ψ-fp-fn`. 核心步骤是用 `l≈l∘` 将序列的起始项后移, 从而为递归调用主命题 `Ψ-fp` 创造条件. 这要求 `λ m → Ψ F (f m) γ` 为非严格单调序列, 由引理 `Ψ-monoˡ-≤` 保证.
+
+```agda
     Ψ-fp-fn γ =                                       begin-equality
       Ψ F (f n) (lim (λ m → Ψ F (f m) γ))             ≈⟨ Ψ-cong² (f n) (l≈l∘ ≤-mono-seq m<smn) ⟩
       Ψ F (f n) (lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)) ≈⟨ Ψ-lim-ct (f n) _ ⟩
@@ -340,14 +348,22 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
         m<smn m = ℕ.s≤s (m≤m+n m n)
         fn<fsmn : ∀ {m} → f n < f (suc m ℕ.+ n)
         fn<fsmn = mono (m<n+m n ℕ.z<s)
+```
 
+接着证 `Ψ-fp-lim`. `γ` 为零或后继的时候递归调用 `Ψ-fp-fn` 即证. `γ` 为极限时递归调用自身得证.
+
+```agda
     Ψ-fp-lim zero = Ψ-fp-fn zero
     Ψ-fp-lim (suc γ) = Ψ-fp-fn (suc (Ψ F (lim f) γ))
     Ψ-fp-lim (lim γ) =                          begin-equality
       Ψ F (f n) (lim (λ m → Ψ F (lim f) (γ m))) ≈⟨ Ψ-lim-ct (f n) _ ⟩
       lim (λ m → Ψ F (f n) (Ψ F (lim f) (γ m))) ≈⟨ l≈l (Ψ-fp-lim (γ _)) ⟩
       lim (λ m → Ψ F (lim f) (γ m))             ∎
+```
 
+最后是主命题的证明. `β` 不可能为零. `β` 为后继时使用引理 `Ψ-fp-suc` 并递归调用主命题得证. `β` 为极限时递归调用衍生命题 `Ψ-fp-lim` 和主命题得证. ∎
+
+```agda
   Ψ-fp {α} {suc β}     (inj₁ _ , ≤) = Ψ-fp-suc-≤ ≤
   Ψ-fp {α} {suc β} {γ} (inj₂ d , ≤) = begin-equality
     Ψ F α (Ψ F (suc β) γ)             ≈˘⟨ Ψ-cong² α (Ψ-fp-suc β γ) ⟩
