@@ -3,7 +3,7 @@ title: Agda大序数(9) 二元Veblen函数
 zhihu-tags: Agda, 序数, 大数数学
 ---
 
-# Agda大序数(9) 二元Ψ函数
+# Agda大序数(9) 二元Veblen函数
 
 > 交流Q群: 893531731  
 > 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
@@ -25,7 +25,7 @@ module Veblen.Function where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (wellFormed; ω; ⌜_⌝; ≤z⇒≡z; l≤s⇒l≤; ∃[m]fn<gm)
+open import Ordinal.WellFormed
 open import Ordinal.Function
 open import Ordinal.Recursion
 open import Ordinal.Arithmetic using (_^_)
@@ -33,9 +33,11 @@ open import Veblen.Fixpoint
 open import Veblen.Epsilon using (ω^-normal; ε; ζ; η)
 
 open import Data.Nat as ℕ using (ℕ; zero; suc)
+open import Data.Nat.Properties as ℕ using (m<n+m)
 open import Function using (_∘_)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
+open import Function.Definitions (_≈_) (_≈_) using (Congruent)
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 ```
 
@@ -140,22 +142,43 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 ### 嵌入性, 单调性
 
-**引理** 对 `Ψ` 来说, 如果初始函数 `F` 是序数嵌入, 那么每个迭代 `Ψ F α` 都是序数嵌入.
+**定理** 对 `Ψ` 来说, 如果初始函数 `F` 是序数嵌入, 那么每个迭代 `Ψ F α` 都是序数嵌入.
 
 ```agda
   Ψ-normal : ∀ α → normal (Ψ F α)
+
+  Ψ-monoʳ-≤ : ∀ α → ≤-monotonic (Ψ F α)
+  Ψ-monoʳ-≤ α = proj₁ (Ψ-normal α)
+
+  Ψ-incrʳ-≤ : ∀ α → ≤-increasing (Ψ F α)
+  Ψ-incrʳ-≤ α = normal⇒≤-incr (Ψ-normal α)
+
   Ψ-normal zero    = nml
   Ψ-normal (suc α) = ′-normal (Ψ-normal α)
   Ψ-normal (lim f) = ⁺-normal (F ∘ₗ f) mono incr where
     mono : ≤-monotonic (F ∘ₗ f)
-    mono {α} {β} ≤ = l≤l λ n → begin
-      Ψ F (f n) (α)        ≤⟨ proj₁ (Ψ-normal (f n)) ≤ ⟩
-      Ψ F (f n) (β)        ∎
+    mono {α} {β} ≤ = l≤l λ n →  begin
+      Ψ F (f n) (α)             ≤⟨ Ψ-monoʳ-≤ (f n) ≤ ⟩
+      Ψ F (f n) (β)             ∎
     incr : ≤-increasing (F ∘ₗ f)
     incr α =                    begin
-      α                         ≤⟨ normal⇒≤-incr (Ψ-normal (f 0)) α ⟩
-      Ψ F (f 0) α          ≤⟨ f≤l ⟩
+      α                         ≤⟨ Ψ-incrʳ-≤ (f 0) α ⟩
+      Ψ F (f 0) α               ≤⟨ f≤l ⟩
       (F ∘ₗ f) α                ∎
+```
+
+**推论** `Ψ F` 对第二个参数满足合同性.
+
+```agda
+  Ψ-cong² : ∀ α → Congruent (Ψ F α)
+  Ψ-cong² α = ≤-mono⇒cong (Ψ-monoʳ-≤ α)
+```
+
+**推论** `Ψ F` 对第二个参数满足极限连续.
+
+```agda
+  Ψ-lim-ct : ∀ α → lim-continuous (Ψ F α)
+  Ψ-lim-ct α = proj₂ (proj₂ (Ψ-normal α))
 ```
 
 **引理** 每个 `Ψ F (suc α) γ` 也是 `Ψ F α` 的不动点.
@@ -188,11 +211,9 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
   Ψ-monoˡ-≤l {α} {f} {n} {suc γ} α≤fn =   begin
     Ψ F α (suc γ)                         ≤⟨ Ψ-monoˡ-≤ α≤fn ⟩
-    Ψ F (f n) (suc γ)                     ≤⟨ proj₁ (Ψ-normal (f n)) (s≤s ≤) ⟩
+    Ψ F (f n) (suc γ)                     ≤⟨ Ψ-monoʳ-≤ (f n) (s≤s (Ψ-incrʳ-≤ (lim f) γ)) ⟩
     Ψ F (f n) (suc (Ψ F (lim f) γ))       ≤⟨ f≤l ⟩
-    (F ∘ₗ f) (suc (Ψ F (lim f) γ))        ∎ where
-      ≤ : γ ≤ Ψ F (lim f) γ
-      ≤ = normal⇒≤-incr (Ψ-normal (lim f)) γ
+    (F ∘ₗ f) (suc (Ψ F (lim f) γ))        ∎
 ```
 
 `γ` 为极限时要看 `α`. `α` 为零或后继时都要递归调用衍生命题, 为后继时还要递归调用主命题. `α` 为极限的情况使用 `_⁺` 的高阶单调性得证.
@@ -208,7 +229,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
     Ψ F (lim f) (γ m)                     ∎
   Ψ-monoˡ-≤l {lim α} {β} {n} (l≤ α≤βn) = ⁺-monoʰ-≤ mono (l≤ ≤) where
     mono : ≤-monotonic (F ∘ₗ α)
-    mono ≤ = l≤l λ _ → proj₁ (Ψ-normal (α _)) ≤
+    mono ≤ = l≤l λ _ → Ψ-monoʳ-≤ (α _) ≤
     ≤ : ∀ {ξ} m → Ψ F (α m) ξ ≤ (F ∘ₗ β) ξ
     ≤ {ξ} m =                             begin
       Ψ F (α m) ξ                         ≤⟨ Ψ-monoˡ-≤ (α≤βn m) ⟩
@@ -229,17 +250,15 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 以下两种情况递归调用衍生命题得证.
 
 ```agda
-  Ψ-monoˡ-≤ {zero} {lim f} z≤
-    = Ψ-monoˡ-≤l {n = 0} z≤
-  Ψ-monoˡ-≤ {suc α} {lim f} (s≤ {d = n , d} α<fn)
-    = Ψ-monoˡ-≤l {suc α} (<⇒s≤ (d , α<fn))
+  Ψ-monoˡ-≤ {zero} {lim f} z≤ = Ψ-monoˡ-≤l {n = 0} z≤
+  Ψ-monoˡ-≤ {suc α} {lim f} (s≤ {d = n , d} α<fn) = Ψ-monoˡ-≤l {suc α} (<⇒s≤ (d , α<fn))
 ```
 
 `α` 和 `β` 都为后继时使用 `_′` 的高阶单调性得证.
 
 ```agda
   Ψ-monoˡ-≤ {suc α} {suc β} {γ} (s≤ α<s) = begin
-    Ψ F (suc α) γ                         ≤⟨ ′-monoʰ-≤ (proj₁ (Ψ-normal α)) IH ⟩
+    Ψ F (suc α) γ                         ≤⟨ ′-monoʰ-≤ (Ψ-monoʳ-≤ α) IH ⟩
     Ψ F (suc β) γ                         ∎ where
       IH : ∀ {γ} → Ψ F α γ ≤ Ψ F β γ
       IH = Ψ-monoˡ-≤ (<s⇒≤ (_ , α<s))
@@ -266,7 +285,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 ```agda
   Ψ-monoˡ-≤ {lim α} {lim β} (l≤ αn≤β) = ⁺-monoʰ-≤ mono (l≤ ≤) where
     mono : ≤-monotonic (F ∘ₗ α)
-    mono ≤ = l≤l λ _ → proj₁ (Ψ-normal (α _)) ≤
+    mono ≤ = l≤l λ _ → Ψ-monoʳ-≤ (α _) ≤
     ≤ : ∀ {ξ} n → Ψ F (α n) ξ ≤ (F ∘ₗ β) ξ
     ≤ {ξ} n with ∃[m]fn<gm (l≤ αn≤β) n
     ... | (m , <) =                       begin
@@ -279,8 +298,8 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 ```agda
   module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
-    Ψ-congˡ : α ≈ β → Ψ F α γ ≈ Ψ F β γ
-    Ψ-congˡ (≤ , ≥) = (Ψ-monoˡ-≤ ≤) , (Ψ-monoˡ-≤ ≥)
+    Ψ-cong¹ : α ≈ β → Ψ F α γ ≈ Ψ F β γ
+    Ψ-cong¹ (≤ , ≥) = (Ψ-monoˡ-≤ ≤) , (Ψ-monoˡ-≤ ≥)
 ```
 
 ### 不动点性
@@ -288,12 +307,12 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **引理** 对任意良构 `α ≤ β`, 每个 `Ψ F (suc β) γ` 也是 `Ψ F α` 的不动点.
 
 ```agda
-    Ψ-fp-≤ : α ≤ β → (Ψ F (suc β) γ) isFixpointOf (Ψ F α)
-    Ψ-fp-≤ ≤ = helper , normal⇒≤-incr (Ψ-normal α) _ where
-      helper =                        begin
-        Ψ F α ((Ψ F β ′) γ)           ≤⟨ Ψ-monoˡ-≤ ≤ ⟩
-        Ψ F β ((Ψ F β ′) γ)           ≈⟨ Ψ-fp-suc β γ ⟩
-        (Ψ F β ′) γ                   ∎
+    Ψ-fp-suc-≤ : α ≤ β → (Ψ F (suc β) γ) isFixpointOf (Ψ F α)
+    Ψ-fp-suc-≤ ≤ = helper , Ψ-incrʳ-≤ α _ where
+      helper =                            begin
+        Ψ F α ((Ψ F β ′) γ)               ≤⟨ Ψ-monoˡ-≤ ≤ ⟩
+        Ψ F β ((Ψ F β ′) γ)               ≈⟨ Ψ-fp-suc β γ ⟩
+        (Ψ F β ′) γ                       ∎
 ```
 
 **定理** 对任意良构 `α < β`, 每个 `Ψ F β γ` 也是 `Ψ F α` 的不动点.
@@ -301,35 +320,56 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 ```agda
   Ψ-fp : ∀ {α β γ} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄
     → α < β → (Ψ F β γ) isFixpointOf (Ψ F α)
-  Ψ-fp {α} {suc β}     (inj₁ _ , ≤) = Ψ-fp-≤ ≤
+
+  module _ f n ⦃ wf : wellFormed (lim f) ⦄ where
+    Ψ-fp-lim : ∀ γ → (Ψ F (lim f) γ) isFixpointOf (Ψ F (f n))
+    Ψ-fp-fn : ∀ γ → lim (λ n → Ψ F (f n) γ) isFixpointOf (Ψ F (f n))
+
+    Ψ-fp-fn γ =                                       begin-equality
+      Ψ F (f n) (lim (λ m → Ψ F (f m) γ))             ≈⟨ Ψ-cong² (f n) {!   !} ⟩
+      Ψ F (f n) (lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)) ≈⟨ Ψ-lim-ct (f n) _ ⟩
+      lim (λ m → Ψ F (f n) (Ψ F (f (suc m ℕ.+ n)) γ)) ≈⟨ l≈l (Ψ-fp fn<fsmn) ⟩
+      lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)             ≈˘⟨ {!   !} ⟩
+      lim (λ m → Ψ F (f m) γ)                         ∎ where
+        fn<fsmn : ∀ {m} → f n < f (suc m ℕ.+ n)
+        fn<fsmn = let (_ , wrap mono) = wf in mono (m<n+m n ℕ.z<s)
+
+    Ψ-fp-lim zero = Ψ-fp-fn zero
+    Ψ-fp-lim (suc γ) = Ψ-fp-fn (suc (Ψ F (lim f) γ))
+    Ψ-fp-lim (lim γ) =                          begin-equality
+      Ψ F (f n) (lim (λ m → Ψ F (lim f) (γ m))) ≈⟨ Ψ-lim-ct (f n) _ ⟩
+      lim (λ m → Ψ F (f n) (Ψ F (lim f) (γ m))) ≈⟨ l≈l (Ψ-fp-lim (γ _)) ⟩
+      lim (λ m → Ψ F (lim f) (γ m))             ∎
+
+  Ψ-fp {α} {suc β}     (inj₁ _ , ≤) = Ψ-fp-suc-≤ ≤
   Ψ-fp {α} {suc β} {γ} (inj₂ d , ≤) = begin-equality
-    Ψ F α (Ψ F (suc β) γ)             ≈˘⟨ ≤-mono⇒cong (proj₁ (Ψ-normal α)) (Ψ-fp-suc β γ) ⟩
+    Ψ F α (Ψ F (suc β) γ)             ≈˘⟨ Ψ-cong² α (Ψ-fp-suc β γ) ⟩
     Ψ F α (Ψ F β (Ψ F (suc β) γ))     ≈⟨ Ψ-fp (d , ≤) ⟩
     Ψ F β (Ψ F (suc β) γ)             ≈⟨ Ψ-fp-suc β γ ⟩
     Ψ F (suc β) γ                     ∎
-  Ψ-fp {α} {lim f} {γ} α<l = {!   !}
+  Ψ-fp {α} {lim f} {γ} α<l with ∃[n]<fn α<l
+  ... | (n , α<fn) = begin-equality
+    Ψ F α (Ψ F (lim f) γ)             ≈˘⟨ Ψ-cong² α (Ψ-fp-lim f n γ) ⟩
+    Ψ F α (Ψ F (f n) (Ψ F (lim f) γ)) ≈⟨ Ψ-fp α<fn ⟩
+    Ψ F (f n) (Ψ F (lim f) γ)         ≈⟨ Ψ-fp-lim f n γ ⟩
+    Ψ F (lim f) γ                     ∎
 ```
 
 ## 特化
 
-我们将 `Ψ` 的性质特化到 `φ`.
+以 `ω ^_` 实例化 Properties 模块即可特到 `φ` 的性质.
 
 ```agda
 open Properties (ω ^_) ω^-normal
 ```
+
+我们只列出主要结论.
 
 **事实** 每个 `φ α` 都是序数嵌入.
 
 ```agda
 φ-normal : ∀ α → normal (φ α)
 φ-normal = Ψ-normal
-```
-
-**事实** $φ_α(φ_{α+1}(β))=φ_{α+1}(β)$.
-
-```agda
-φ-fp-suc : ∀ α β → (φ (suc α) β) isFixpointOf (φ α)
-φ-fp-suc = Ψ-fp-suc
 ```
 
 **事实** `φ` 对第一个参数满足单调性与合同性.
@@ -340,16 +380,13 @@ module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ wh
   φ-monoˡ-≤ : α ≤ β → φ α γ ≤ φ β γ
   φ-monoˡ-≤ = Ψ-monoˡ-≤
 
-  φ-congˡ-≤ : α ≈ β → φ α γ ≈ φ β γ
-  φ-congˡ-≤ = Ψ-congˡ
+  φ-cong¹-≤ : α ≈ β → φ α γ ≈ φ β γ
+  φ-cong¹-≤ = Ψ-cong¹
 ```
 
 **事实** 高阶不动点同时也是低阶不动点.
 
 ```agda
-  φ-fp-≤ : α ≤ β → (φ (suc β) γ) isFixpointOf (φ α)
-  φ-fp-≤ = Ψ-fp-≤
-
   φ-fp : α < β → (φ β γ) isFixpointOf (φ α)
   φ-fp = Ψ-fp
 ```

@@ -144,7 +144,7 @@ module _ (wfα : wellFormed α) where
       < zero     = <s
       < (suc n)  =                  begin-strict
         ε α                         <⟨ < n ⟩
-        ω ^^[ suc (ε α) ] ⌜ n ⌝     ≤⟨ ^-incrʳ-≤ _ _ ⦃ n<ω ⦄ ⟩
+        ω ^^[ suc (ε α) ] ⌜ n ⌝     ≤⟨ ^-incrˡ-≤ _ _ ⦃ n<ω ⦄ ⟩
         ω ^ ω ^^[ suc (ε α) ] ⌜ n ⌝ ∎
 ```
 
@@ -158,10 +158,10 @@ $$ω^{ω^{ω^{.^{.^{{ε_α}+1}}}}} = {ε_α}^{{ε_α}^{.^{.^ω}}}$$
     lim (λ n → ω ^^[ suc (ε α) ] ⌜ n ⌝)           ≈⟨ l≈ls incr ⟩
     lim (λ n → ω ^^[ suc (ε α) ] ⌜ suc n ⌝)       ≈⟨ l≈ls (^-monoʳ-≤ ω ⦃ n≤ω ⦄ incr) ⟩
     lim (λ n → ω ^^[ suc (ε α) ] ⌜ suc (suc n) ⌝) ≈⟨ l≈l (ω^^[sε]n _) ⟩
-    lim (λ n → ε α ^^[ ω ] ⌜ suc n ⌝)             ≈˘⟨ l≈ls (^-incrʳ-≤ ω (ε α)) ⟩
+    lim (λ n → ε α ^^[ ω ] ⌜ suc n ⌝)             ≈˘⟨ l≈ls (^-incrˡ-≤ ω (ε α)) ⟩
     lim (λ n → (ε α ^^[ ω ] ⌜ n ⌝))               ∎ where
       incr : suc (ε α) ≤ ω ^ suc (ε α)
-      incr = ^-incrʳ-≤ (suc (ε α)) ω ⦃ n<ω ⦄
+      incr = ^-incrˡ-≤ (suc (ε α)) ω ⦃ n<ω ⦄
 ```
 
 于是我们得到了 `ε` 后继项的另一种表示.

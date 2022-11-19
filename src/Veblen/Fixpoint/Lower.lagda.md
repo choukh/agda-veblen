@@ -172,7 +172,7 @@ module _ ⦃ ξ>1 : ξ > ⌜ 1 ⌝ ⦄ where
 ```agda
   π⋱ₛ : ∀ α → π (suc α) ≈ π α + ξ ^ ω
   π⋱ₛ α = ⋱ₛ-suc ξ*-normal _ _ πα<πα+ξ^ω πα+ξ^ω-fp , l≤ helper where
-    πα<πα+ξ^ω = +-incrˡ-< _ ^>0 _
+    πα<πα+ξ^ω = +-incrʳ-< _ ^>0 _
     πα+ξ^ω-fp =               begin-equality
       ξ * (π α + ξ ^ ω)       ≈⟨ *-distribˡ-+ ξ _ _ ⟩
       ξ * π α + ξ * ξ ^ ω     ≈⟨ +-congˡ ξ^ω-fp ⟩

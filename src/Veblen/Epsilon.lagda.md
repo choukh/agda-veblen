@@ -64,7 +64,7 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
   suc α               ≤⟨ +-monoʳ-≤ α (<⇒s≤ α>0) ⟩
   α + α               ≈˘⟨ α*2≈α+α α ⟩
   α * ⌜ 2 ⌝           <⟨ *-monoʳ-< α ⦃ α>0 ⦄ (n<ω {2}) ⟩
-  α * ω               ≤⟨ *-monoˡ-≤ ω (^-incrʳ-≤ α ω) ⟩
+  α * ω               ≤⟨ *-monoˡ-≤ ω (^-incrˡ-≤ α ω) ⟩
   ω ^ α * ω           ∎
 ```
 

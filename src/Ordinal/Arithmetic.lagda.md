@@ -181,14 +181,14 @@ _ = refl
 ```agda
 module _ (α) where
 
-  +-incrˡ-≤ : ≤-increasing (_+ α)
-  +-incrˡ-≤ β = rec-from-incr-≤ α (λ _ → ≤s) β
+  +-incrʳ-≤ : ≤-increasing (_+ α)
+  +-incrʳ-≤ β = rec-from-incr-≤ α (λ _ → ≤s) β
 
-  +-incrʳ-≤ : ≤-increasing (α +_)
-  +-incrʳ-≤ β = rec-by-incr-≤ s≤s (λ _ → <s) β
+  +-incrˡ-≤ : ≤-increasing (α +_)
+  +-incrˡ-≤ β = rec-by-incr-≤ s≤s (λ _ → <s) β
 
-  +-incrˡ-< : α > ⌜ 0 ⌝ → <-increasing (_+ α)
-  +-incrˡ-< >z β = rec-from-incr-< >z s≤s (λ _ → <s) β
+  +-incrʳ-< : α > ⌜ 0 ⌝ → <-increasing (_+ α)
+  +-incrʳ-< >z β = rec-from-incr-< >z s≤s (λ _ → <s) β
 
   +-monoˡ-≤ : ≤-monotonic (_+ α)
   +-monoˡ-≤ ≤ = rec-from-mono-≤ α s≤s ≤
@@ -200,7 +200,7 @@ module _ (α) where
   +-monoʳ-< < = rec-by-mono-< s≤s (λ _ → <s) <
 ```
 
-**注意** 只有左侧加法 `_+` 是强增长的, 右侧加法 `+_` 不保证强增长. 这就是我们在乘法的定义中使用 `_+` 的原因.
+**注意** 只有 `_+` 是强增长的, `+_` 不保证强增长. 这就是我们在乘法的定义中使用 `_+` 的原因.
 
 由 `+-monoˡ-≤` 以及 `+-monoʳ-≤` 立即得到 `_+_` 的合同性 (congruence).
 
@@ -369,35 +369,35 @@ _ = refl
 
 序数乘法的单调性等需要配合序数加法的相关性质, 且需要注意运算方向和证明顺序都与加法有所不同, 且有些性质需要额外的前提.
 
-首先是从右侧乘法的 ≤-单调性推出左侧乘法的弱增长性.
+首先是从 `*_` 的 ≤-单调性推出 `_*` 的弱增长性.
 
 ```agda
 *-monoʳ-≤ : ∀ α → ≤-monotonic (α *_)
-*-monoʳ-≤ α = rec-by-mono-≤ (+-monoˡ-≤ α) (+-incrˡ-≤ α)
+*-monoʳ-≤ α = rec-by-mono-≤ (+-monoˡ-≤ α) (+-incrʳ-≤ α)
 
-*-incrˡ-≤ : ∀ α → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → ≤-increasing (_* α)
-*-incrˡ-≤ α ⦃ α≥1 ⦄ β = begin-nonstrict
+*-incrʳ-≤ : ∀ α → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → ≤-increasing (_* α)
+*-incrʳ-≤ α ⦃ α≥1 ⦄ β = begin-nonstrict
   β                     ≈˘⟨ *-identityʳ β ⟩
   β * ⌜ 1 ⌝             ≤⟨ *-monoʳ-≤ β α≥1 ⟩
   β * α                 ∎
 ```
 
-然后, 类似地, 从右侧乘法的 <-单调性推出左侧乘法的强增长性.
+然后, 类似地, 从 `*_` 的 <-单调性推出 `_*` 的强增长性.
 
 ```agda
 *-monoʳ-< : ∀ α → ⦃ α > ⌜ 0 ⌝ ⦄ → <-monotonic (α *_)
-*-monoʳ-< α ⦃ α>0 ⦄ = rec-by-mono-< (+-monoˡ-≤ α) (+-incrˡ-< α α>0)
+*-monoʳ-< α ⦃ α>0 ⦄ = rec-by-mono-< (+-monoˡ-≤ α) (+-incrʳ-< α α>0)
 
-*-incrˡ-< : ∀ α β → ⦃ α > ⌜ 0 ⌝ ⦄ → ⦃ β > ⌜ 1 ⌝ ⦄ → α < α * β
-*-incrˡ-< α β ⦃ _ ⦄ ⦃ β>1 ⦄ = begin-strict
+*-incrʳ-< : ∀ α β → ⦃ α > ⌜ 0 ⌝ ⦄ → ⦃ β > ⌜ 1 ⌝ ⦄ → α < α * β
+*-incrʳ-< α β ⦃ _ ⦄ ⦃ β>1 ⦄ = begin-strict
   α                         ≈˘⟨ *-identityʳ α ⟩
   α * ⌜ 1 ⌝                 <⟨ *-monoʳ-< α β>1 ⟩
   α * β                     ∎
 ```
 
-**注意** 只有左侧乘法 `_*` 是强增长的, 右侧乘法 `*_` 不保证强增长. 这就是我们在幂运算的定义中使用 `_*` 的原因.
+**注意** 只有 `_*` 是强增长的, `*_` 不保证强增长. 这就是我们在幂运算的定义中使用 `_*` 的原因.
 
-接着是从左侧乘法的 ≤-单调性推出右侧乘法的弱增长性. 注意前者已经无法使用超限递归的相关引理了, 需要直接用归纳法证明.
+接着是从 `_*` 的 ≤-单调性推出 `*_` 的弱增长性. 注意前者已经无法使用超限递归的相关引理了, 需要直接用归纳法证明.
 
 ```agda
 *-monoˡ-≤ : ∀ α → ≤-monotonic (_* α)
@@ -410,8 +410,8 @@ _ = refl
   γ * suc α                   ∎
 *-monoˡ-≤ (lim f) {β} {γ} ≤ = l≤ λ n → ≤f⇒≤l (*-monoˡ-≤ (f n) ≤)
 
-*-incrʳ-≤ : ∀ α → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → ≤-increasing (α *_)
-*-incrʳ-≤ α ⦃ α≥1 ⦄ β = begin-nonstrict
+*-incrˡ-≤ : ∀ α → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → ≤-increasing (α *_)
+*-incrˡ-≤ α ⦃ α≥1 ⦄ β = begin-nonstrict
   β                     ≈˘⟨ *-identityˡ β ⟩
   ⌜ 1 ⌝ * β             ≤⟨ *-monoˡ-≤ β α≥1 ⟩
   α * β                 ∎
@@ -588,14 +588,14 @@ _ = *-zeroʳ
 
 幂运算的单调性等性质比乘法的更不规整, 需要更强的额外前提.
 
-首先相对简单的是从右侧幂运算的 ≤-单调性到左侧幂运算的弱增长性.
+首先相对简单的是从 `^_` 的 ≤-单调性到 `_^` 的弱增长性.
 
 ```agda
 ^-monoʳ-≤ : ∀ α → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → ≤-monotonic (α ^_)
-^-monoʳ-≤ α = rec-by-mono-≤ (*-monoˡ-≤ α) (*-incrˡ-≤ α)
+^-monoʳ-≤ α = rec-by-mono-≤ (*-monoˡ-≤ α) (*-incrʳ-≤ α)
 
-^-incrˡ-≤ : ∀ α β → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → β ≥ ⌜ 1 ⌝ → α ≤ α ^ β
-^-incrˡ-≤ α β β≥1 = begin-nonstrict
+^-incrʳ-≤ : ∀ α β → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → β ≥ ⌜ 1 ⌝ → α ≤ α ^ β
+^-incrʳ-≤ α β β≥1 = begin-nonstrict
   α                 ≈˘⟨ ^-identityʳ α ⟩
   α ^ ⌜ 1 ⌝         ≤⟨ ^-monoʳ-≤ α β≥1 ⟩
   α ^ β             ∎
@@ -612,14 +612,14 @@ _ = *-zeroʳ
   α ^ β       ∎
 ```
 
-右侧幂运算的 <-单调性无法从 `rec-by-mono-<` 推出, 但可以直接用归纳法证明.
+`^_` 的 <-单调性无法从 `rec-by-mono-<` 推出, 但可以直接用归纳法证明.
 
 ```agda
 ^-monoʳ-< : ∀ α → ⦃ α > ⌜ 1 ⌝ ⦄ → <-monotonic (α ^_)
 ^-monoʳ-< α ⦃ α>1 ⦄ {β} {suc γ} < =
   let instance α≥1 = <⇒≤ α>1 in begin-strict
   α ^ β                         ≤⟨ ^-monoʳ-≤ α (<s⇒≤ <) ⟩
-  α ^ γ                         <⟨ *-incrˡ-< (α ^ γ) α ⦃ ^>0 ⦄ ⟩
+  α ^ γ                         <⟨ *-incrʳ-< (α ^ γ) α ⦃ ^>0 ⦄ ⟩
   α ^ γ * α                     ≤.≡⟨⟩
   α ^ suc γ                     ∎
 ^-monoʳ-< α {β} {lim f} ((n , d) , ≤f) = begin-strict
@@ -628,19 +628,19 @@ _ = *-zeroʳ
   α ^ lim f                     ∎
 ```
 
-然后容易推出左侧幂运算的强增长性.
+然后容易推出 `_^` 的强增长性.
 
 ```agda
-^-incrˡ-< : ∀ α β → ⦃ α > ⌜ 1 ⌝ ⦄ → β > ⌜ 1 ⌝ → α < α ^ β
-^-incrˡ-< α β β>1 = begin-strict
+^-incrʳ-< : ∀ α β → ⦃ α > ⌜ 1 ⌝ ⦄ → β > ⌜ 1 ⌝ → α < α ^ β
+^-incrʳ-< α β β>1 = begin-strict
   α                 ≈˘⟨ ^-identityʳ _ ⟩
   α ^ ⌜ 1 ⌝         <⟨ ^-monoʳ-< α β>1 ⟩
   α ^ β             ∎
 ```
 
-**注意** 只有左侧幂运算 `_^` 是强增长的, 右侧幂运算 `^_` 不保证强增长. 我们会在下一章展示 `^_` 定义的迭代幂次会遇到不动点.
+**注意** 只有 `_^` 是强增长的, `^_` 不保证强增长. 我们会在下一章展示 `^_` 定义的迭代幂次会遇到不动点.
 
-左侧幂运算的 ≤-单调性无法使用超限递归的相关引理, 需要用归纳法证明.
+`_^` 的 ≤-单调性无法使用超限递归的相关引理, 需要用归纳法证明.
 
 ```agda
 ^-monoˡ-≤ : ∀ α → ≤-monotonic (_^ α)
@@ -653,21 +653,21 @@ _ = *-zeroʳ
 ^-monoˡ-≤ (lim f) {β} {γ} β≤γ = l≤ λ n → ≤f⇒≤l (^-monoˡ-≤ (f n) β≤γ)
 ```
 
-右侧幂运算的弱增长性又是个特殊的性质, 它无法从 `^-monoˡ-≤` 推出, 但可以直接用归纳法证明.
+`^_` 的弱增长性又是个特殊的性质, 它无法从 `^-monoˡ-≤` 推出, 但可以直接用归纳法证明.
 
 ```agda
-^-incrʳ-≤ : ∀ α β → ⦃ β > ⌜ 1 ⌝ ⦄ → α ≤ β ^ α
-^-incrʳ-≤ zero    β         = ≤s
-^-incrʳ-≤ (suc α) β ⦃ β>1 ⦄  = begin-nonstrict
-  suc α                       ≤⟨ s≤s (^-incrʳ-≤ α β) ⟩
+^-incrˡ-≤ : ∀ α β → ⦃ β > ⌜ 1 ⌝ ⦄ → α ≤ β ^ α
+^-incrˡ-≤ zero    β         = ≤s
+^-incrˡ-≤ (suc α) β ⦃ β>1 ⦄  = begin-nonstrict
+  suc α                       ≤⟨ s≤s (^-incrˡ-≤ α β) ⟩
   suc (β ^ α)                 ≤.≡⟨⟩
   β ^ α + ⌜ 1 ⌝               ≤⟨ +-monoʳ-≤ (β ^ α) (<⇒s≤ (^>0 ⦃ <⇒≤ β>1 ⦄)) ⟩
   β ^ α + β ^ α               ≈˘⟨ α*2≈α+α _ ⟩
   β ^ α * ⌜ 2 ⌝               ≤⟨ *-monoʳ-≤ (β ^ α) (<⇒s≤ β>1) ⟩
   β ^ α * β                   ≤.≡⟨⟩
   β ^ suc α                   ∎
-^-incrʳ-≤ (lim f) β         = l≤l λ n → begin-nonstrict
-  f n                         ≤⟨ ^-incrʳ-≤ (f n) β ⟩
+^-incrˡ-≤ (lim f) β         = l≤l λ n → begin-nonstrict
+  f n                         ≤⟨ ^-incrˡ-≤ (f n) β ⟩
   β ^ f n                     ∎
 ```
 
@@ -683,7 +683,7 @@ _ = *-zeroʳ
 
 ### 代数结构
 
-**定理** 底数不为零的右侧幂运算 `^_` 是加法半群到乘法半群的群同态, 也是加法幺半群到乘法幺半群的群同态.
+**定理** 底数不为零的 `^_` 是加法半群到乘法半群的群同态, 也是加法幺半群到乘法幺半群的群同态.
 
 ```agda
 ^-semigroup-morphism : ∀ {α} → ⦃ α ≥ ⌜ 1 ⌝ ⦄ → (α ^_) Is +-semigroup -Semigroup⟶ *-semigroup
@@ -725,7 +725,7 @@ _ = *-zeroʳ
 +-wfp wfα = rec-wfp wfα s≤s (λ _ → <s) id
 
 *-wfp : ∀ {α} → wellFormed α → α > ⌜ 0 ⌝ → wf-preserving (α *_)
-*-wfp {α} wfα α>0 = rec-wfp tt (+-monoˡ-≤ α) (+-incrˡ-< α α>0) (λ wfx → +-wfp wfx wfα)
+*-wfp {α} wfα α>0 = rec-wfp tt (+-monoˡ-≤ α) (+-incrʳ-< α α>0) (λ wfx → +-wfp wfx wfα)
 
 ^-wfp : ∀ {α} → wellFormed α → ⦃ α > ⌜ 1 ⌝ ⦄ → wf-preserving (α ^_)
 ^-wfp {α} wfα {zero} _ = tt
@@ -775,12 +775,12 @@ _ = *-zeroʳ
       ω ^ β * ω                 ≤.≡⟨⟩
       ω ^ suc β                 ∎)
   , l≤ (λ n →                   begin-nonstrict
-      ω ^ β * ⌜ n ⌝             ≤⟨ +-incrʳ-≤ _ _ ⟩
+      ω ^ β * ⌜ n ⌝             ≤⟨ +-incrˡ-≤ _ _ ⟩
       ω ^ α + ω ^ β * ⌜ n ⌝     ≤⟨ +-monoʳ-≤ _ (*-monoʳ-≤ _ (<⇒≤ n<ω)) ⟩
       ω ^ α + ω ^ β * ω         ≤.≡⟨⟩
       ω ^ α + ω ^ suc β         ∎)
 ω^-absorb-+ {α} {lim f} ⦃ wf ⦄ α<l with ∃[n]<fn α<l
-... | (m , α<fm) = l≤ helper , l≤ λ n → ≤f⇒≤l (+-incrʳ-≤ _ _) where
+... | (m , α<fm) = l≤ helper , l≤ λ n → ≤f⇒≤l (+-incrˡ-≤ _ _) where
   helper : ∀ n → ω ^ α + ω ^ f n ≤ lim (λ n → ω ^ f n)
   helper n with (ℕ.<-cmp m n)
   ... | tri< m<n _ _  = ≤f⇒≤l ( begin-nonstrict

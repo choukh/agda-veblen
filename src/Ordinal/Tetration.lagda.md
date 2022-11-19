@@ -202,7 +202,7 @@ _^^_ : Ord → Ord → Ord
 
 ```agda
 ^^-monoʳ-≤ : ∀ α → ⦃ α > ⌜ 1 ⌝ ⦄ → ≤-monotonic (α ^^_)
-^^-monoʳ-≤ α ⦃ α>1 ⦄ = rec-by-mono-≤ (^-monoʳ-≤ α ⦃ <⇒≤ α>1 ⦄) (λ β → ^-incrʳ-≤ β α)
+^^-monoʳ-≤ α ⦃ α>1 ⦄ = rec-by-mono-≤ (^-monoʳ-≤ α ⦃ <⇒≤ α>1 ⦄) (λ β → ^-incrˡ-≤ β α)
 
 ^^-stuck-forever : ∀ α β → ⦃ α > ⌜ 1 ⌝ ⦄ → ⦃ wellFormed β ⦄ → β ≥ ω → α ^^ β ≈ α ^^ ω
 ^^-stuck-forever α zero           β≥ω = ⊥-elim (≤⇒≯ β≥ω z<ω)
