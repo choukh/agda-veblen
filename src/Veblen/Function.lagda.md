@@ -24,7 +24,6 @@ module Veblen.Function where
 
 ```agda
 open import Ordinal
-open Ordinal.≤-Reasoning
 open import Ordinal.WellFormed
 open import Ordinal.Function
 open import Ordinal.Recursion
@@ -32,8 +31,12 @@ open import Ordinal.Arithmetic using (_^_)
 open import Veblen.Fixpoint
 open import Veblen.Epsilon using (ω^-normal; ε; ζ; η)
 
+open Ordinal.≤-Reasoning
+open Ordinal.WellFormed.NonStrictMono
+  using (l≈l∘; <⇒≤-mono) renaming (≤-monotonic to ≤-mono-sequence)
+
 open import Data.Nat as ℕ using (ℕ; zero; suc)
-open import Data.Nat.Properties as ℕ using (m<n+m)
+open import Data.Nat.Properties as ℕ using (m≤m+n; m<n+m)
 open import Function using (_∘_)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
@@ -101,7 +104,7 @@ _ = λ _ → refl
 
 第一个参数是极限时又按第二个参数分三种情况:
 
-$$φ_{\lim f}(0) = \sup\{φ_{f(0)}(0), φ_{f(1)}(0), φ_{f(2)}(0), ...\}$$
+$$φ_{γ}(0) = \sup\{φ_{γ[0]}(0), φ_{γ[1]}(0), φ_{γ[2]}(0), ...\}$$
 
 或者按基本序列记作
 
@@ -321,18 +324,22 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
   Ψ-fp : ∀ {α β γ} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄
     → α < β → (Ψ F β γ) isFixpointOf (Ψ F α)
 
-  module _ f n ⦃ wf : wellFormed (lim f) ⦄ where
+  module _ f n ⦃ (_ , wrap mono) : wellFormed (lim f) ⦄ where
     Ψ-fp-lim : ∀ γ → (Ψ F (lim f) γ) isFixpointOf (Ψ F (f n))
     Ψ-fp-fn : ∀ γ → lim (λ n → Ψ F (f n) γ) isFixpointOf (Ψ F (f n))
 
     Ψ-fp-fn γ =                                       begin-equality
-      Ψ F (f n) (lim (λ m → Ψ F (f m) γ))             ≈⟨ Ψ-cong² (f n) {!   !} ⟩
+      Ψ F (f n) (lim (λ m → Ψ F (f m) γ))             ≈⟨ Ψ-cong² (f n) (l≈l∘ ≤-mono-seq m<smn) ⟩
       Ψ F (f n) (lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)) ≈⟨ Ψ-lim-ct (f n) _ ⟩
       lim (λ m → Ψ F (f n) (Ψ F (f (suc m ℕ.+ n)) γ)) ≈⟨ l≈l (Ψ-fp fn<fsmn) ⟩
-      lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)             ≈˘⟨ {!   !} ⟩
+      lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)             ≈˘⟨ l≈l∘ ≤-mono-seq m<smn ⟩
       lim (λ m → Ψ F (f m) γ)                         ∎ where
+        ≤-mono-seq : ≤-mono-sequence (λ m → Ψ F (f m) γ)
+        ≤-mono-seq ≤ = Ψ-monoˡ-≤ (<⇒≤-mono ≤)
+        m<smn : ∀ m → m ℕ.< suc m ℕ.+ n
+        m<smn m = ℕ.s≤s (m≤m+n m n)
         fn<fsmn : ∀ {m} → f n < f (suc m ℕ.+ n)
-        fn<fsmn = let (_ , wrap mono) = wf in mono (m<n+m n ℕ.z<s)
+        fn<fsmn = mono (m<n+m n ℕ.z<s)
 
     Ψ-fp-lim zero = Ψ-fp-fn zero
     Ψ-fp-lim (suc γ) = Ψ-fp-fn (suc (Ψ F (lim f) γ))

@@ -33,11 +33,11 @@ open Ordinal.≤-Reasoning
 ```agda
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Unit using (⊤; tt)
-open import Data.Nat as ℕ using (ℕ; zero; suc)
+open import Data.Nat as ℕ using (ℕ; zero; suc; z≤n)
 open import Data.Nat.Properties as ℕ using (m≤n⇒m<n∨m≡n)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
-open import Function using (_↩_)
+open import Function using (_∘_; _↩_)
 open import Relation.Binary using (Monotonic₁)
 open import Relation.Binary.PropositionalEquality as Eq
   using (_≡_; _≢_; refl; sym; cong; subst)
@@ -277,6 +277,28 @@ l≤s⇒l≤ {f} {α} ⦃ mono ⦄ (l≤ fn≤s) = l≤ λ n → <s⇒≤ (begin
 ```agda
 ω≤s⇒ω≤ : ∀ {α} → ω ≤ suc α → ω ≤ α
 ω≤s⇒ω≤ ω≤s = l≤s⇒l≤ ⦃ ⌜⌝-monotonic ⦄ ω≤s
+```
+
+### ≤-单调
+
+```agda
+module NonStrictMono where
+
+  ≤-monotonic : (ℕ → Ord) → Set
+  ≤-monotonic = Monotonic₁ ℕ._≤_ _≤_
+
+  <⇒≤-mono : ∀ {f} → ⦃ Monotonic f ⦄ → ≤-monotonic f
+  <⇒≤-mono ⦃ wrap mono ⦄ ≤ with m≤n⇒m<n∨m≡n ≤
+  ... | inj₁ < = <⇒≤ (mono <)
+  ... | inj₂ refl = ≤-refl
+```
+
+```agda
+  module _ {f h} (≤-mono : ≤-monotonic f) (incr : ∀ n → n ℕ.< h n) where
+    l≈l∘ : lim f ≈ lim (f ∘ h)
+    l≈l∘ = l≤ (λ { ℕ.zero   → ≤f⇒≤l {n = 0} (≤-mono z≤n)
+                ; (ℕ.suc n) → ≤f⇒≤l (≤-mono (incr n)) })
+        , l≤ λ n → ≤f⇒≤l (≤-mono (ℕ.<⇒≤ (incr (h n))))
 ```
 
 ## 良构序数的性质
