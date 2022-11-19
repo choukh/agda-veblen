@@ -380,7 +380,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 ## 特化
 
-以 `ω ^_` 实例化 Properties 模块即可特到 `φ` 的性质.
+以 `ω ^_` 实例化 Properties 模块即可得到 `φ` 的性质.
 
 ```agda
 open Properties (ω ^_) ω^-normal
