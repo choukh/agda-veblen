@@ -24,16 +24,13 @@ module Veblen.Function where
 
 ```agda
 open import Ordinal
+open Ordinal.≤-Reasoning
 open import Ordinal.WellFormed
 open import Ordinal.Function
 open import Ordinal.Recursion
 open import Ordinal.Arithmetic using (_^_)
 open import Veblen.Fixpoint
 open import Veblen.Epsilon using (ω^-normal; ε; ζ; η)
-
-open Ordinal.≤-Reasoning
-open Ordinal.WellFormed.NonStrictMono
-  using (l≈l∘; <⇒≤-mono) renaming (≤-monotonic to ≤-mono-sequence)
 
 open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Nat.Properties as ℕ using (m≤m+n; m<n+m)
@@ -337,13 +334,13 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 ```agda
     Ψ-fp-fn γ =                                       begin-equality
-      Ψ F (f n) (lim (λ m → Ψ F (f m) γ))             ≈⟨ Ψ-cong² (f n) (l≈l∘ ≤-mono-seq m<smn) ⟩
+      Ψ F (f n) (lim (λ m → Ψ F (f m) γ))             ≈⟨ Ψ-cong² (f n) (l≈l∘ ≤-seq m<smn) ⟩
       Ψ F (f n) (lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)) ≈⟨ Ψ-lim-ct (f n) _ ⟩
       lim (λ m → Ψ F (f n) (Ψ F (f (suc m ℕ.+ n)) γ)) ≈⟨ l≈l (Ψ-fp fn<fsmn) ⟩
-      lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)             ≈˘⟨ l≈l∘ ≤-mono-seq m<smn ⟩
+      lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)             ≈˘⟨ l≈l∘ ≤-seq m<smn ⟩
       lim (λ m → Ψ F (f m) γ)                         ∎ where
-        ≤-mono-seq : ≤-mono-sequence (λ m → Ψ F (f m) γ)
-        ≤-mono-seq ≤ = Ψ-monoˡ-≤ (<⇒≤-mono ≤)
+        ≤-seq : ≤-monoSequence (λ m → Ψ F (f m) γ)
+        ≤-seq ≤ = Ψ-monoˡ-≤ (<⇒≤-mono ≤)
         m<smn : ∀ m → m ℕ.< suc m ℕ.+ n
         m<smn m = ℕ.s≤s (m≤m+n m n)
         fn<fsmn : ∀ {m} → f n < f (suc m ℕ.+ n)

@@ -154,9 +154,9 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **引理** `F` 的从零开始的有穷递归是递归次数的单调序列.
 
 ```agda
-    ⋱₀-mono-n : Monotonic (rec F from zero by_ ∘ ⌜_⌝)
+    ⋱₀-mono-n : MonoSequence (rec F from zero by_ ∘ ⌜_⌝)
     ⋱₀-mono-n = wrap mono where
-      mono : monotonic _
+      mono : monoSequence _
       mono {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
       ... | inj₁ m<n =                begin-strict
         rec F from zero by ⌜ m ⌝      <⟨ mono m<n ⟩
@@ -232,9 +232,9 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **引理** `F` 的从 `suc α` 开始的有穷递归是递归次数的单调序列.
 
 ```agda
-    ⋱ₛ-mono-n : ∀ α → ⦃ wellFormed α ⦄ → Monotonic (rec F from suc α by_ ∘ ⌜_⌝)
+    ⋱ₛ-mono-n : ∀ α → ⦃ wellFormed α ⦄ → MonoSequence (rec F from suc α by_ ∘ ⌜_⌝)
     ⋱ₛ-mono-n α = wrap mono where
-      mono : monotonic _
+      mono : monoSequence _
       mono {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
       ... | inj₁ m<n =                 begin-strict
         rec F from suc α by ⌜ m ⌝      <⟨ mono m<n ⟩

@@ -28,7 +28,7 @@ open import Ordinal
 open Ordinal.≤-Reasoning
 ```
 
-标准库依赖大部分都在上一章出现过. 注意 Agda 有构造子重载, `ℕ` 的 `zero` 和 `suc` 与 `Ord` 的同名, 但只要类型明确就没有问题. `_↩_` 表示存在左逆, 其强度介于等价和同构之间. `Monotonic₁` 是函数对序关系的单调性.
+标准库依赖大部分都在上一章出现过. 注意 Agda 有构造子重载, `ℕ` 的 `zero` 和 `suc` 与 `Ord` 的同名, 但只要类型明确就没有问题. `_↩_` 表示存在左逆, 其强度介于等价和同构之间. `MonoSequence₁` 是函数对序关系的单调性.
 
 ```agda
 open import Data.Empty using (⊥; ⊥-elim)
@@ -48,16 +48,16 @@ open import Relation.Binary.PropositionalEquality as Eq
 我们说序列 `f : ℕ → Ord` **单调**, 如果 `f` *保持* `ℕ.<` 到 `Ord.<`.
 
 ```agda
-monotonic : (ℕ → Ord) → Set
-monotonic = Monotonic₁ ℕ._<_ _<_
+monoSequence : (ℕ → Ord) → Set
+monoSequence = Monotonic₁ ℕ._<_ _<_
 ```
 
 由于要作为 [instance参数](https://agda.readthedocs.io/en/v2.6.2.2.20221106/language/instance-arguments.html), 形式上做了一层 record 封装.
 
 ```agda
-record Monotonic (f : ℕ → Ord) : Set where
+record MonoSequence (f : ℕ → Ord) : Set where
   constructor wrap
-  field unwrap : monotonic f
+  field unwrap : monoSequence f
 ```
 
 由单调序列的极限构成的序数我们称为**良构**序数. 注意这是递归定义, 序列的每一项也要求良构. 平凡地, 零以及良构序数的后继也是良构序数.
@@ -66,7 +66,7 @@ record Monotonic (f : ℕ → Ord) : Set where
 wellFormed : Ord → Set
 wellFormed zero    = ⊤
 wellFormed (suc α) = wellFormed α
-wellFormed (lim f) = (∀ {n} → wellFormed (f n)) × Monotonic f
+wellFormed (lim f) = (∀ {n} → wellFormed (f n)) × MonoSequence f
 ```
 
 以下 instance 用于从良构极限序数推出其序列每一项良构以及序列单调.
@@ -76,7 +76,7 @@ instance
   wf⇒wf : ∀ {f} → ⦃ wellFormed (lim f) ⦄ → ∀ {n} → wellFormed (f n)
   wf⇒wf ⦃ wf ⦄ = proj₁ wf
 
-  wf⇒mono : ∀ {f} → ⦃ wellFormed (lim f) ⦄ → Monotonic f
+  wf⇒mono : ∀ {f} → ⦃ wellFormed (lim f) ⦄ → MonoSequence f
   wf⇒mono ⦃ wf ⦄ = proj₂ wf
 ```
 
@@ -109,9 +109,9 @@ instance
 **证明** 即证 `m < n` 蕴含 `⌜m⌝ < ⌜n⌝`. 只需考虑 `n` 是后继的情况, 即 `m < suc n`, 拆开分别讨论 `m < n` 和 `m = n` 并用归纳假设即可. ∎
 
 ```agda
-⌜⌝-monotonic : Monotonic ⌜_⌝
-⌜⌝-monotonic = wrap mono where
-  mono : monotonic ⌜_⌝
+⌜⌝-monoSequence : MonoSequence ⌜_⌝
+⌜⌝-monoSequence = wrap mono where
+  mono : monoSequence ⌜_⌝
   mono {m} {suc n} (ℕ.s≤s m≤n) with (m≤n⇒m<n∨m≡n m≤n)
   ... | inj₁ m<n  = begin-strict ⌜ m ⌝ <⟨ mono m<n ⟩ ⌜ n ⌝ <⟨ <s ⟩ suc ⌜ n ⌝ ∎
   ... | inj₂ refl = begin-strict ⌜ m ⌝ <⟨ <s ⟩ suc ⌜ m ⌝ ∎
@@ -121,7 +121,7 @@ instance
 
 ```agda
 ω-wellFormed : wellFormed ω
-ω-wellFormed = (λ {n} → ⌜ n ⌝-wellFormed) , ⌜⌝-monotonic
+ω-wellFormed = (λ {n} → ⌜ n ⌝-wellFormed) , ⌜⌝-monoSequence
 ```
 
 ### `ω` 的性质
@@ -145,17 +145,17 @@ instance
   n≤ω = <⇒≤ n<ω
 ```
 
-以下引理将 `monotonic` 的 `f m < f n` 结论特化到 `f n < f (suc n)`, 因为它在接下来的证明中经常用到.
+以下引理将 `monoSequence` 的 `f m < f n` 结论特化到 `f n < f (suc n)`, 因为它在接下来的证明中经常用到.
 
 ```agda
-fn<fsn : ∀ {f n} → ⦃ Monotonic f ⦄ → f n < f (suc n)
+fn<fsn : ∀ {f n} → ⦃ MonoSequence f ⦄ → f n < f (suc n)
 fn<fsn ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 ```
 
 **引理** 单调序列的第 `n` 项不会小于 `n` 自身.
 
 ```agda
-⌜n⌝≤fn : ∀ {f n} → ⦃ Monotonic f ⦄ → ⌜ n ⌝ ≤ f n
+⌜n⌝≤fn : ∀ {f n} → ⦃ MonoSequence f ⦄ → ⌜ n ⌝ ≤ f n
 ⌜n⌝≤fn {f} {zero}  = z≤
 ⌜n⌝≤fn {f} {suc n} = begin
   suc ⌜ n ⌝          ≤⟨ s≤s ⌜n⌝≤fn ⟩
@@ -168,7 +168,7 @@ fn<fsn ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 **引理** `ω` 是最小的单调极限序数.
 
 ```agda
-ω≤l : ∀ {f} → ⦃ Monotonic f ⦄ → ω ≤ lim f
+ω≤l : ∀ {f} → ⦃ MonoSequence f ⦄ → ω ≤ lim f
 ω≤l = l≤ λ n → ≤f⇒≤l ⌜n⌝≤fn
 ```
 
@@ -210,14 +210,14 @@ fn<fsn ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 **引理** 任意单调极限序数严格大于零.
 
 ```agda
-z<l : ∀ {f} → ⦃ Monotonic f ⦄ → zero < lim f
+z<l : ∀ {f} → ⦃ MonoSequence f ⦄ → zero < lim f
 z<l = <-≤-trans z<ω ω≤l
 ```
 
 `f<l` 是上一章 [`f≤l`](Ordinal.html#7884) 的 `_<_` 版, 它要求 `f` 单调.
 
 ```agda
-f<l : ∀ {f n} → ⦃ Monotonic f ⦄ → f n < lim f
+f<l : ∀ {f n} → ⦃ MonoSequence f ⦄ → f n < lim f
 f<l = <-≤-trans fn<fsn f≤l
 ```
 
@@ -229,7 +229,7 @@ f<l = <-≤-trans fn<fsn f≤l
 - 对于极限序数 `lim g`, 存在 `f n` 大于 `lim g`. ∎
 
 ```agda
-∃[n]<fn : ∀ {α f} → ⦃ Monotonic f ⦄ → α < lim f → ∃[ n ] α < f n
+∃[n]<fn : ∀ {α f} → ⦃ MonoSequence f ⦄ → α < lim f → ∃[ n ] α < f n
 ∃[n]<fn {zero} {f} _ = 1 , ≤-<-trans z≤ fn<fsn
 ∃[n]<fn {suc α} {f} s<l with ∃[n]<fn (<-trans <s s<l)
 ... | n , <f = suc n , (begin-strict
@@ -243,7 +243,7 @@ f<l = <-≤-trans fn<fsn f≤l
 **证明** 由 `lim f ≤ lim g` 有 `f n < f (suc n) ≤ lim g`, 套入上一条即得. ∎
 
 ```agda
-module _ {f g} ⦃ f-mono : Monotonic f ⦄ ⦃ g-mono : Monotonic g ⦄ where
+module _ {f g} ⦃ f-mono : MonoSequence f ⦄ ⦃ g-mono : MonoSequence g ⦄ where
   ∃[m]fn<gm : lim f ≤ lim g → ∀ n → ∃[ m ] f n < g m
   ∃[m]fn<gm (l≤ fn≤l) n = ∃[n]<fn (begin-strict
     f n                            <⟨ fn<fsn ⟩
@@ -255,7 +255,7 @@ module _ {f g} ⦃ f-mono : Monotonic f ⦄ ⦃ g-mono : Monotonic g ⦄ where
 **证明** 由 `∃[n]<fn`, 存在 `n` 使得 `α < f n`, 即 `suc α ≤ f n`, 又 `f n < f (suc n) < lim f`, 由传递性即证. ∎
 
 ```agda
-<l⇒s<l : ∀ {α f} → ⦃ Monotonic f ⦄ → α < lim f → suc α < lim f
+<l⇒s<l : ∀ {α f} → ⦃ MonoSequence f ⦄ → α < lim f → suc α < lim f
 <l⇒s<l {α} {f} ⦃ mono ⦄ < with ∃[n]<fn <
 ... | n , <f = begin-strict suc α ≤⟨ <⇒s≤ <f ⟩ f n <⟨ f<l ⟩ lim f ∎
 ```
@@ -264,7 +264,7 @@ module _ {f g} ⦃ f-mono : Monotonic f ⦄ ⦃ g-mono : Monotonic g ⦄ where
 **证明** 与 `∃[m]fn<gm` 类似的思路. ∎
 
 ```agda
-l≤s⇒l≤ : ∀ {f α} → ⦃ Monotonic f ⦄ → lim f ≤ suc α → lim f ≤ α
+l≤s⇒l≤ : ∀ {f α} → ⦃ MonoSequence f ⦄ → lim f ≤ suc α → lim f ≤ α
 l≤s⇒l≤ {f} {α} ⦃ mono ⦄ (l≤ fn≤s) = l≤ λ n → <s⇒≤ (begin-strict
   f n       <⟨ fn<fsn ⟩
   f (suc n) ≤⟨ fn≤s (suc n) ⟩
@@ -276,38 +276,36 @@ l≤s⇒l≤ {f} {α} ⦃ mono ⦄ (l≤ fn≤s) = l≤ λ n → <s⇒≤ (begin
 
 ```agda
 ω≤s⇒ω≤ : ∀ {α} → ω ≤ suc α → ω ≤ α
-ω≤s⇒ω≤ ω≤s = l≤s⇒l≤ ⦃ ⌜⌝-monotonic ⦄ ω≤s
+ω≤s⇒ω≤ ω≤s = l≤s⇒l≤ ⦃ ⌜⌝-monoSequence ⦄ ω≤s
 ```
 
 ### ≤-单调
 
-还有一种更弱的单调序列, 叫做非严格单调. 由于很少用到, 而且容易重名, 我们把它放在独立的模块.
+还有一种更弱的单调序列, 叫做非严格单调.
 
 ```agda
-module NonStrictMono where
-
-  ≤-monotonic : (ℕ → Ord) → Set
-  ≤-monotonic = Monotonic₁ ℕ._≤_ _≤_
+≤-monoSequence : (ℕ → Ord) → Set
+≤-monoSequence = Monotonic₁ ℕ._≤_ _≤_
 ```
 
 **事实** 非严格单调蕴含严格单调.
 
 ```agda
-  <⇒≤-mono : ∀ {f} → ⦃ Monotonic f ⦄ → ≤-monotonic f
-  <⇒≤-mono ⦃ wrap mono ⦄ ≤ with m≤n⇒m<n∨m≡n ≤
-  ... | inj₁ < = <⇒≤ (mono <)
-  ... | inj₂ refl = ≤-refl
+<⇒≤-mono : ∀ {f} → ⦃ MonoSequence f ⦄ → ≤-monoSequence f
+<⇒≤-mono ⦃ wrap mono ⦄ ≤ with m≤n⇒m<n∨m≡n ≤
+... | inj₁ < = <⇒≤ (mono <)
+... | inj₂ refl = ≤-refl
 ```
 
 **事实** 非严格单调序列的极限与起始无关.  
 **证明** 这可看作是上一章 `l≈ls` 的推广, 用类似思路可证. ∎
 
 ```agda
-  module _ {f h} (≤-mono : ≤-monotonic f) (incr : ∀ n → n ℕ.< h n) where
-    l≈l∘ : lim f ≈ lim (f ∘ h)
-    l≈l∘ = l≤ (λ { ℕ.zero   → ≤f⇒≤l {n = 0} (≤-mono z≤n)
-                ; (ℕ.suc n) → ≤f⇒≤l (≤-mono (incr n)) })
-        , l≤ λ n → ≤f⇒≤l (≤-mono (ℕ.<⇒≤ (incr (h n))))
+module _ {f h} (≤-mono : ≤-monoSequence f) (incr : ∀ n → n ℕ.< h n) where
+  l≈l∘ : lim f ≈ lim (f ∘ h)
+  l≈l∘ = l≤ (λ { ℕ.zero   → ≤f⇒≤l {n = 0} (≤-mono z≤n)
+              ; (ℕ.suc n) → ≤f⇒≤l (≤-mono (incr n)) })
+      , l≤ λ n → ≤f⇒≤l (≤-mono (ℕ.<⇒≤ (incr (h n))))
 ```
 
 ## 良构序数的性质
