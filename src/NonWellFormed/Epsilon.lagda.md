@@ -1,35 +1,35 @@
 ---
-title: Agda大序数(8) ε层级, ζ层级, η层级
+title: Agda大序数(1-8) ε层级, ζ层级, η层级
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/582661842
 ---
 
-# Agda大序数(8) ε层级, ζ层级, η层级
+# Agda大序数(1-8) ε层级, ζ层级, η层级
 
 > 交流Q群: 893531731  
-> 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Veblen/Epsilon.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Epsilon.lagda.md)  
-> 高亮渲染: [Veblen.Epsilon.html](https://choukh.github.io/agda-lvo/Veblen.Epsilon.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
+> 本文源码: [Epsilon.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Epsilon.lagda.md)  
+> 高亮渲染: [Epsilon.html](https://choukh.github.io/agda-lvo/NonWellFormed.Epsilon.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
 {-# OPTIONS --no-qualified-instances #-}
 
-module Veblen.Epsilon where
+module NonWellFormed.Epsilon where
 ```
 
 ## 前置
 
 ```agda
-open import Ordinal
-open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed hiding (wf⇒wf)
-open import Ordinal.Function using (normal; wf-preserving; zero-increasing; suc-increasing)
-open import Ordinal.Recursion using (rec_from_by_)
-open import Ordinal.Arithmetic
-open import Ordinal.Tetration using (_^^ω; _^^ω[_]; ^^≈^^[]ω; ^^-stuck; ^-^^[]-comm)
-open import Veblen.Fixpoint
+open import NonWellFormed.Ordinal
+open NonWellFormed.Ordinal.≤-Reasoning
+open import NonWellFormed.WellFormed hiding (wf⇒wf)
+open import NonWellFormed.Function using (normal; wf-preserving; zero-increasing; suc-increasing)
+open import NonWellFormed.Recursion using (rec_from_by_)
+open import NonWellFormed.Arithmetic
+open import NonWellFormed.Tetration using (_^^ω; _^^ω[_]; ^^≈^^[]ω; ^^-stuck; ^-^^[]-comm)
+open import NonWellFormed.Fixpoint
 
 open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Sum using (_⊎_; inj₁; inj₂)

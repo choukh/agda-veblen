@@ -1,22 +1,22 @@
 ---
-title: Agda大序数(3) 序数函数
+title: Agda大序数(1-3) 序数函数
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/575766146
 ---
 
-# Agda大序数(3) 序数函数
+# Agda大序数(1-3) 序数函数
 
 > 交流Q群: 893531731  
-> 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Ordinal/Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/Function.lagda.md)  
-> 高亮渲染: [Ordinal.Function.html](https://choukh.github.io/agda-lvo/Ordinal.Function.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
+> 本文源码: [Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Function.lagda.md)  
+> 高亮渲染: [Function.html](https://choukh.github.io/agda-lvo/NonWellFormed.Function.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
 {-# OPTIONS --without-K --safe #-}
 {-# OPTIONS --no-qualified-instances #-}
 
-module Ordinal.Function where
+module NonWellFormed.Function where
 ```
 
 ## 前置
@@ -24,9 +24,9 @@ module Ordinal.Function where
 本章在内容上延续前两章.
 
 ```agda
-open import Ordinal
-open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (WellFormed; ∃[n]<fn; f<l; wrap)
+open import NonWellFormed.Ordinal
+open NonWellFormed.Ordinal.≤-Reasoning
+open import NonWellFormed.WellFormed using (WellFormed; ∃[n]<fn; f<l; wrap)
 ```
 
 标准库依赖除了乘积类型之外, 我们还将使用函数复合 `_∘_`, 恒等函数 `id`, 函数的单调性 `Monotonic₁`, 以及函数**尊重**二元关系 `_Respects_`.

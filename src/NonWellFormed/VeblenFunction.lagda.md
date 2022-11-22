@@ -1,34 +1,35 @@
 ---
-title: Agda大序数(9) 二元Veblen函数
+title: Agda大序数(1-9) 二元Veblen函数
 zhihu-tags: Agda, 序数, 大数数学
+zhihu-url: https://zhuanlan.zhihu.com/p/585851679
 ---
 
-# Agda大序数(9) 二元Veblen函数
+# Agda大序数(1-9) 二元Veblen函数
 
 > 交流Q群: 893531731  
-> 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Veblen/Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Function.lagda.md)  
-> 高亮渲染: [Veblen.Function.html](https://choukh.github.io/agda-lvo/Veblen.Function.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
+> 本文源码: [VeblenFunction.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/VeblenFunction.lagda.md)  
+> 高亮渲染: [VeblenFunction.html](https://choukh.github.io/agda-lvo/NonWellFormed.VeblenFunction.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
 {-# OPTIONS --overlapping-instances #-}
 
-module Veblen.Function where
+module NonWellFormed.VeblenFunction where
 ```
 
 ## 前置
 
 ```agda
-open import Ordinal
-open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed
-open import Ordinal.Function
-open import Ordinal.Recursion
-open import Ordinal.Arithmetic using (_^_)
-open import Veblen.Fixpoint
-open import Veblen.Epsilon
+open import NonWellFormed.Ordinal
+open NonWellFormed.Ordinal.≤-Reasoning
+open import NonWellFormed.WellFormed
+open import NonWellFormed.Function
+open import NonWellFormed.Recursion
+open import NonWellFormed.Arithmetic using (_^_)
+open import NonWellFormed.Fixpoint
+open import NonWellFormed.Epsilon
 
 open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Nat.Properties as ℕ using (m≤m+n; m<n+m)

@@ -1,15 +1,15 @@
 ---
-title: Agda大序数(2*) 经典序数
+title: Agda大序数(1-2*) 经典序数
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/575362583
 ---
 
-# Agda大序数(2*) 经典序数
+# Agda大序数(1-2*) 经典序数
 
 > 交流Q群: 893531731  
-> 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Ordinal/Classic.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/Classic.lagda.md)  
-> 高亮渲染: [Ordinal.Classic.html](https://choukh.github.io/agda-lvo/Ordinal.Classic.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
+> 本文源码: [Classic.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Classic.lagda.md)  
+> 高亮渲染: [Classic.html](https://choukh.github.io/agda-lvo/NonWellFormed.Classic.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 本章假设排中律并证明良构序数上的 `_≤_` 是线序, 该内容与主线无关, 仅作为学习上的参考. 因为有排中律, 所以非 `--safe`.
@@ -18,15 +18,15 @@ zhihu-url: https://zhuanlan.zhihu.com/p/575362583
 {-# OPTIONS --without-K #-}
 {-# OPTIONS --overlapping-instances #-}
 
-module Ordinal.Classic where
+module NonWellFormed.Classic where
 ```
 
 本章内容上延续前两章, 其他依赖都是标准库的常规模块.
 
 ```agda
-open import Ordinal
-open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (WellFormed; z<l; f<l; <l⇒s<l; fn<fsn; l≤s⇒l≤)
+open import NonWellFormed.Ordinal
+open NonWellFormed.Ordinal.≤-Reasoning
+open import NonWellFormed.WellFormed using (WellFormed; z<l; f<l; <l⇒s<l; fn<fsn; l≤s⇒l≤)
 open import Data.Nat using (ℕ)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Unit using (⊤; tt)

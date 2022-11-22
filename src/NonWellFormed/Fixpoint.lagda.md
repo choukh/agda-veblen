@@ -1,22 +1,22 @@
 ---
-title: Agda大序数(7) 序数嵌入的不动点
+title: Agda大序数(1-7) 序数嵌入的不动点
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/581675452
 ---
 
-# Agda大序数(7) 序数嵌入的不动点
+# Agda大序数(1-7) 序数嵌入的不动点
 
 > 交流Q群: 893531731  
-> 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Veblen/Fixpoint.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Fixpoint.lagda.md)  
-> 高亮渲染: [Veblen.Fixpoint.html](https://choukh.github.io/agda-lvo/Veblen.Fixpoint.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
+> 本文源码: [Fixpoint.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Fixpoint.lagda.md)  
+> 高亮渲染: [Fixpoint.html](https://choukh.github.io/agda-lvo/NonWellFormed.Fixpoint.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
 {-# OPTIONS --no-qualified-instances #-}
 
-module Veblen.Fixpoint where
+module NonWellFormed.Fixpoint where
 ```
 
 ## 前置
@@ -24,11 +24,11 @@ module Veblen.Fixpoint where
 本章考察序数嵌入的不动点, 需要开头四章作为前置.
 
 ```agda
-open import Ordinal
-open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed hiding (wf⇒wf)
-open import Ordinal.Function
-open import Ordinal.Recursion
+open import NonWellFormed.Ordinal
+open NonWellFormed.Ordinal.≤-Reasoning
+open import NonWellFormed.WellFormed hiding (wf⇒wf)
+open import NonWellFormed.Function
+open import NonWellFormed.Recursion
 ```
 
 以下是标准库依赖.

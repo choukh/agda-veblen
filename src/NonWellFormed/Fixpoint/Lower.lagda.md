@@ -1,15 +1,15 @@
 ---
-title: Agda大序数(7*) 低阶不动点
+title: Agda大序数(1-7*) 低阶不动点
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/582065361
 ---
 
-# Agda大序数(7*) 低阶不动点
+# Agda大序数(1-7*) 低阶不动点
 
 > 交流Q群: 893531731  
-> 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Veblen/Fixpoint/Lower.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Fixpoint/Lower.lagda.md)  
-> 高亮渲染: [Veblen.Fixpoint.Lower.html](https://choukh.github.io/agda-lvo/Veblen.Fixpoint.Lower.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
+> 本文源码: [Fixpoint/Lower.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Fixpoint/Lower.lagda.md)  
+> 高亮渲染: [Fixpoint.Lower.html](https://choukh.github.io/agda-lvo/NonWellFormed.Fixpoint.Lower.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 本章是关于不动点的一些平凡的例子, 与主线无关, 可以跳过.
@@ -21,13 +21,13 @@ zhihu-url: https://zhuanlan.zhihu.com/p/582065361
 ## 前置
 
 ```agda
-open import Ordinal
-open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed
-open import Ordinal.Function
-open import Ordinal.Recursion
-open import Ordinal.Arithmetic
-open import Veblen.Fixpoint
+open import NonWellFormed.Ordinal
+open NonWellFormed.Ordinal.≤-Reasoning
+open import NonWellFormed.WellFormed
+open import NonWellFormed.Function
+open import NonWellFormed.Recursion
+open import NonWellFormed.Arithmetic
+open import NonWellFormed.Fixpoint
 
 open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
@@ -36,7 +36,7 @@ open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 本章的所有内容都是参数化到某序数 `ξ` 上的.
 
 ```agda
-module Veblen.Fixpoint.Lower {ξ : Ord} where
+module NonWellFormed.Fixpoint.Lower {ξ : Ord} where
 ```
 
 ## 加法不动点

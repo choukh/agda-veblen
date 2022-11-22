@@ -1,22 +1,22 @@
 ---
-title: Agda大序数(2) 良构序数
+title: Agda大序数(1-2) 良构序数
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/573846653
 ---
 
-# Agda大序数(2) 良构序数
+# Agda大序数(1-2) 良构序数
 
 > 交流Q群: 893531731  
-> 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Ordinal/WellFormed.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/WellFormed.lagda.md)  
-> 高亮渲染: [Ordinal.WellFormed.html](https://choukh.github.io/agda-lvo/Ordinal.WellFormed.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
+> 本文源码: [WellFormed.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/WellFormed.lagda.md)  
+> 高亮渲染: [WellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.WellFormed.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
 {-# OPTIONS --without-K --safe #-}
 {-# OPTIONS --overlapping-instances #-}
 
-module Ordinal.WellFormed where
+module NonWellFormed.WellFormed where
 ```
 
 ## 前置
@@ -24,8 +24,8 @@ module Ordinal.WellFormed where
 本章在内容上延续上一章.
 
 ```agda
-open import Ordinal
-open Ordinal.≤-Reasoning
+open import NonWellFormed.Ordinal
+open NonWellFormed.Ordinal.≤-Reasoning
 ```
 
 标准库依赖大部分都在上一章出现过. 注意 Agda 有构造子重载, `ℕ` 的 `zero` 和 `suc` 与 `Ord` 的同名, 但只要类型明确就没有问题. `_↩_` 表示存在左逆, 其强度介于等价和同构之间. `MonoSequence₁` 是函数对序关系的单调性.

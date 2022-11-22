@@ -1,33 +1,33 @@
 ---
-title: Agda大序数(8*) ε的另一种表示
+title: Agda大序数(1-8*) ε的另一种表示
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/582936614
 ---
 
-# Agda大序数(8*) ε的另一种表示
+# Agda大序数(1-8*) ε的另一种表示
 
 > 交流Q群: 893531731  
-> 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Veblen/Epsilon/Alternative.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Epsilon/Alternative.lagda.md)  
-> 高亮渲染: [Veblen.Epsilon.Alternative.html](https://choukh.github.io/agda-lvo/Veblen.Epsilon.Alternative.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
+> 本文源码: [Epsilon/Alternative.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Epsilon/Alternative.lagda.md)  
+> 高亮渲染: [Epsilon.Alternative.html](https://choukh.github.io/agda-lvo/NonWellFormed.Epsilon.Alternative.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
 
-module Veblen.Epsilon.Alternative where
+module NonWellFormed.Epsilon.Alternative where
 ```
 
 ## 前置
 
 ```agda
-open import Ordinal
-open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed
-open import Ordinal.Arithmetic
-open import Ordinal.Tetration using (_^^[_]_; _^^ω; _^^ω[_]; ^^≈^^[]ω)
-open import Veblen.Fixpoint.Lower using (π; π-fp; π≈)
-open import Veblen.Epsilon using (ε; ε-normal; ε-fp; ε-wfp)
+open import NonWellFormed.Ordinal
+open NonWellFormed.Ordinal.≤-Reasoning
+open import NonWellFormed.WellFormed
+open import NonWellFormed.Arithmetic
+open import NonWellFormed.Tetration using (_^^[_]_; _^^ω; _^^ω[_]; ^^≈^^[]ω)
+open import NonWellFormed.Fixpoint.Lower using (π; π-fp; π≈)
+open import NonWellFormed.Epsilon using (ε; ε-normal; ε-fp; ε-wfp)
 
 open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Sum using (_⊎_; inj₁; inj₂)

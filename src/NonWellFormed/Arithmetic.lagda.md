@@ -1,15 +1,15 @@
 ---
-title: Agda大序数(5) 序数算术
+title: Agda大序数(1-5) 序数算术
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/578641323
 ---
 
-# Agda大序数(5) 序数算术
+# Agda大序数(1-5) 序数算术
 
 > 交流Q群: 893531731  
-> 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Ordinal/Arithmetic.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal/Arithmetic.lagda.md)  
-> 高亮渲染: [Ordinal.Arithmetic.html](https://choukh.github.io/agda-lvo/Ordinal.Arithmetic.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
+> 本文源码: [Arithmetic.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Arithmetic.lagda.md)  
+> 高亮渲染: [Arithmetic.html](https://choukh.github.io/agda-lvo/NonWellFormed.Arithmetic.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 本章打开了 [*实验性有损合一化*](https://agda.readthedocs.io/en/v2.6.2.2/language/lossy-unification.html) 特性, 它可以减少显式标记隐式参数的需要, 而且跟 `--safe` 是兼容的. 当然它也有一些缺点, 具体这里不会展开.
@@ -17,7 +17,7 @@ zhihu-url: https://zhuanlan.zhihu.com/p/578641323
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
 
-module Ordinal.Arithmetic where
+module NonWellFormed.Arithmetic where
 ```
 
 ## 前置
@@ -25,10 +25,10 @@ module Ordinal.Arithmetic where
 本章在内容上延续前四章.
 
 ```agda
-open import Ordinal
-open import Ordinal.WellFormed
-open import Ordinal.Function
-open import Ordinal.Recursion
+open import NonWellFormed.Ordinal
+open import NonWellFormed.WellFormed
+open import NonWellFormed.Function
+open import NonWellFormed.Recursion
 ```
 
 以下标准库依赖在前几章都出现过.
@@ -51,7 +51,7 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl; cong
 open module ≡ = Eq.≡-Reasoning renaming
   ( begin_          to begin-propeq_
   ; _∎              to _◼)
-open module ≤ = Ordinal.≤-Reasoning renaming
+open module ≤ = NonWellFormed.Ordinal.≤-Reasoning renaming
   ( begin-equality_ to begin-eq_
   ; begin_          to begin-nonstrict_)
 ```

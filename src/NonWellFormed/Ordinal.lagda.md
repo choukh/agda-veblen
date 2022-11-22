@@ -1,15 +1,15 @@
 ---
-title: Agda大序数(1) 序数的定义
+title: Agda大序数(1-1) 序数的定义
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/572691308
 ---
 
-# Agda大序数(1) 序数的定义
+# Agda大序数(1-1) 序数的定义
 
 > 交流Q群: 893531731  
-> 总目录: [Everything.html](https://choukh.github.io/agda-lvo/Everything.html)  
-> 本文源码: [Ordinal.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Ordinal.lagda.md)  
-> 高亮渲染: [Ordinal.html](https://choukh.github.io/agda-lvo/Ordinal.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
+> 本文源码: [Ordinal.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Ordinal.lagda.md)  
+> 高亮渲染: [Ordinal.html](https://choukh.github.io/agda-lvo/NonWellFormed.Ordinal.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ## 前言
@@ -27,7 +27,7 @@ zhihu-url: https://zhuanlan.zhihu.com/p/572691308
 本文为文学Agda脚本, 既是 markdown 文件, 也是可通过类型检查的 Agda 源码. 原文件托管于本项目的 Github 仓库 [agda-lvo](https://github.com/choukh/agda-lvo).
 
 ```agda
-module Ordinal where
+module NonWellFormed.Ordinal where
 ```
 
 ## 前置
