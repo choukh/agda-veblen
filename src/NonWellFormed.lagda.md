@@ -98,4 +98,4 @@ open import NonWellFormed.VeblenFunction public
 - 证明了 `φ` 的嵌入性, 单调性, 合同性, 不动点性和保良构性
 - Γ₀ 定义为 `(λ α → φ α zero) ⋱ zero`
 
-[第2卷](https://github.com/choukh/agda-lvo/blob/main/src/WellFormed.lagda.md)
+[前往第2卷](https://choukh.github.io/agda-lvo/WellFormed.html)
