@@ -26,7 +26,7 @@ module Ordinal.Function where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (wellFormed; ∃[n]<fn; f<l; wrap)
+open import Ordinal.WellFormed using (WellFormed; ∃[n]<fn; f<l; wrap)
 ```
 
 标准库依赖除了乘积类型之外, 我们还将使用函数复合 `_∘_`, 恒等函数 `id`, 函数的单调性 `Monotonic₁`, 以及函数**尊重**二元关系 `_Respects_`.
@@ -50,7 +50,7 @@ private variable
 
 ```agda
 wf-preserving : (Ord → Ord) → Set
-wf-preserving F = ∀ {α} → wellFormed α → wellFormed (F α)
+wf-preserving F = ∀ {α} → WellFormed α → WellFormed (F α)
 ```
 
 显然 `suc` 保良构.
@@ -93,8 +93,8 @@ _ = λ- <s
 zero-increasing : (Ord → Ord) → Set
 zero-increasing F = zero < F zero
 
-suc-increasingʷᶠ : (Ord → Ord) → Set
-suc-increasingʷᶠ F = ∀ α → ⦃ wellFormed α ⦄ → suc α < F (suc α)
+suc-increasing : (Ord → Ord) → Set
+suc-increasing F = ∀ α → ⦃ WellFormed α ⦄ → suc α < F (suc α)
 ```
 
 以下两条称为 F 的单调性, 分别叫做 **≤-单调** 和 **<-单调**.
@@ -143,19 +143,6 @@ normal : (Ord → Ord) → Set
 normal F = ≤-monotonic F × <-monotonic F × lim-continuous F
 ```
 
-下面是良构版的序数嵌入. 前期构筑不需要, 后期理论复杂之后需要.
-
-```agda
-≤-monotonicʷᶠ : (Ord → Ord) → Set
-≤-monotonicʷᶠ F = ∀ {α β} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ → α ≤ β → F α ≤ F β
-
-<-monotonicʷᶠ : (Ord → Ord) → Set
-<-monotonicʷᶠ F = ∀ {α β} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ → α < β → F α < F β
-
-normalʷᶠ : (Ord → Ord) → Set
-normalʷᶠ F = ≤-monotonicʷᶠ F × <-monotonicʷᶠ F × lim-continuous F
-```
-
 我们会在下一小节解释序数嵌入的定义, 现在先来看一些结论.
 
 **引理** 序数嵌入蕴含非无穷降链.  
@@ -164,28 +151,27 @@ normalʷᶠ F = ≤-monotonicʷᶠ F × <-monotonicʷᶠ F × lim-continuous F
 - 零的情况显然成立.
 
 ```agda
-normal⇒≤-incr : normal F → ≤-increasing F
-normal⇒≤-incr {F} nml@(_ , <-mono , lim-ct) =
-  λ { zero    → z≤
+module _ (nml@(_ , <-mono , lim-ct) : normal F) where
+  normal⇒≤-incr : ≤-increasing F
+  normal⇒≤-incr zero = z≤
 ```
 
 - 后继的情况, 首先由归纳假设 `α ≤ F α` 有 `suc α ≤ suc (F α)`. 又由后继单调 `F α < F (suc α)` 有 `suc (F α) ≤ F (suc α)`. 结合两者由传递性即得 `suc α ≤ F (suc α)`.
 
 ```agda
-    ; (suc α) →   begin
-        suc α     ≤⟨ s≤s (normal⇒≤-incr nml α) ⟩
-        suc (F α) ≤⟨ <⇒s≤ (<-mono <s) ⟩
-        F (suc α) ∎
+  normal⇒≤-incr (suc α) = begin
+    suc α                 ≤⟨ s≤s (normal⇒≤-incr α) ⟩
+    suc (F α)             ≤⟨ <⇒s≤ (<-mono <s) ⟩
+    F (suc α)             ∎
 ```
 
 - 极限的情况, 即证 `f n ≤ F (lim f)`. 由连续性, `F (lim f) ≈ lim (F ∘ f)`. 只需证 `f n ≤ lim (F ∘ f)`, 只需证 `f n ≤ (F ∘ f) n`, 此即归纳假设. ∎
 
 ```agda
-    ; (lim f) → l≤ λ n → begin
-        f n              ≤⟨ ≤f⇒≤l (normal⇒≤-incr nml (f n)) ⟩
-        lim (F ∘ f)      ≈˘⟨ lim-ct f ⟩
-        F (lim f)        ∎
-    }
+  normal⇒≤-incr (lim f) = l≤ λ n → begin
+    f n                   ≤⟨ ≤f⇒≤l (normal⇒≤-incr (f n)) ⟩
+    lim (F ∘ f)           ≈˘⟨ lim-ct f ⟩
+    F (lim f)             ∎
 ```
 
 **引理** 序数嵌入**尊重**序数函数的外延等价性.
@@ -263,10 +249,10 @@ open import Function.Definitions (_≈_) (_≈_) using (Congruent)
 
 ```agda
 wf-<-monotonic : (Ord → Ord) → Set
-wf-<-monotonic F = ∀ {α β} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ → α < β → F α < F β
+wf-<-monotonic F = ∀ {α β} → ⦃ WellFormed α ⦄ → ⦃ WellFormed β ⦄ → α < β → F α < F β
 
 wf-suc-monotonic : (Ord → Ord) → Set
-wf-suc-monotonic F = ∀ α → ⦃ wellFormed α ⦄ → F α < F (suc α)
+wf-suc-monotonic F = ∀ α → ⦃ WellFormed α ⦄ → F α < F (suc α)
 
 wf-normal : (Ord → Ord) → Set
 wf-normal F = ≤-monotonic F × wf-suc-monotonic F × lim-continuous F

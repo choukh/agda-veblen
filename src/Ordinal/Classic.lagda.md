@@ -26,7 +26,7 @@ module Ordinal.Classic where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (wellFormed; z<l; f<l; <l⇒s<l; fn<fsn; l≤s⇒l≤)
+open import Ordinal.WellFormed using (WellFormed; z<l; f<l; <l⇒s<l; fn<fsn; l≤s⇒l≤)
 open import Data.Nat using (ℕ)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Unit using (⊤; tt)
@@ -71,13 +71,13 @@ postulate
 第一章已证 `_≤_` 是偏序, 我们只证完全性 (total). 简单起见我们不再另外定义良构序数的 record 类型, 仅把良构条件作为前件带上.
 
 ```agda
-≤-total : ∀ α β → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ → α ≤ β ⊎ β ≤ α
+≤-total : ∀ α β → ⦃ WellFormed α ⦄ → ⦃ WellFormed β ⦄ → α ≤ β ⊎ β ≤ α
 ```
 
 即使有排中律, 该证明也不简单. 实际上, 我们使用了 Agda 的[互递归](https://agda.readthedocs.io/en/v2.6.2.2/language/mutual-recursion.html)特性, 即同时证明上述命题以及以下命题. 它们分别在自己的归纳证明过程中调用了对方, 所以叫互递归.
 
 ```agda
-≤-split : ∀ {α β} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ → α ≤ β → α < β ⊎ α ≈ β
+≤-split : ∀ {α β} → ⦃ WellFormed α ⦄ → ⦃ WellFormed β ⦄ → α ≤ β → α < β ⊎ α ≈ β
 ```
 
 我们先证 `≤-total`, 有七种情况. 两边有任何一边是零的时候都是显然的.
@@ -141,7 +141,7 @@ postulate
 在证明 `≤-split` 之前我们先用 `≤-total` 证一些引理. 没错, 互递归之间可以插入一些依赖两者的引理. 首先由 `≤-total` 立即有 `≰⇒≥`.
 
 ```agda
-≰⇒≥ : ∀ {α} {β} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ → α ≰ β → α ≥ β
+≰⇒≥ : ∀ {α} {β} → ⦃ WellFormed α ⦄ → ⦃ WellFormed β ⦄ → α ≰ β → α ≥ β
 ≰⇒≥ {α} {β} ≰ with ≤-total α β
 ... | inj₁ ≤ = ⊥-elim (≰ ≤)
 ... | inj₂ ≥ = ≥
@@ -150,7 +150,7 @@ postulate
 下面是第二章 `<ω⊎≥ω` 的推广, 前两个分支的证法与之类似.
 
 ```agda
-<l⊎≥l : ∀ α g → ⦃ wellFormed α ⦄ → ⦃ wellFormed (lim g) ⦄ → α < lim g ⊎ α ≥ lim g
+<l⊎≥l : ∀ α g → ⦃ WellFormed α ⦄ → ⦃ WellFormed (lim g) ⦄ → α < lim g ⊎ α ≥ lim g
 <l⊎≥l zero g = inj₁ z<l
 <l⊎≥l (suc α) g with <l⊎≥l α g
 ... | inj₁ <l = inj₁ (<l⇒s<l <l)

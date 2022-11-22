@@ -115,7 +115,7 @@ $$ω^{ω^{ω^{{ε_α}+1}}} = {ε_α}^{{ε_α}^ω}$$
 归纳到任意 `n` 项.
 
 ```agda
-module _ (wfα : wellFormed α) where
+module _ (wfα : WellFormed α) where
 
   ω^^[sε]n : ∀ n → ω ^^[ suc (ε α) ] ⌜ suc (suc n) ⌝ ≈ ε α ^^[ ω ] ⌜ suc n ⌝
   ω^^[sε]n zero    = ω^^[sε]2
@@ -137,7 +137,7 @@ module _ (wfα : wellFormed α) where
     (ω ^ ε α) ^ ssn                 ≈⟨ ^-congʳ (ε-fp _) ⟩
     ε α ^ ssn                       ≈⟨ ^-congˡ (ω^^[sε]n _) ⟩
     ε α ^ (ε α ^^[ ω ] suc ⌜ n ⌝) ∎ where
-      wf : ∀ n → wellFormed (ω ^^[ suc (ε α) ] ⌜ n ⌝)
+      wf : ∀ n → WellFormed (ω ^^[ suc (ε α) ] ⌜ n ⌝)
       wf zero    = ε-wfp wfα
       wf (suc n) = ^-wfp ω-wellFormed ⦃ n<ω ⦄ (wf n)
       <  : ∀ n → ε α < ω ^^[ suc (ε α) ] ⌜ n ⌝

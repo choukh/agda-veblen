@@ -27,7 +27,7 @@ module Ordinal.Recursion where
 ```agda
 open import Ordinal
 open Ordinal.≤-Reasoning
-open import Ordinal.WellFormed using (wellFormed; wrap)
+open import Ordinal.WellFormed using (WellFormed; wrap)
 open import Ordinal.Function
 ```
 
@@ -190,14 +190,14 @@ rec-from-incr-< {F} {lim f} ((n , d) , ≤∸) ≤-mono <-incr α₀ = <f⇒<l
 **定理** 如果 `F` ≤-单调且强增长, 那么 `rec F from α₀ by_` 保良构, 只要初始值良构且 `F` 保良构.
 
 ```agda
-rec-wfp : ∀ {α₀} → wellFormed α₀ → ≤-monotonic F → <-increasing F
+rec-wfp : ∀ {α₀} → WellFormed α₀ → ≤-monotonic F → <-increasing F
   → wf-preserving F → wf-preserving (rec F from α₀ by_)
 rec-wfp wfα₀ ≤-mono <-incr wf-p {zero}  wfα = wfα₀
 rec-wfp wfα₀ ≤-mono <-incr wf-p {suc α} wfα = wf-p
-  -- wellFormed (rec F from α₀ by α)
+  -- WellFormed (rec F from α₀ by α)
   (rec-wfp wfα₀ ≤-mono <-incr wf-p wfα)
 rec-wfp wfα₀ ≤-mono <-incr wf-p {lim f} (wfn , wrap mono) =
-  -- wellFormed (rec F from α₀ by f n)
+  -- WellFormed (rec F from α₀ by f n)
   (rec-wfp wfα₀ ≤-mono <-incr wf-p wfn)
   -- rec F from α₀ by f m < rec F from α₀ by f n
   , wrap λ m<n → rec-by-mono-< ≤-mono <-incr (mono m<n)

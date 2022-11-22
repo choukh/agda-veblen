@@ -201,9 +201,9 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 该命题较为繁琐. 首先在表述上, 参数要求是良构序数. 证明上, 要同时讨论 `_≤_` 的两边, 这就分出了九种情况, 然后还衍生出一个互递归命题又分出五种情况.
 
 ```agda
-  Ψ-mono¹-≤ : ∀ {α β γ} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ →
+  Ψ-mono¹-≤ : ∀ {α β γ} → ⦃ WellFormed α ⦄ → ⦃ WellFormed β ⦄ →
     α ≤ β → Ψ F α γ ≤ Ψ F β γ
-  Ψ-mono¹-≤l : ∀ {α f n γ} → ⦃ wellFormed α ⦄ → ⦃ ∀ {n} → wellFormed (f n) ⦄ →
+  Ψ-mono¹-≤l : ∀ {α f n γ} → ⦃ WellFormed α ⦄ → ⦃ ∀ {n} → WellFormed (f n) ⦄ →
     α ≤ f n → Ψ F α γ ≤ Ψ F (lim f) γ
 ```
 
@@ -303,7 +303,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **推论** `Ψ F` 对第一个参数满足合同性.
 
 ```agda
-  module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
+  module _ {α β γ} ⦃ wfα : WellFormed α ⦄ ⦃ wfβ : WellFormed β ⦄ where
     Ψ-cong¹ : α ≈ β → Ψ F α γ ≈ Ψ F β γ
     Ψ-cong¹ (≤ , ≥) = (Ψ-mono¹-≤ ≤) , (Ψ-mono¹-≤ ≥)
 ```
@@ -324,14 +324,14 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **定理** 对任意良构 `α < β`, 每个 `Ψ F β γ` 也是 `Ψ F α` 的不动点.
 
 ```agda
-  Ψ-fp : ∀ {α β γ} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄
+  Ψ-fp : ∀ {α β γ} → ⦃ WellFormed α ⦄ → ⦃ WellFormed β ⦄
     → α < β → (Ψ F β γ) isFixpointOf (Ψ F α)
 ```
 
 **证明** 这是一个三重互递归证明. 我们需要以下两个衍生命题.
 
 ```agda
-  module _ f n ⦃ (_ , wrap mono) : wellFormed (lim f) ⦄ where
+  module _ f n ⦃ (_ , wrap mono) : WellFormed (lim f) ⦄ where
     Ψ-fp-lim : ∀ γ → (Ψ F (lim f) γ) isFixpointOf (Ψ F (f n))
     Ψ-fp-fn : ∀ γ → lim (λ n → Ψ F (f n) γ) isFixpointOf (Ψ F (f n))
 ```
@@ -386,7 +386,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **推论** 对任意 `α` `β` `γ` `δ`, 有三种情况可以建立 `Ψ F α β < Ψ F γ δ` 关系. 一种是 `α ≈ γ` 且 `β < δ`, 这由 `Ψ-cong¹` 和 `Ψ-mono²-<` 可以立即得到.
 
 ```agda
-  module _ {α β γ δ} ⦃ wfα : wellFormed α ⦄ ⦃ wfγ : wellFormed γ ⦄ where
+  module _ {α β γ δ} ⦃ wfα : WellFormed α ⦄ ⦃ wfγ : WellFormed γ ⦄ where
     Ψ-≈⇒< : α ≈ γ → β < δ → Ψ F α β < Ψ F γ δ
     Ψ-≈⇒< α≈γ β<δ =     begin-strict
       Ψ F α β           ≈⟨ Ψ-cong¹ α≈γ ⟩
@@ -431,8 +431,8 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **引理** 如果 `F` 在良构后继处增长, 那么任意良构 `Ψ F α` 也在良构后继处增长.
 
 ```agda
-  module _ (s-incr : suc-increasingʷᶠ F) where
-    Ψ-suc-incr : ∀ α → ⦃ wellFormed α ⦄ → suc-increasingʷᶠ (Ψ F α)
+  module _ (s-incr : suc-increasing F) where
+    Ψ-suc-incr : ∀ α → ⦃ WellFormed α ⦄ → suc-increasing (Ψ F α)
     Ψ-suc-incr zero    = s-incr
     Ψ-suc-incr (suc α) = ′-suc-incr (Ψ-normal² α) (Ψ-suc-incr α)
     Ψ-suc-incr (lim f) β = <f⇒<l {n = 0} (begin-strict
@@ -444,12 +444,12 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **定理** 如果 `F` 在零处增长, 且在良构后继处增长, 且保良构, 那么任意良构 `Ψ F α` 也保良构.
 
 ```agda
-  module _ (z-incr : zero-increasing F) (s-incr : suc-increasingʷᶠ F) (wfp₀ : wf-preserving F) where
-    Ψ-wfp² : ∀ α → ⦃ wellFormed α ⦄ → wf-preserving (Ψ F α)
+  module _ (z-incr : zero-increasing F) (s-incr : suc-increasing F) (wfp₀ : wf-preserving F) where
+    Ψ-wfp² : ∀ α → ⦃ WellFormed α ⦄ → wf-preserving (Ψ F α)
     Ψ-wfp² zero    wfβ = wfp₀ wfβ
     Ψ-wfp² (suc α) wfβ = ′-wfp (Ψ-normal² α) (Ψ-zero-incr z-incr α) (Ψ-suc-incr s-incr α) (Ψ-wfp² α) wfβ
     Ψ-wfp² (lim f) wfβ = rec-wfp wf mono incr wfp wfβ where
-      wf : wellFormed (Ψ F (lim f) zero)
+      wf : WellFormed (Ψ F (lim f) zero)
       wf = Ψ-wfp² (f _) tt , wrap (λ < → Ψ-<⇒< (fm<fn <) (Ψ-zero-incr z-incr (f _)))
       mono : ≤-monotonic (F ∘ₗ f ∘ suc)
       mono ≤ = l≤l (λ n → Ψ-mono²-≤ (f n) (s≤s ≤))
@@ -466,21 +466,11 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **推论** `Ψ F` 对两个参数保良构.
 
 ```agda
-    Ψ-wfp¹ : ∀ β → ⦃ wellFormed β ⦄ → wf-preserving (λ α → Ψ F α β)
+    Ψ-wfp¹ : ∀ β → ⦃ WellFormed β ⦄ → wf-preserving (λ α → Ψ F α β)
     Ψ-wfp¹ β {α} wfα = Ψ-wfp² α ⦃ wfα ⦄ it
 
-    Ψ-wfp₂ : ∀ α β → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ → wellFormed (Ψ F α β)
+    Ψ-wfp₂ : ∀ α β → ⦃ WellFormed α ⦄ → ⦃ WellFormed β ⦄ → WellFormed (Ψ F α β)
     Ψ-wfp₂ α β = Ψ-wfp² α it
-```
-
-由 `Ψ-normal²` 我们知道固定 `Ψ F` 第一个参数可以得到序数嵌入. 现在考虑第二个参数, 对任意的 `β`, `λ α → Ψ F α β` 不一定是序数嵌入, 但是当 `β` 为零时则可以是序数嵌入.
-
-**推论** 如果 `F` 在零处增长, 那么 `λ α → Ψ F α zero` 是序数嵌入.
-
-```agda
-  module _ (z-incr : zero-increasing F) where
-    Ψ-normal¹ : normalʷᶠ (λ α → Ψ F α zero)
-    Ψ-normal¹ = Ψ-mono¹-≤ , (λ α<β → Ψ-<⇒< α<β (Ψ-zero-incr z-incr _)) , λ- ≈-refl
 ```
 
 ### 实例化
@@ -503,7 +493,7 @@ open Properties (ω ^_) ω^-normal
 **事实** `φ` 对第一个参数满足单调性与合同性.
 
 ```agda
-module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
+module _ {α β γ} ⦃ wfα : WellFormed α ⦄ ⦃ wfβ : WellFormed β ⦄ where
 
   φ-mono¹-≤ : α ≤ β → φ α γ ≤ φ β γ
   φ-mono¹-≤ = Ψ-mono¹-≤
@@ -522,7 +512,7 @@ module _ {α β γ} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ wh
 **事实** 以下三种情况可以建立 `φ α β < φ γ δ` 关系.
 
 ```agda
-module _ {α β γ δ} ⦃ wfα : wellFormed α ⦄ ⦃ wfγ : wellFormed γ ⦄ where
+module _ {α β γ δ} ⦃ wfα : WellFormed α ⦄ ⦃ wfγ : WellFormed γ ⦄ where
 
   φ-≈⇒< : α ≈ γ → β < δ → φ α β < φ γ δ
   φ-≈⇒< = Ψ-≈⇒<
@@ -537,22 +527,27 @@ module _ {α β γ δ} ⦃ wfα : wellFormed α ⦄ ⦃ wfγ : wellFormed γ ⦄
 **事实** `φ` 对两个参数保良构.
 
 ```agda
-module _ {α β} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
-  φ-wfp₂ : wellFormed (φ α β)
+module _ {α β} ⦃ wfα : WellFormed α ⦄ ⦃ wfβ : WellFormed β ⦄ where
+  φ-wfp₂ : WellFormed (φ α β)
   φ-wfp₂ = Ψ-wfp₂ ω^-zero-incr ω^-suc-incr ω^-wfp α β
 ```
 
 ## 突破 Feferman–Schütte 屏障
 
-我们向更高阶进发, 这需要突破二元Veblen函数的极限, 也叫 Feferman–Schütte 屏障, 因为它是一些较弱系统的上限. Agda 可以轻易突破, 只需取 `λ α → φ α zero` 的不动点枚举, 得到所谓 `Γ` 层级.
+我们向更高阶进发, 这需要突破二元Veblen函数的极限, 也叫 Feferman–Schütte 屏障, 因为它是一些较弱系统的上限. 但 Agda 可以轻易突破, 只需取 `λ α → φ α zero` 的不动点枚举, 得到所谓 `Γ` 层级.
 
 ```agda
   Γ : Ord → Ord
   Γ = (λ α → φ α zero) ′
+```
 
-  Γ-normal : normalʷᶠ Γ
-  Γ-normal = {!   !}
+最小的 `Γ` 数是
 
+$$Γ_0 = φ_{φ_{φ_{φ_{...}(0)}(0)}(0)}(0)$$
+
+```agda
   _ : Γ zero ≡ (λ α → φ α zero) ⋱ zero
   _ = refl
 ```
+
+`Γ` 确实是对 `λ α → φ α zero` 的不动点的枚举, 因为 `λ α → φ α zero` 对任意良构 `α` 是序数嵌入. 这可以从 `Ψ-mono¹-≤` 和 `Ψ-<⇒<` 看出. 这些引理都要求良构序数. 可见, 从 `Γ` 开始, 必须完全限定到良构序数才能继续理论的构筑. 我们就此结束本系列文章的第1卷. 第2卷会从良构序数的 record 类型的定义开始, 然后把第1卷的结果都迁移过去, 再继续向 LVO 进发.

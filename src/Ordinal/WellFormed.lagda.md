@@ -66,20 +66,20 @@ fm<fn = MonoSequence.unwrap it
 由单调序列的极限构成的序数我们称为**良构**序数. 注意这是递归定义, 序列的每一项也要求良构. 平凡地, 零以及良构序数的后继也是良构序数.
 
 ```agda
-wellFormed : Ord → Set
-wellFormed zero    = ⊤
-wellFormed (suc α) = wellFormed α
-wellFormed (lim f) = (∀ {n} → wellFormed (f n)) × MonoSequence f
+WellFormed : Ord → Set
+WellFormed zero    = ⊤
+WellFormed (suc α) = WellFormed α
+WellFormed (lim f) = (∀ {n} → WellFormed (f n)) × MonoSequence f
 ```
 
 以下 instance 用于从良构极限序数推出其序列每一项良构以及序列单调.
 
 ```agda
 instance
-  wf⇒wf : ∀ {f} → ⦃ wellFormed (lim f) ⦄ → ∀ {n} → wellFormed (f n)
+  wf⇒wf : ∀ {f} → ⦃ WellFormed (lim f) ⦄ → ∀ {n} → WellFormed (f n)
   wf⇒wf ⦃ wf ⦄ = proj₁ wf
 
-  wf⇒mono : ∀ {f} → ⦃ wellFormed (lim f) ⦄ → MonoSequence f
+  wf⇒mono : ∀ {f} → ⦃ WellFormed (lim f) ⦄ → MonoSequence f
   wf⇒mono ⦃ wf ⦄ = proj₂ wf
 ```
 
@@ -103,7 +103,7 @@ instance
 简单的归纳法即可证明任意有限序数良构.
 
 ```agda
-⌜_⌝-wellFormed : ∀ n → wellFormed ⌜ n ⌝
+⌜_⌝-wellFormed : ∀ n → WellFormed ⌜ n ⌝
 ⌜ zero ⌝-wellFormed  = tt
 ⌜ suc n ⌝-wellFormed = ⌜ n ⌝-wellFormed
 ```
@@ -123,7 +123,7 @@ instance
 以上两条引理说明 `ω` 是良构序数.
 
 ```agda
-ω-wellFormed : wellFormed ω
+ω-wellFormed : WellFormed ω
 ω-wellFormed = (λ {n} → ⌜ n ⌝-wellFormed) , ⌜⌝-monoSequence
 ```
 
@@ -188,7 +188,7 @@ fn<fsn ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 **引理** 小于 `ω` 的良构序数被 `⌜_⌝` 满射.
 
 ```agda
-⌜⌝-surjective : ∀ {α} → ⦃ wellFormed α ⦄ → α < ω → ∃[ n ] α ≡ ⌜ n ⌝
+⌜⌝-surjective : ∀ {α} → ⦃ WellFormed α ⦄ → α < ω → ∃[ n ] α ≡ ⌜ n ⌝
 ⌜⌝-surjective {zero} _ = 0 , refl
 ⌜⌝-surjective {suc α} s<ω with ⌜⌝-surjective (<-trans <s s<ω)
 ... | n , ≡⌜n⌝ = suc n , cong suc ≡⌜n⌝
@@ -198,7 +198,7 @@ fn<fsn ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 **推论** 小于 `ω` 的良构序数与自然数等价.
 
 ```agda
-∃[<ω]wf↩ℕ : (∃[ α ] α < ω × wellFormed α) ↩ ℕ
+∃[<ω]wf↩ℕ : (∃[ α ] α < ω × WellFormed α) ↩ ℕ
 ∃[<ω]wf↩ℕ = record
   { to        = λ (α , <ω , wf) → proj₁ (⌜⌝-surjective ⦃ wf ⦄ <ω)
   ; from      = λ n → ⌜ n ⌝ , n<ω , ⌜ n ⌝-wellFormed
@@ -318,7 +318,7 @@ module _ {f h} (≤-mono : ≤-monoSequence f) (incr : ∀ n → n ℕ.< h n) wh
 **引理** 非零良构序数大于零.
 
 ```agda
-≢z⇒>z : ∀ {α} → ⦃ wellFormed α ⦄ → α ≢ zero → α > zero
+≢z⇒>z : ∀ {α} → ⦃ WellFormed α ⦄ → α ≢ zero → α > zero
 ≢z⇒>z {zero}  z≢z = ⊥-elim (z≢z refl)
 ≢z⇒>z {suc α} _   = inj₁ tt , z≤
 ≢z⇒>z {lim f} _   = z<l
@@ -327,7 +327,7 @@ module _ {f h} (≤-mono : ≤-monoSequence f) (incr : ∀ n → n ℕ.< h n) wh
 **引理** 外延等于零的良构序数就是零.
 
 ```agda
-≈z⇒≡z : ∀ {α} → ⦃ wellFormed α ⦄ → α ≈ zero → α ≡ zero
+≈z⇒≡z : ∀ {α} → ⦃ WellFormed α ⦄ → α ≈ zero → α ≡ zero
 ≈z⇒≡z {zero}  _         = refl
 ≈z⇒≡z {suc α} (s≤z , _) = ⊥-elim (s≰z s≤z)
 ≈z⇒≡z {lim f} (l≤z , _) = ⊥-elim (<⇒≱ z<l l≤z)
@@ -336,7 +336,7 @@ module _ {f h} (≤-mono : ≤-monoSequence f) (incr : ∀ n → n ℕ.< h n) wh
 **引理** 小于等于零的良构序数就是零.
 
 ```agda
-≤z⇒≡z : ∀ {α} → ⦃ wellFormed α ⦄ → α ≤ zero → α ≡ zero
+≤z⇒≡z : ∀ {α} → ⦃ WellFormed α ⦄ → α ≤ zero → α ≡ zero
 ≤z⇒≡z ≤z = ≈z⇒≡z (≤z , z≤)
 ```
 
@@ -345,7 +345,7 @@ module _ {f h} (≤-mono : ≤-monoSequence f) (incr : ∀ n → n ℕ.< h n) wh
 **引理** 良构序数要么是零, 要么大于零.
 
 ```agda
-≡z⊎>z : ∀ α → ⦃ wellFormed α ⦄ → α ≡ zero ⊎ α > zero
+≡z⊎>z : ∀ α → ⦃ WellFormed α ⦄ → α ≡ zero ⊎ α > zero
 ≡z⊎>z zero    = inj₁ refl
 ≡z⊎>z (suc α) = inj₂ (z<s α)
 ≡z⊎>z (lim f) = inj₂ (z<l)
@@ -354,7 +354,7 @@ module _ {f h} (≤-mono : ≤-monoSequence f) (incr : ∀ n → n ℕ.< h n) wh
 **引理** 良构序数要么有限, 要么无限.
 
 ```agda
-<ω⊎≥ω : ∀ α → ⦃ wellFormed α ⦄ → α < ω ⊎ α ≥ ω
+<ω⊎≥ω : ∀ α → ⦃ WellFormed α ⦄ → α < ω ⊎ α ≥ ω
 <ω⊎≥ω zero     = inj₁ z<ω
 <ω⊎≥ω (suc α) with <ω⊎≥ω α
 ... | inj₁ <ω  = inj₁ (s<ω <ω)

@@ -204,7 +204,7 @@ _^^_ : Ord → Ord → Ord
 ^^-monoʳ-≤ : ∀ α → ⦃ α > ⌜ 1 ⌝ ⦄ → ≤-monotonic (α ^^_)
 ^^-monoʳ-≤ α ⦃ α>1 ⦄ = rec-by-mono-≤ (^-monoʳ-≤ α ⦃ <⇒≤ α>1 ⦄) (λ β → ^-incrˡ-≤ β α)
 
-^^-stuck-forever : ∀ α β → ⦃ α > ⌜ 1 ⌝ ⦄ → ⦃ wellFormed β ⦄ → β ≥ ω → α ^^ β ≈ α ^^ ω
+^^-stuck-forever : ∀ α β → ⦃ α > ⌜ 1 ⌝ ⦄ → ⦃ WellFormed β ⦄ → β ≥ ω → α ^^ β ≈ α ^^ ω
 ^^-stuck-forever α zero           β≥ω = ⊥-elim (≤⇒≯ β≥ω z<ω)
 ^^-stuck-forever α (suc β) ⦃ α>1 ⦄ β≥ω =
     let instance α≥1 = <⇒≤ α>1 in        (begin

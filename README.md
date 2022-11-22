@@ -66,7 +66,8 @@
 ### [Veblen.Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/Veblen/Function.lagda.md)
 
 - Veblen function `φ α β` is defined
-- Γ₀ is defined as `φ ⋱ zero`
+- We show that `φ` is normal, monotonic, congruence and wf-preserving
+- Γ₀ is defined as `(λ α → φ α zero) ⋱ zero`
 
 ### Veblen.Extended.lagda.md
 

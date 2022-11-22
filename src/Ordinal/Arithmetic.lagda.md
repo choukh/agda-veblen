@@ -721,13 +721,13 @@ _ = *-zeroʳ
 **定理** 右侧运算 `+_`, `*_`, `^_` 都保良构.
 
 ```agda
-+-wfp : ∀ {α} → wellFormed α → wf-preserving (α +_)
++-wfp : ∀ {α} → WellFormed α → wf-preserving (α +_)
 +-wfp wfα = rec-wfp wfα s≤s (λ- <s) id
 
-*-wfp : ∀ {α} → wellFormed α → α > ⌜ 0 ⌝ → wf-preserving (α *_)
+*-wfp : ∀ {α} → WellFormed α → α > ⌜ 0 ⌝ → wf-preserving (α *_)
 *-wfp {α} wfα α>0 = rec-wfp tt (+-monoˡ-≤ α) (+-incrʳ-< α α>0) (λ wfx → +-wfp wfx wfα)
 
-^-wfp : ∀ {α} → wellFormed α → ⦃ α > ⌜ 1 ⌝ ⦄ → wf-preserving (α ^_)
+^-wfp : ∀ {α} → WellFormed α → ⦃ α > ⌜ 1 ⌝ ⦄ → wf-preserving (α ^_)
 ^-wfp {α} wfα {zero} _ = tt
 ^-wfp {α} wfα ⦃ α>1 ⦄ {suc β} wfβ = *-wfp (^-wfp wfα wfβ) (^>0 ⦃ <⇒≤ α>1 ⦄) wfα
 ^-wfp {α} wfα {lim f} (wfn , wrap mono) = ^-wfp wfα wfn , wrap λ m<n → ^-monoʳ-< α (mono m<n)
@@ -765,7 +765,7 @@ _ = *-zeroʳ
 **引理** ω的幂对加法有吸收律.
 
 ```agda
-ω^-absorb-+ : ∀ {α β} → ⦃ wellFormed β ⦄ → α < β → ω ^ α + ω ^ β ≈ ω ^ β
+ω^-absorb-+ : ∀ {α β} → ⦃ WellFormed β ⦄ → α < β → ω ^ α + ω ^ β ≈ ω ^ β
 ω^-absorb-+ {α} {suc β} α<β =
     l≤ (λ n →                   begin-nonstrict
       ω ^ α + ω ^ β * ⌜ n ⌝     ≤⟨ +-monoˡ-≤ _ (^-monoʳ-≤ ω (<s⇒≤ α<β)) ⟩

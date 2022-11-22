@@ -94,4 +94,5 @@ open import Veblen.Function public
 ```
 
 - 定义了二元 Veblen 函数 `φ α β`
-- Γ₀ 定义为 `φ ⋱ zero`
+- 证明了 `φ` 的嵌入性, 单调性, 合同性, 不动点性和保良构性
+- Γ₀ 定义为 `(λ α → φ α zero) ⋱ zero`
