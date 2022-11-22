@@ -39,7 +39,7 @@ open import Data.Nat.Properties as ℕ using (m≤n⇒m<n∨m≡n)
 open import Data.Unit using (tt)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
-open import Function using (_∘_)
+open import Function using (_∘_; λ-)
 open import Relation.Binary.PropositionalEquality as Eq using (refl)
 ```
 
@@ -85,7 +85,7 @@ F ⁺ = rec F ∘ suc from (F zero) by_
 ⁺-normal F F-mono-≤ F-incr-≤ =
     rec-by-mono-≤ Fs-mono-≤ (<⇒≤-incr Fs-incr-<)
   , rec-by-mono-< Fs-mono-≤ Fs-incr-<
-  , λ _ → ≈-refl where
+  , λ- ≈-refl where
     Fs-mono-≤ : ≤-monotonic (F ∘ suc)
     Fs-mono-≤ ≤ = F-mono-≤ (s≤s ≤)
     Fs-incr-< : <-increasing (F ∘ suc)
@@ -154,8 +154,8 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **引理** `F` 的从零开始的有穷递归是递归次数的单调序列.
 
 ```agda
-    ⋱₀-mono-n : MonoSequence (rec F from zero by_ ∘ ⌜_⌝)
-    ⋱₀-mono-n = wrap mono where
+    ⋱₀-monoSeq : MonoSequence (rec F from zero by_ ∘ ⌜_⌝)
+    ⋱₀-monoSeq = wrap mono where
       mono : monoSequence _
       mono {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
       ... | inj₁ m<n =                begin-strict
@@ -172,7 +172,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 ```agda
     ⋱₀-wf : wf-preserving F → wellFormed (F ⋱ zero)
-    ⋱₀-wf wfp = helper , ⋱₀-mono-n where
+    ⋱₀-wf wfp = helper , ⋱₀-monoSeq where
       helper : ∀ {n} → wellFormed (rec F from zero by ⌜ n ⌝)
       helper {zero}  = tt
       helper {suc n} = wfp helper
@@ -181,7 +181,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **事实** 如果 `F` 还在良构后继处增长, 那么 `F` 的最小不动点严格大于 `F` 在有限序数处的值.
 
 ```agda
-    Fn<F⋱₀ : suc-increasing F → ∀ n → F ⌜ n ⌝ < F ⋱ zero
+    Fn<F⋱₀ : suc-increasingʷᶠ F → ∀ n → F ⌜ n ⌝ < F ⋱ zero
     Fn<F⋱₀ s-incr n =                       begin-strict
       F ⌜ n ⌝                               <⟨ <-mono <s ⟩
       F ⌜ suc n ⌝                           ≤⟨ ≤-mono (helper n) ⟩
@@ -226,14 +226,14 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 现在, 假设 `F` 在良构后继处增长.
 
 ```agda
-  module _ (s-incr : suc-increasing F) where
+  module _ (s-incr : suc-increasingʷᶠ F) where
 ```
 
 **引理** `F` 的从 `suc α` 开始的有穷递归是递归次数的单调序列.
 
 ```agda
-    ⋱ₛ-mono-n : ∀ α → ⦃ wellFormed α ⦄ → MonoSequence (rec F from suc α by_ ∘ ⌜_⌝)
-    ⋱ₛ-mono-n α = wrap mono where
+    ⋱ₛ-monoSeq : ∀ α → ⦃ wellFormed α ⦄ → MonoSequence (rec F from suc α by_ ∘ ⌜_⌝)
+    ⋱ₛ-monoSeq α = wrap mono where
       mono : monoSequence _
       mono {m} {suc n} (ℕ.s≤s m≤n) with m≤n⇒m<n∨m≡n m≤n
       ... | inj₁ m<n =                 begin-strict
@@ -250,7 +250,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 ```agda
     ⋱ₛ-wfp : wf-preserving F → wf-preserving (F ⋱_ ∘ suc)
-    ⋱ₛ-wfp wfp {α} wfα = helper , ⋱ₛ-mono-n α ⦃ wfα ⦄ where
+    ⋱ₛ-wfp wfp {α} wfα = helper , ⋱ₛ-monoSeq α ⦃ wfα ⦄ where
       helper : ∀ {n} → wellFormed (rec F from suc α by ⌜ n ⌝)
       helper {zero}  = wfα
       helper {suc n} = wfp helper
@@ -284,7 +284,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **定理** `_′` 保持保良构性.
 
 ```agda
-  ′-wfp : zero-increasing F → suc-increasing F → wf-preserving F → wf-preserving (F ′)
+  ′-wfp : zero-increasing F → suc-increasingʷᶠ F → wf-preserving F → wf-preserving (F ′)
   ′-wfp z-incr s-incr wfp = rec-wfp (⋱₀-wf z-incr wfp) ⋱ₛ-mono-≤ ⋱ₛ-incr-< (⋱ₛ-wfp s-incr wfp)
 ```
 
@@ -299,7 +299,7 @@ module _ {F} where
 **定理** `_′` 保持良构后继处增长性.
 
 ```agda
-  ′-suc-incr : normal F → suc-increasing F → suc-increasing (F ′)
+  ′-suc-incr : normal F → suc-increasingʷᶠ F → suc-increasingʷᶠ (F ′)
   ′-suc-incr nml s-incr α =           begin-strict
     suc α                             <⟨ s-incr α ⟩
     rec F from suc α by ⌜ 1 ⌝         ≤⟨ f≤l ⟩
@@ -364,3 +364,4 @@ module _ {F G} (F-mono : ≤-monotonic F) (G-mono : ≤-monotonic G) where
   ′-congʰ F≈ᶠG = ′-monoʰ-≤ F-mono (proj₁ F≈ᶠG)
                , ′-monoʰ-≤ G-mono (proj₂ F≈ᶠG)
 ```
+ 

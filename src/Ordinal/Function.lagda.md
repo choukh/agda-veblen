@@ -33,7 +33,7 @@ open import Ordinal.WellFormed using (wellFormed; ∃[n]<fn; f<l; wrap)
 
 ```agda
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
-open import Function using (_∘_; id)
+open import Function using (_∘_; id; λ-)
 open import Relation.Binary using (Monotonic₁; _Respects_)
 ```
 
@@ -74,10 +74,10 @@ _ = id
 
 ```agda
 _ : ≤-increasing suc
-_ = λ _ → ≤s
+_ = λ- ≤s
 
 _ : <-increasing suc
-_ = λ _ → <s
+_ = λ- <s
 ```
 
 显然, 强增长蕴含弱增长.
@@ -93,8 +93,8 @@ _ = λ _ → <s
 zero-increasing : (Ord → Ord) → Set
 zero-increasing F = zero < F zero
 
-suc-increasing : (Ord → Ord) → Set
-suc-increasing F = ∀ α → ⦃ wellFormed α ⦄ → suc α < F (suc α)
+suc-increasingʷᶠ : (Ord → Ord) → Set
+suc-increasingʷᶠ F = ∀ α → ⦃ wellFormed α ⦄ → suc α < F (suc α)
 ```
 
 以下两条称为 F 的单调性, 分别叫做 **≤-单调** 和 **<-单调**.
@@ -143,7 +143,20 @@ normal : (Ord → Ord) → Set
 normal F = ≤-monotonic F × <-monotonic F × lim-continuous F
 ```
 
-对该定义的解释放在下一小节. 我们先来看一些结论.
+下面是良构版的序数嵌入. 前期构筑不需要, 后期理论复杂之后需要.
+
+```agda
+≤-monotonicʷᶠ : (Ord → Ord) → Set
+≤-monotonicʷᶠ F = ∀ {α β} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ → α ≤ β → F α ≤ F β
+
+<-monotonicʷᶠ : (Ord → Ord) → Set
+<-monotonicʷᶠ F = ∀ {α β} → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ → α < β → F α < F β
+
+normalʷᶠ : (Ord → Ord) → Set
+normalʷᶠ F = ≤-monotonicʷᶠ F × <-monotonicʷᶠ F × lim-continuous F
+```
+
+我们会在下一小节解释序数嵌入的定义, 现在先来看一些结论.
 
 **引理** 序数嵌入蕴含非无穷降链.  
 **证明** 即证对序数嵌入 `F` 有 `α ≤ F α`. 讨论 `α`.

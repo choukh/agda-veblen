@@ -28,11 +28,12 @@ open import Ordinal.Function
 open import Ordinal.Recursion
 open import Ordinal.Arithmetic using (_^_)
 open import Veblen.Fixpoint
-open import Veblen.Epsilon using (ω^-normal; ε; ζ; η)
+open import Veblen.Epsilon
 
 open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Nat.Properties as ℕ using (m≤m+n; m<n+m)
-open import Function using (_∘_)
+open import Function using (_∘_; λ-; it)
+open import Data.Unit using (tt)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 open import Function.Definitions (_≈_) (_≈_) using (Congruent)
@@ -92,7 +93,7 @@ $$φ_{α+1}(β) = {φ_{α}}'(β)$$
 
 ```agda
 _ : ∀ α → φ (suc α) ≡ (φ α) ′
-_ = λ _ → refl
+_ = λ- refl
 ```
 
 第一个参数是极限时又按第二个参数分三种情况:
@@ -107,7 +108,7 @@ $$φ_{γ}(0)[n] = φ_{γ[n]}(0)$$
 
 ```agda
 _ : ∀ f → φ (lim f) zero ≡ lim (λ n → φ (f n) zero)
-_ = λ _ → refl
+_ = λ- refl
 ```
 
 后继的情况有
@@ -415,6 +416,73 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 在经典逻辑中可以强化到有且**仅**有以上三种情况可以推出 `Ψ F α β < Ψ F γ δ`, 只是第三种情况要增加 `α > γ` 条件, 以利用 `<` 的三歧性.
 
+### 保良构
+
+**引理** 如果 `F` 在零处增长, 那么任意 `Ψ F α` 也在零处增长.
+
+```agda
+  module _ (z-incr : zero-increasing F) where
+    Ψ-zero-incr : ∀ α → zero-increasing (Ψ F α)
+    Ψ-zero-incr zero    = z-incr
+    Ψ-zero-incr (suc α) = ′-zero-incr (Ψ-zero-incr α)
+    Ψ-zero-incr (lim f) = <f⇒<l {n = 0} (Ψ-zero-incr (f 0))
+```
+
+**引理** 如果 `F` 在良构后继处增长, 那么任意良构 `Ψ F α` 也在良构后继处增长.
+
+```agda
+  module _ (s-incr : suc-increasingʷᶠ F) where
+    Ψ-suc-incr : ∀ α → ⦃ wellFormed α ⦄ → suc-increasingʷᶠ (Ψ F α)
+    Ψ-suc-incr zero    = s-incr
+    Ψ-suc-incr (suc α) = ′-suc-incr (Ψ-normal² α) (Ψ-suc-incr α)
+    Ψ-suc-incr (lim f) β = <f⇒<l {n = 0} (begin-strict
+      suc β                               <⟨ Ψ-suc-incr (f 0) β ⟩
+      Ψ F (f 0) (suc β)                   ≤⟨ Ψ-mono²-≤ _ (s≤s (Ψ-incr²-≤ _ _)) ⟩
+      Ψ F (f 0) (suc (Ψ F (lim f) β))     ∎)
+```
+
+**定理** 如果 `F` 在零处增长, 且在良构后继处增长, 且保良构, 那么任意良构 `Ψ F α` 也保良构.
+
+```agda
+  module _ (z-incr : zero-increasing F) (s-incr : suc-increasingʷᶠ F) (wfp₀ : wf-preserving F) where
+    Ψ-wfp² : ∀ α → ⦃ wellFormed α ⦄ → wf-preserving (Ψ F α)
+    Ψ-wfp² zero    wfβ = wfp₀ wfβ
+    Ψ-wfp² (suc α) wfβ = ′-wfp (Ψ-normal² α) (Ψ-zero-incr z-incr α) (Ψ-suc-incr s-incr α) (Ψ-wfp² α) wfβ
+    Ψ-wfp² (lim f) wfβ = rec-wfp wf mono incr wfp wfβ where
+      wf : wellFormed (Ψ F (lim f) zero)
+      wf = Ψ-wfp² (f _) tt , wrap (λ < → Ψ-<⇒< (fm<fn <) (Ψ-zero-incr z-incr (f _)))
+      mono : ≤-monotonic (F ∘ₗ f ∘ suc)
+      mono ≤ = l≤l (λ n → Ψ-mono²-≤ (f n) (s≤s ≤))
+      incr : <-increasing (F ∘ₗ f ∘ suc)
+      incr α =            begin-strict
+        α                 <⟨ <s ⟩
+        suc α             ≤⟨ ≤f⇒≤l (Ψ-incr²-≤ (f 0) _) ⟩
+        (F ∘ₗ f ∘ suc) α  ∎
+      wfp : wf-preserving (F ∘ₗ f ∘ suc)
+      wfp {α} wfα = (λ {n} → Ψ-wfp² (f n) {suc α} wfα)
+                  , wrap (λ < → Ψ-<⇒< (fm<fn <) (Ψ-suc-incr s-incr _ _ ⦃ wfα ⦄))
+```
+
+**推论** `Ψ F` 对两个参数保良构.
+
+```agda
+    Ψ-wfp¹ : ∀ β → ⦃ wellFormed β ⦄ → wf-preserving (λ α → Ψ F α β)
+    Ψ-wfp¹ β {α} wfα = Ψ-wfp² α ⦃ wfα ⦄ it
+
+    Ψ-wfp₂ : ∀ α β → ⦃ wellFormed α ⦄ → ⦃ wellFormed β ⦄ → wellFormed (Ψ F α β)
+    Ψ-wfp₂ α β = Ψ-wfp² α it
+```
+
+由 `Ψ-normal²` 我们知道固定 `Ψ F` 第一个参数可以得到序数嵌入. 现在考虑第二个参数, 对任意的 `β`, `λ α → Ψ F α β` 不一定是序数嵌入, 但是当 `β` 为零时则可以是序数嵌入.
+
+**推论** 如果 `F` 在零处增长, 那么 `λ α → Ψ F α zero` 是序数嵌入.
+
+```agda
+  module _ (z-incr : zero-increasing F) where
+    Ψ-normal¹ : normalʷᶠ (λ α → Ψ F α zero)
+    Ψ-normal¹ = Ψ-mono¹-≤ , (λ α<β → Ψ-<⇒< α<β (Ψ-zero-incr z-incr _)) , λ- ≈-refl
+```
+
 ### 实例化
 
 以 `ω ^_` 实例化 Properties 模块即可得到 `φ` 的性质.
@@ -466,13 +534,25 @@ module _ {α β γ δ} ⦃ wfα : wellFormed α ⦄ ⦃ wfγ : wellFormed γ ⦄
   φ->⇒< = Ψ->⇒<
 ```
 
-## 突破 Feferman–Schütte 屏障
-
-由 `Ψ-normal²` 我们知道固定 `Ψ F` 第一个参数可以得到序数嵌入. 现在考虑第二个参数, 对任意的 `β`, `λ α → Ψ F α β` 不一定是序数嵌入, 但是当 `β` 为零时则一定是序数嵌入.
+**事实** `φ` 对两个参数保良构.
 
 ```agda
-module Higher F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
+module _ {α β} ⦃ wfα : wellFormed α ⦄ ⦃ wfβ : wellFormed β ⦄ where
+  φ-wfp₂ : wellFormed (φ α β)
+  φ-wfp₂ = Ψ-wfp₂ ω^-zero-incr ω^-suc-incr ω^-wfp α β
+```
 
-  --Ψ-normal¹ : normal (λ α → Ψ F α zero)
-  --Ψ-normal¹ = {!   !} , {!   !} , {!   !})
+## 突破 Feferman–Schütte 屏障
+
+我们向更高阶进发, 这需要突破二元Veblen函数的极限, 也叫 Feferman–Schütte 屏障, 因为它是一些较弱系统的上限. Agda 可以轻易突破, 只需取 `λ α → φ α zero` 的不动点枚举, 得到所谓 `Γ` 层级.
+
+```agda
+  Γ : Ord → Ord
+  Γ = (λ α → φ α zero) ′
+
+  Γ-normal : normalʷᶠ Γ
+  Γ-normal = {!   !}
+
+  _ : Γ zero ≡ (λ α → φ α zero) ⋱ zero
+  _ = refl
 ```

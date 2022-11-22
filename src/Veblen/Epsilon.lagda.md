@@ -25,7 +25,7 @@ module Veblen.Epsilon where
 open import Ordinal
 open Ordinal.≤-Reasoning
 open import Ordinal.WellFormed hiding (wf⇒wf)
-open import Ordinal.Function using (normal; wf-preserving; zero-increasing; suc-increasing)
+open import Ordinal.Function using (normal; wf-preserving; zero-increasing; suc-increasingʷᶠ)
 open import Ordinal.Recursion using (rec_from_by_)
 open import Ordinal.Arithmetic
 open import Ordinal.Tetration using (_^^ω; _^^ω[_]; ^^≈^^[]ω; ^^-stuck; ^-^^[]-comm)
@@ -54,7 +54,7 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
   ⌜ 1 ⌝               ≡⟨⟩
   ω ^ zero            ∎
 
-ω^-suc-incr : suc-increasing (ω ^_)
+ω^-suc-incr : suc-increasingʷᶠ (ω ^_)
 ω^-suc-incr α with ≡z⊎>z α
 ... | inj₁ refl =     begin-strict
   ⌜ 1 ⌝               <⟨ n<ω ⟩
@@ -151,7 +151,7 @@ _ = λ f → refl
 ε-zero-incr : zero-increasing ε
 ε-zero-incr = ′-zero-incr ω^-zero-incr
 
-ε-suc-incr : suc-increasing ε
+ε-suc-incr : suc-increasingʷᶠ ε
 ε-suc-incr = ′-suc-incr ω^-normal ω^-suc-incr
 
 ζ-wfp : wf-preserving ζ
@@ -204,7 +204,7 @@ _ = λ f → refl
 ζ-zero-incr : zero-increasing ζ
 ζ-zero-incr = ′-zero-incr ε-zero-incr
 
-ζ-suc-incr : suc-increasing ζ
+ζ-suc-incr : suc-increasingʷᶠ ζ
 ζ-suc-incr = ′-suc-incr ε-normal ε-suc-incr
 
 η-wfp : wf-preserving η

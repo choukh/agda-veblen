@@ -37,7 +37,7 @@ open import Data.Nat as ℕ using (ℕ; zero; suc; z≤n)
 open import Data.Nat.Properties as ℕ using (m≤n⇒m<n∨m≡n)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
-open import Function using (_∘_; _↩_)
+open import Function using (_∘_; _↩_; it)
 open import Relation.Binary using (Monotonic₁)
 open import Relation.Binary.PropositionalEquality as Eq
   using (_≡_; _≢_; refl; sym; cong; subst)
@@ -58,6 +58,9 @@ monoSequence = Monotonic₁ ℕ._<_ _<_
 record MonoSequence (f : ℕ → Ord) : Set where
   constructor wrap
   field unwrap : monoSequence f
+
+fm<fn : ∀ {f} → ⦃ MonoSequence f ⦄ → monoSequence f
+fm<fn = MonoSequence.unwrap it
 ```
 
 由单调序列的极限构成的序数我们称为**良构**序数. 注意这是递归定义, 序列的每一项也要求良构. 平凡地, 零以及良构序数的后继也是良构序数.

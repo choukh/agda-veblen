@@ -39,7 +39,7 @@ open import Data.Nat as ℕ using (ℕ; zero; suc)
 import Data.Nat.Properties as ℕ
 open import Data.Unit using (tt)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
-open import Function using (id)
+open import Function using (id; λ-)
 open import Relation.Binary using (_Preserves_⟶_)
 open Relation.Binary.Tri
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl; cong)
@@ -155,7 +155,7 @@ _ = refl
 +-identityˡ (lim f) = l≈l (+-identityˡ (f _))
 
 +-identityʳ : RightIdentity ⌜ 0 ⌝ _+_
-+-identityʳ = λ _ → ≈-refl
++-identityʳ = λ- ≈-refl
 
 +-identity : Identity ⌜ 0 ⌝ _+_
 +-identity = +-identityˡ , +-identityʳ
@@ -182,22 +182,22 @@ _ = refl
 module _ (α) where
 
   +-incrʳ-≤ : ≤-increasing (_+ α)
-  +-incrʳ-≤ β = rec-from-incr-≤ α (λ _ → ≤s) β
+  +-incrʳ-≤ β = rec-from-incr-≤ α (λ- ≤s) β
 
   +-incrˡ-≤ : ≤-increasing (α +_)
-  +-incrˡ-≤ β = rec-by-incr-≤ s≤s (λ _ → <s) β
+  +-incrˡ-≤ β = rec-by-incr-≤ s≤s (λ- <s) β
 
   +-incrʳ-< : α > ⌜ 0 ⌝ → <-increasing (_+ α)
-  +-incrʳ-< >z β = rec-from-incr-< >z s≤s (λ _ → <s) β
+  +-incrʳ-< >z β = rec-from-incr-< >z s≤s (λ- <s) β
 
   +-monoˡ-≤ : ≤-monotonic (_+ α)
   +-monoˡ-≤ ≤ = rec-from-mono-≤ α s≤s ≤
 
   +-monoʳ-≤ : ≤-monotonic (α +_)
-  +-monoʳ-≤ ≤ = rec-by-mono-≤ s≤s (λ _ → ≤s) ≤
+  +-monoʳ-≤ ≤ = rec-by-mono-≤ s≤s (λ- ≤s) ≤
 
   +-monoʳ-< : <-monotonic (α +_ )
-  +-monoʳ-< < = rec-by-mono-< s≤s (λ _ → <s) <
+  +-monoʳ-< < = rec-by-mono-< s≤s (λ- <s) <
 ```
 
 **注意** 只有 `_+` 是强增长的, `+_` 不保证强增长. 这就是我们在乘法的定义中使用 `_+` 的原因.
@@ -722,7 +722,7 @@ _ = *-zeroʳ
 
 ```agda
 +-wfp : ∀ {α} → wellFormed α → wf-preserving (α +_)
-+-wfp wfα = rec-wfp wfα s≤s (λ _ → <s) id
++-wfp wfα = rec-wfp wfα s≤s (λ- <s) id
 
 *-wfp : ∀ {α} → wellFormed α → α > ⌜ 0 ⌝ → wf-preserving (α *_)
 *-wfp {α} wfα α>0 = rec-wfp tt (+-monoˡ-≤ α) (+-incrʳ-< α α>0) (λ wfx → +-wfp wfx wfα)

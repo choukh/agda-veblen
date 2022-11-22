@@ -36,12 +36,12 @@ module Ordinal where
 - Agda语言达到 [PLFA](https://agda-zh.github.io/PLFA-zh/) 第一册水平
 - 理解以下[标准库](https://agda.github.io/agda-stdlib/index)依赖所涉及的数学概念
 
-我们只使用最底层的宇宙, 因此导入了 `0ℓ` 以实例化库中其他宇宙多态类型. 我们需要自然数来定义序数, 但本章暂不需要关于自然数的理论, 所以只导入了 `ℕ`. 我们还导入了函数复合 `_∘_`.
+我们只使用最底层的宇宙, 因此导入了 `0ℓ` 以实例化库中其他宇宙多态类型. 我们需要自然数来定义序数, 但本章暂不需要关于自然数的理论, 所以只导入了 `ℕ`. 我们还导入了函数复合 `_∘_` 以及显式参数转隐式的算子 `λ-`.
 
 ```agda
 open import Level using (0ℓ)
 open import Data.Nat using (ℕ)
-open import Function using (_∘_)
+open import Function using (_∘_; λ-)
 ```
 
 接下来是一些基本的逻辑概念. 其中空类型 `⊥` 和单值类型 `⊤` 都将用于序数的定义. 和类型 `_⊎_` 用作析取, 积类型 `_×_` 用作合取, 而存在量词 `∃` 只是 Σ类型上的一种 syntax. 本质上, `_×_` 和 `∃` 都是 Σ类型的特化, 都可以用 `_,_` 解构.
@@ -298,7 +298,7 @@ _≉_ : Rel Ord 0ℓ
 ≡⇒≈ refl = ≈-refl
 ```
 
-`≤ zero` 蕴含 `≈ zero`, 但要得到 `≡ zero` 则要求下一章的良构条件. 因为比如非良构的 `lim (λ _ → zero)` 外延等于 `zero`, 但显然不是 `zero`.
+`≤ zero` 蕴含 `≈ zero`, 但要得到 `≡ zero` 则要求下一章的良构条件. 因为比如非良构的 `lim (λ- zero)` 外延等于 `zero`, 但显然不是 `zero`.
 
 ```agda
 ≤z⇒≈z : ∀ {α} → α ≤ zero → α ≈ zero
@@ -324,8 +324,8 @@ s≈s⇒≈ (sα≤sβ , sβ≤sα) = s≤s⇒≤ sα≤sβ , s≤s⇒≤ sβ≤
 
 ```agda
 l≈l : ∀ {f g} → (∀ {n} → f n ≈ g n) → lim f ≈ lim g
-l≈l ext = l≤l (λ _ → proj₁ ext)
-        , l≤l (λ _ → proj₂ ext)
+l≈l ext = l≤l (λ- (proj₁ ext))
+        , l≤l (λ- (proj₂ ext))
 ```
 
 序列极限与起始项无关.
