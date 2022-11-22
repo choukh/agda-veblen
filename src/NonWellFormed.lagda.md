@@ -11,6 +11,8 @@ zhihu-url: https://zhuanlan.zhihu.com/p/585851715
 > 高亮渲染: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
 > 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
+[前往第2卷](https://choukh.github.io/agda-lvo/WellFormed.html)
+
 ```agda
 {-# OPTIONS --without-K --safe #-}
 

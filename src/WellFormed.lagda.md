@@ -23,3 +23,5 @@ open import WellFormed.Ordinal public
 ```
 
 - 良构序数以及其上的序
+
+[返回第1卷](https://choukh.github.io/agda-lvo/NonWellFormed.html)
