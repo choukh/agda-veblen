@@ -22,7 +22,7 @@ module WellFormed.Ordinal where
 
 ```agda
 open import NonWellFormed.Ordinal as ord using (zero; suc; lim) renaming (Ord to ord)
-open import NonWellFormed.WellFormed as ord using (MonoSequence; WellFormed; wrap)
+open import NonWellFormed.WellFormed using (WellFormed; wrap)
 
 open import Data.Unit using (tt)
 open import Data.Nat as ℕ using (ℕ; zero; suc)
@@ -92,37 +92,6 @@ _≯_ : Rel Ord 0ℓ
 ```
 
 ```agda
-≡⇒≈ : _≡_ ⇒ _≈_
-≡⇒≈ refl = ord.≈-refl
-
-<⇒≤ : _<_ ⇒ _≤_
-<⇒≤ = ord.<⇒≤
-
-<⇒≱ : _<_ ⇒ _≱_
-<⇒≱ = ord.<⇒≱
-
-≤⇒≯ : _≤_ ⇒ _≯_
-≤⇒≯ = ord.≤⇒≯
-```
-
-```agda
-≤-refl : Reflexive _≤_
-≤-refl = ord.≤-refl
-
-≤-trans : Transitive _≤_
-≤-trans = ord.≤-trans
-
-≈-refl : Reflexive _≈_
-≈-refl = ord.≈-refl
-
-≈-sym : Symmetric _≈_
-≈-sym = ord.≈-sym
-
-<-trans : Transitive _<_
-<-trans = ord.<-trans
-```
-
-```agda
 Zero : Ord
 Zero = wf zero
 
@@ -135,74 +104,26 @@ monoSequence : (ℕ → Ord) → Set
 monoSequence = Monotonic₁ ℕ._<_ _<_
 
 Lim : ∀ f → monoSequence f → Ord
-Lim f mf = wf (ord.lim (λ n → nwf (f n))) ⦃ wfl ⦄ where
+Lim f mf = wf (lim (λ n → nwf (f n))) ⦃ wfl ⦄ where
   wfl = (λ {n} → wellFormed (f n)) , wrap mf
 ```
 
 ```agda
-z≤ : ∀ α → Zero ≤ α
-z≤ _ = ord.z≤
+open import NonWellFormed.Ordinal using
+  ( z≤; ≤s; s∸≤; s≤s; ≤f⇒≤l; l≤l; f≤l
+  ; s≈s; l≈l; l≈ls
+  ; z<s; <s; s<s; <f⇒<l
+  ; <⇒≤; <⇒s≤; s≤⇒<; ≤⇒<s; <s⇒≤
+  ) public
 ```
 
 ```agda
-≤s : ∀ {α} → α ≤ Suc α
-≤s = ord.≤s
-
-s≤s : ∀ {α β} → α ≤ β → Suc α ≤ Suc β
-s≤s = ord.s≤s
-```
-
-```agda
-≤f⇒≤l : ∀ {α f n} {mf : monoSequence f} → α ≤ f n → α ≤ Lim f mf
-≤f⇒≤l = ord.≤f⇒≤l
-
-l≤l : ∀ {f g} {mf : monoSequence f} {mg : monoSequence g}
-  → (∀ n → f n ≤ g n) → Lim f mf ≤ Lim g mg
-l≤l = ord.l≤l
-
-f≤l : ∀ f n (mf : monoSequence f) → f n ≤ Lim f mf
-f≤l _ _ _ = ord.f≤l
-```
-
-```agda
-s≈s : ∀ {α β} → α ≈ β → Suc α ≈ Suc β
-s≈s = ord.s≈s
-
-l≈l : ∀ {f g} {mf : monoSequence f} {mg : monoSequence g}
-  → (∀ {n} → f n ≈ g n) → Lim f mf ≈ Lim g mg
-l≈l = ord.l≈l
-
-l≈ls : ∀ {f} {mf : monoSequence f}
-  → f 0 ≤ f 1 → Lim f mf ≈ Lim (f ∘ ℕ.suc) (λ ≤ → mf (ℕ.s≤s ≤))
-l≈ls = ord.l≈ls
-```
-
-```agda
-z<s : ∀ {α} → Zero < Suc α
-z<s = ord.z<s
-
-<s : ∀ {α} → α < Suc α
-<s = ord.<s
-
-s<s : ∀ {α β} → α < β → Suc α < Suc β
-s<s = ord.s<s
-
-<f⇒<l : ∀ {α f n} {mf : monoSequence f} → α < f n → α < Lim f mf
-<f⇒<l = ord.<f⇒<l
-```
-
-```agda
-<⇒s≤ : ∀ {α β} → α < β → Suc α ≤ β
-<⇒s≤ = ord.<⇒s≤
-
-s≤⇒< : ∀ {α β} → Suc α ≤ β → α < β
-s≤⇒< = ord.s≤⇒<
-
-≤⇒<s : ∀ {α β} → α ≤ β → α < Suc β
-≤⇒<s = ord.≤⇒<s
-
-<s⇒≤ : ∀ {α β} → α < Suc β → α ≤ β
-<s⇒≤ = ord.<s⇒≤
+open import NonWellFormed.Ordinal using
+  ( ≤-refl; ≤-trans
+  ; ≈-refl; ≈-sym; ≈-trans
+  ; <-irrefl-≈; <-trans; <-asym
+  ; <-≤-trans; ≤-<-trans
+  ) public
 ```
 
 ```agda
@@ -211,16 +132,16 @@ open import Relation.Binary.Structures (_≈_)
 
 ≈-isEquivalence : IsEquivalence
 ≈-isEquivalence = record
-  { refl  = ord.≈-refl
-  ; sym   = ord.≈-sym
-  ; trans = ord.≈-trans
+  { refl  = ≈-refl
+  ; sym   = ≈-sym
+  ; trans = ≈-trans
   }
 
 ≤-isPreorder : IsPreorder _≤_
 ≤-isPreorder = record
   { isEquivalence = ≈-isEquivalence
   ; reflexive = proj₁
-  ; trans = ord.≤-trans
+  ; trans = ≤-trans
   }
 
 ≤-isPartialOrder : IsPartialOrder _≤_
@@ -232,10 +153,10 @@ open import Relation.Binary.Structures (_≈_)
 <-isStrictPartialOrder : IsStrictPartialOrder _<_
 <-isStrictPartialOrder = record
   { isEquivalence = ≈-isEquivalence
-  ; irrefl = ord.<-irrefl-≈
-  ; trans = ord.<-trans
-  ; <-resp-≈ = (λ (β≤γ , _) α<β → ord.<-≤-trans α<β β≤γ) ,
-                λ (_ , α≤β) β<γ → ord.≤-<-trans α≤β β<γ
+  ; irrefl = <-irrefl-≈
+  ; trans = <-trans
+  ; <-resp-≈ = (λ (β≤γ , _) α<β → <-≤-trans α<β β≤γ) ,
+                λ (_ , α≤β) β<γ → ≤-<-trans α≤β β<γ
   }
 ```
 
@@ -253,11 +174,11 @@ open import Relation.Binary.Structures (_≈_)
 module ≤-Reasoning where
   open import Relation.Binary.Reasoning.Base.Triple
     ≤-isPreorder
-    ord.<-trans
+    <-trans
     <-resp-≈
-    ord.<⇒≤
-    ord.<-≤-trans
-    ord.≤-<-trans
+    <⇒≤
+    <-≤-trans
+    ≤-<-trans
     public
 ```
 

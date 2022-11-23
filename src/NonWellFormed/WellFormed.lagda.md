@@ -144,8 +144,7 @@ z<ω : zero < ω
 z<ω = <-≤-trans z<s (n≤ω {1})
 
 s<ω : ∀ {α} → α < ω → suc α < ω
-s<ω {α} ((n , d) , ≤) = (suc n , inj₁ tt) ,
-  (begin suc α ≤⟨ s≤s ≤ ⟩ suc (⌜ n ⌝ ∸ d) ≤⟨ s∸≤ ⟩ ⌜ n ⌝ ∎)
+s<ω {α} ((n , d) , ≤) = (suc n , inj₁ tt) , ≤-trans (s≤s ≤) s∸≤
 
 instance
   n<ω : ∀ {n} → ⌜ n ⌝ < ω

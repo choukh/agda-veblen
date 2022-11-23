@@ -20,6 +20,7 @@ module WellFormed.WellFormed where
 
 ```agda
 open import WellFormed.Ordinal
+--open import NonWellFormed.Ordinal as ord using () renaming (Ord to ord)
 open import NonWellFormed.WellFormed as ord
   using (MonoSequence; WellFormed; wrap; ⌜_⌝-wellFormed)
 
@@ -29,6 +30,7 @@ open WellFormed.Ordinal.≤-Reasoning
 
 open import Data.Unit using (tt)
 open import Data.Nat as ℕ using (ℕ; zero; suc)
+import Data.Nat.Properties as ℕ
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 open import Function using (_∘_)
@@ -53,8 +55,27 @@ ord⌜ suc n ⌝ = refl
 
 ```agda
 n≤ω : ∀ n → ⌜ n ⌝ ≤ ω
-n≤ω n = f≤l ⌜_⌝ n ⌜⌝-monoSequence
+n≤ω n = f≤l {n = n}
 
 z<ω : Zero < ω
 z<ω = begin-strict Zero <⟨ z<s ⟩ ⌜ 1 ⌝ ≤⟨ n≤ω 1 ⟩ ω ∎
+
+s<ω : ∀ α → α < ω → Suc α < ω
+s<ω α ((n , d) , ≤) rewrite ord⌜ n ⌝ =
+  (suc n , inj₁ tt) , ≤-trans (s≤s ≤) s∸≤
+
+n<ω : ∀ n → ⌜ n ⌝ < ω
+n<ω zero = z<ω
+n<ω (suc n) rewrite sym ord⌜ n ⌝ = s<ω ⌜ n ⌝ (n<ω n)
+```
+
+```agda
+fn<fsn : ∀ {f n} → monoSequence f → f n < f (suc n)
+fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
+```
+
+```agda
+⌜n⌝≤fn : ∀ {f n} → monoSequence f → ⌜ n ⌝ ≤ f n
+⌜n⌝≤fn {f} {zero}  mono = z≤
+⌜n⌝≤fn {f} {suc n} mono = {!   !}
 ```
