@@ -20,21 +20,22 @@ module WellFormed.WellFormed where
 
 ```agda
 open import WellFormed.Ordinal
---open import NonWellFormed.Ordinal as ord using () renaming (Ord to ord)
 open import NonWellFormed.WellFormed as ord
-  using (MonoSequence; WellFormed; wrap; ⌜_⌝-wellFormed)
+  using (MonoSequence; wrap; WellFormed; ⌜_⌝-wellFormed)
 
 open Ord using (nwf)
 open MonoSequence using (unwrap)
 open WellFormed.Ordinal.≤-Reasoning
 
 open import Data.Unit using (tt)
+open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Nat as ℕ using (ℕ; zero; suc)
 import Data.Nat.Properties as ℕ
 open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
-open import Function using (_∘_)
-open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl; sym)
+open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
+open import Function using (_∘_; it)
+open import Relation.Binary.PropositionalEquality as Eq
+  using (_≡_; refl; sym; cong)
 ```
 
 ```agda
@@ -45,6 +46,9 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl; sym)
 ord⌜_⌝ : ∀ n → nwf ⌜ n ⌝ ≡ ord.⌜ n ⌝
 ord⌜ zero ⌝ = refl
 ord⌜ suc n ⌝ = refl
+
+nwf⌜_⌝ : ∀ n → ord.⌜ n ⌝ ≡ nwf ⌜ n ⌝
+nwf⌜ n ⌝ = sym ord⌜ n ⌝
 
 ⌜⌝-monoSequence : monoSequence ⌜_⌝
 ⌜⌝-monoSequence {m} {n} rewrite ord⌜ m ⌝ | ord⌜ n ⌝ = unwrap ord.⌜⌝-monoSequence
@@ -66,16 +70,40 @@ s<ω α ((n , d) , ≤) rewrite ord⌜ n ⌝ =
 
 n<ω : ∀ n → ⌜ n ⌝ < ω
 n<ω zero = z<ω
-n<ω (suc n) rewrite sym ord⌜ n ⌝ = s<ω ⌜ n ⌝ (n<ω n)
+n<ω (suc n) rewrite nwf⌜ n ⌝ = s<ω ⌜ n ⌝ (n<ω n)
 ```
 
 ```agda
-fn<fsn : ∀ {f n} → monoSequence f → f n < f (suc n)
-fn<fsn mono = mono (ℕ.s≤s ℕ.≤-refl)
+fn<fsn : ∀ f n → monoSequence f → f n < f (suc n)
+fn<fsn f n mono = mono (ℕ.s≤s ℕ.≤-refl)
 ```
 
 ```agda
-⌜n⌝≤fn : ∀ {f n} → monoSequence f → ⌜ n ⌝ ≤ f n
-⌜n⌝≤fn {f} {zero}  mono = z≤
-⌜n⌝≤fn {f} {suc n} mono = {!   !}
+⌜n⌝≤fn : ∀ f n → monoSequence f → ⌜ n ⌝ ≤ f n
+⌜n⌝≤fn f zero  mono = z≤
+⌜n⌝≤fn f (suc n) mono rewrite nwf⌜ n ⌝ = begin
+  Suc ⌜ n ⌝          ≤⟨ s≤s (⌜n⌝≤fn f n mono) ⟩
+  Suc (f n)          ≤⟨ <⇒s≤ (fn<fsn f n mono) ⟩
+  f (suc n)          ∎
 ```
+
+```agda
+ω≤l : ∀ f (mf : monoSequence f) → ω ≤ Lim f mf
+ω≤l f mf = l≤ (λ n → ≤f⇒≤l (⌜n⌝≤fn f n mf))
+```
+
+```agda
+⌜⌝-injective : ∀ {m n} → ⌜ m ⌝ ≡ ⌜ n ⌝ → m ≡ n
+⌜⌝-injective {m} {n} eq = ord.⌜⌝-injective helper where
+  helper : ord.⌜ m ⌝ ≡ ord.⌜ n ⌝
+  helper rewrite nwf⌜ m ⌝ | nwf⌜ n ⌝ = cong nwf eq
+```
+
+```agda
+⌜⌝-surjective : ∀ α → α < ω → ∃[ n ] α ≡ ⌜ n ⌝
+⌜⌝-surjective (wf zero) _ = 0 , refl
+⌜⌝-surjective (wf (suc α)) s<ω with ⌜⌝-surjective (wf α) (<-trans <s s<ω)
+... | zero  , refl = 1 , refl
+... | suc n , refl = suc (suc n) , refl
+⌜⌝-surjective (wf (lim f)) l<ω = ⊥-elim (<⇒≱ l<ω (ω≤l (λ n → wf (f n)) (unwrap (proj₂ it))))
+``` 

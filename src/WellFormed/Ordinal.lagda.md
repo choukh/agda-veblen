@@ -21,8 +21,9 @@ module WellFormed.Ordinal where
 ## 前置
 
 ```agda
-open import NonWellFormed.Ordinal as ord using (zero; suc; lim) renaming (Ord to ord)
-open import NonWellFormed.WellFormed using (WellFormed; wrap)
+open import NonWellFormed.Ordinal as ord
+  using (zero; suc; lim) renaming (Ord to ord) public
+open import NonWellFormed.WellFormed using (WellFormed; wrap) public
 
 open import Data.Unit using (tt)
 open import Data.Nat as ℕ using (ℕ; zero; suc)
@@ -97,6 +98,9 @@ Zero = wf zero
 
 Suc : Ord → Ord
 Suc (wf α) = wf (suc α)
+
+Suc-injective : ∀ {α β} → Suc α ≡ Suc β → α ≡ β
+Suc-injective refl = refl
 ```
 
 ```agda
@@ -110,10 +114,11 @@ Lim f mf = wf (lim (λ n → nwf (f n))) ⦃ wfl ⦄ where
 
 ```agda
 open import NonWellFormed.Ordinal using
-  ( z≤; ≤s; s∸≤; s≤s; ≤f⇒≤l; l≤l; f≤l
+  ( z≤; l≤; ≤s; s∸≤; s≤s; ≤f⇒≤l; l≤l; f≤l
   ; s≈s; l≈l; l≈ls
   ; z<s; <s; s<s; <f⇒<l
-  ; <⇒≤; <⇒s≤; s≤⇒<; ≤⇒<s; <s⇒≤
+  ; <⇒≤; <⇒≱
+  ; <⇒s≤; s≤⇒<; ≤⇒<s; <s⇒≤
   ) public
 ```
 

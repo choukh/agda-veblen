@@ -195,7 +195,7 @@ fn<fsn ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 ⌜⌝-surjective : ∀ {α} → ⦃ WellFormed α ⦄ → α < ω → ∃[ n ] α ≡ ⌜ n ⌝
 ⌜⌝-surjective {zero} _ = 0 , refl
 ⌜⌝-surjective {suc α} s<ω with ⌜⌝-surjective (<-trans <s s<ω)
-... | n , ≡⌜n⌝ = suc n , cong suc ≡⌜n⌝
+... | n , refl = suc n , refl
 ⌜⌝-surjective {lim f} l<ω = ⊥-elim (<⇒≱ l<ω ω≤l)
 ```
 
