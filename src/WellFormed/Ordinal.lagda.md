@@ -160,8 +160,8 @@ l≤l : ∀ {f g} {mf : monoSequence f} {mg : monoSequence g}
   → (∀ n → f n ≤ g n) → Lim f mf ≤ Lim g mg
 l≤l = ord.l≤l
 
-f≤l : ∀ {f n} {mf : monoSequence f} → f n ≤ Lim f mf
-f≤l = ord.f≤l
+f≤l : ∀ f n (mf : monoSequence f) → f n ≤ Lim f mf
+f≤l _ _ _ = ord.f≤l
 ```
 
 ```agda

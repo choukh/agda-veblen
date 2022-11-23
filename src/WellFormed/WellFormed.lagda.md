@@ -21,11 +21,15 @@ module WellFormed.WellFormed where
 ```agda
 open import WellFormed.Ordinal
 open import NonWellFormed.WellFormed as ord
-  using (MonoSequence; WellFormed; wrap; ⌜_⌝-wellFormed; ⌜⌝-monoSequence)
+  using (MonoSequence; WellFormed; wrap; ⌜_⌝-wellFormed)
+
 open Ord using (nwf)
 open MonoSequence using (unwrap)
+open WellFormed.Ordinal.≤-Reasoning
 
+open import Data.Unit using (tt)
 open import Data.Nat as ℕ using (ℕ; zero; suc)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
 open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl; sym)
@@ -40,10 +44,17 @@ ord⌜_⌝ : ∀ n → nwf ⌜ n ⌝ ≡ ord.⌜ n ⌝
 ord⌜ zero ⌝ = refl
 ord⌜ suc n ⌝ = refl
 
+⌜⌝-monoSequence : monoSequence ⌜_⌝
+⌜⌝-monoSequence {m} {n} rewrite ord⌜ m ⌝ | ord⌜ n ⌝ = unwrap ord.⌜⌝-monoSequence
+
 ω : Ord
-ω = Lim ⌜_⌝ mono where
-  mono : monoSequence ⌜_⌝
-  mono {m} {n} rewrite ord⌜ m ⌝ | ord⌜ n ⌝ = unwrap ⌜⌝-monoSequence
+ω = Lim ⌜_⌝ ⌜⌝-monoSequence
+```
 
+```agda
+n≤ω : ∀ n → ⌜ n ⌝ ≤ ω
+n≤ω n = f≤l ⌜_⌝ n ⌜⌝-monoSequence
 
+z<ω : Zero < ω
+z<ω = begin-strict Zero <⟨ z<s ⟩ ⌜ 1 ⌝ ≤⟨ n≤ω 1 ⟩ ω ∎
 ```

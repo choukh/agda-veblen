@@ -129,11 +129,19 @@ instance
 
 ### `ω` 的性质
 
-以下三条引理表明 `ω` 严格大于任意有限序数.
+**引理** `ω` 大于任意有限序数.
+
+```agda
+instance
+  n≤ω : ∀ {n} → ⌜ n ⌝ ≤ ω
+  n≤ω = f≤l
+```
+
+**引理** `ω` 严格大于任意有限序数.
 
 ```agda
 z<ω : zero < ω
-z<ω = (1 , inj₁ tt) , z≤
+z<ω = <-≤-trans z<s (n≤ω {1})
 
 s<ω : ∀ {α} → α < ω → suc α < ω
 s<ω {α} ((n , d) , ≤) = (suc n , inj₁ tt) ,
@@ -143,9 +151,6 @@ instance
   n<ω : ∀ {n} → ⌜ n ⌝ < ω
   n<ω {zero}  = z<ω
   n<ω {suc n} = s<ω n<ω
-
-  n≤ω : ∀ {n} → ⌜ n ⌝ ≤ ω
-  n≤ω = <⇒≤ n<ω
 ```
 
 以下引理将 `monoSequence` 的 `f m < f n` 结论特化到 `f n < f (suc n)`, 因为它在接下来的证明中经常用到.
@@ -217,7 +222,7 @@ z<l : ∀ {f} → ⦃ MonoSequence f ⦄ → zero < lim f
 z<l = <-≤-trans z<ω ω≤l
 ```
 
-`f<l` 是上一章 [`f≤l`](Ordinal.html#7884) 的 `_<_` 版, 它要求 `f` 单调.
+`f<l` 是上一章 [`f≤l`](NonWellFormed.Ordinal.html#7957) 的 `_<_` 版, 它要求 `f` 单调.
 
 ```agda
 f<l : ∀ {f n} → ⦃ MonoSequence f ⦄ → f n < lim f
