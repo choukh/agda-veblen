@@ -20,11 +20,9 @@ module WellFormed.WellFormed where
 
 ```agda
 open import WellFormed.Ordinal
-open import NonWellFormed.WellFormed as ord
-  using (MonoSequence; wrap; WellFormed; ⌜_⌝-wellFormed)
+open import NonWellFormed.WellFormed as ord using (WellFormed; ⌜_⌝-wellFormed)
 
 open Ord using (nwf)
-open MonoSequence using (unwrap)
 open WellFormed.Ordinal.≤-Reasoning
 
 open import Data.Unit using (tt)
@@ -33,7 +31,7 @@ open import Data.Nat as ℕ using (ℕ; zero; suc)
 import Data.Nat.Properties as ℕ
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
-open import Function using (_∘_; it)
+open import Function using (_∘_; _↩_; it)
 open import Relation.Binary.PropositionalEquality as Eq
   using (_≡_; refl; sym; cong)
 ```
@@ -50,11 +48,14 @@ ord⌜ suc n ⌝ = refl
 nwf⌜_⌝ : ∀ n → ord.⌜ n ⌝ ≡ nwf ⌜ n ⌝
 nwf⌜ n ⌝ = sym ord⌜ n ⌝
 
-⌜⌝-monoSequence : monoSequence ⌜_⌝
-⌜⌝-monoSequence {m} {n} rewrite ord⌜ m ⌝ | ord⌜ n ⌝ = unwrap ord.⌜⌝-monoSequence
+⌜⌝-monoSequence : MonoSequence ⌜_⌝
+⌜⌝-monoSequence = wrap mono where
+  mono : monoSequence ⌜_⌝
+  mono {m} {n} rewrite ord⌜ m ⌝ | ord⌜ n ⌝
+    = ord.MonoSequence.unwrap ord.⌜⌝-monoSequence
 
 ω : Ord
-ω = Lim ⌜_⌝ ⌜⌝-monoSequence
+ω = Lim ⌜_⌝ ⦃ ⌜⌝-monoSequence ⦄
 ```
 
 ```agda
@@ -74,22 +75,22 @@ n<ω (suc n) rewrite nwf⌜ n ⌝ = s<ω ⌜ n ⌝ (n<ω n)
 ```
 
 ```agda
-fn<fsn : ∀ f n → monoSequence f → f n < f (suc n)
-fn<fsn f n mono = mono (ℕ.s≤s ℕ.≤-refl)
+fn<fsn : ∀ f n → ⦃ MonoSequence f ⦄ → f n < f (suc n)
+fn<fsn f n ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 ```
 
 ```agda
-⌜n⌝≤fn : ∀ f n → monoSequence f → ⌜ n ⌝ ≤ f n
-⌜n⌝≤fn f zero    mono = z≤
-⌜n⌝≤fn f (suc n) mono rewrite nwf⌜ n ⌝ = begin
-  Suc ⌜ n ⌝          ≤⟨ s≤s (⌜n⌝≤fn f n mono) ⟩
-  Suc (f n)          ≤⟨ <⇒s≤ (fn<fsn f n mono) ⟩
-  f (suc n)          ∎
+⌜n⌝≤fn : ∀ f n → ⦃ MonoSequence f ⦄ → ⌜ n ⌝ ≤ f n
+⌜n⌝≤fn f zero = z≤
+⌜n⌝≤fn f (suc n) rewrite nwf⌜ n ⌝ = begin
+  Suc ⌜ n ⌝         ≤⟨ s≤s (⌜n⌝≤fn f n) ⟩
+  Suc (f n)         ≤⟨ <⇒s≤ (fn<fsn f n) ⟩
+  f (suc n)         ∎
 ```
 
 ```agda
-ω≤l : ∀ f (mf : monoSequence f) → ω ≤ Lim f mf
-ω≤l f mf = l≤ (λ n → ≤f⇒≤l (⌜n⌝≤fn f n mf))
+ω≤l : ∀ f ⦃ mf : MonoSequence f ⦄ → ω ≤ Lim f
+ω≤l f = l≤ (λ n → ≤f⇒≤l (⌜n⌝≤fn f n))
 ```
 
 ```agda
@@ -105,5 +106,16 @@ fn<fsn f n mono = mono (ℕ.s≤s ℕ.≤-refl)
 ⌜⌝-surjective (wf (suc α)) s<ω with ⌜⌝-surjective (wf α) (<-trans <s s<ω)
 ... | zero  , refl = 1 , refl
 ... | suc n , refl = suc (suc n) , refl
-⌜⌝-surjective (wf (lim f)) l<ω = ⊥-elim (<⇒≱ l<ω (ω≤l (lift f) lift-mono))
+⌜⌝-surjective (wf (lim f)) l<ω = ⊥-elim (<⇒≱ l<ω (ω≤l (lift f)))
+```
+
+```agda
+∃[<ω]wf↩ℕ : (∃[ α ] α < ω) ↩ ℕ
+∃[<ω]wf↩ℕ = record
+  { to        = λ (α , <ω) → proj₁ (⌜⌝-surjective α <ω)
+  ; from      = λ n → ⌜ n ⌝ , n<ω n
+  ; to-cong   = λ{ refl → refl }
+  ; from-cong = λ{ refl → refl }
+  ; inverseˡ   = λ n → ⌜⌝-injective (sym (proj₂ (⌜⌝-surjective ⌜ n ⌝ (n<ω n))))
+  }
 ```

@@ -23,7 +23,7 @@ module WellFormed.Ordinal where
 ```agda
 open import NonWellFormed.Ordinal as ord
   using (zero; suc; lim) renaming (Ord to ord) public
-open import NonWellFormed.WellFormed using (MonoSequence; WellFormed; wrap) public
+open import NonWellFormed.WellFormed as ord using (WellFormed) public
 
 open import Data.Unit using (tt)
 open import Data.Nat as ℕ using (ℕ; zero; suc)
@@ -107,9 +107,13 @@ Suc-injective refl = refl
 monoSequence : (ℕ → Ord) → Set
 monoSequence = Monotonic₁ ℕ._<_ _<_
 
-Lim : ∀ f → monoSequence f → Ord
-Lim f mf = wf (lim (λ n → nwf (f n))) ⦃ wfl ⦄ where
-  wfl = (λ {n} → wellFormed (f n)) , wrap mf
+record MonoSequence (f : ℕ → Ord) : Set where
+  constructor wrap
+  field unwrap : monoSequence f
+
+Lim : ∀ f → ⦃ MonoSequence f ⦄ → Ord
+Lim f ⦃ wrap mono ⦄ = wf (lim (λ n → nwf (f n))) ⦃ wfl ⦄ where
+  wfl = (λ {n} → wellFormed (f n)) , ord.wrap mono
 ```
 
 ```agda
@@ -117,8 +121,8 @@ lift : ∀ (f : ℕ → ord) → ⦃ ∀ {n} → WellFormed (f n) ⦄ → (ℕ �
 lift f n = wf (f n)
 
 instance
-  lift-mono : ∀ {f : ℕ → ord} ⦃ wf : WellFormed (lim f) ⦄ → monoSequence (lift f ⦃ proj₁ wf ⦄)
-  lift-mono = MonoSequence.unwrap (proj₂ it)
+  lift-mono : ∀ {f : ℕ → ord} ⦃ wf : WellFormed (lim f) ⦄ → MonoSequence (lift f ⦃ proj₁ wf ⦄)
+  lift-mono = wrap (ord.MonoSequence.unwrap (proj₂ it))
 ```
 
 ```agda

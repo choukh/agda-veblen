@@ -208,7 +208,7 @@ fn<fsn ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
   ; from      = λ n → ⌜ n ⌝ , n<ω , ⌜ n ⌝-wellFormed
   ; to-cong   = λ{ refl → refl }
   ; from-cong = λ{ refl → refl }
-  ; inverseˡ   = λ n → ⌜⌝-injective (sym (proj₂ (⌜⌝-surjective ⦃ ⌜ n ⌝-wellFormed ⦄ n<ω)))
+  ; inverseˡ  = λ n → ⌜⌝-injective (sym (proj₂ (⌜⌝-surjective ⦃ ⌜ n ⌝-wellFormed ⦄ n<ω)))
   }
 ```
 
