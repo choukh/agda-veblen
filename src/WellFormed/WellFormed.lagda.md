@@ -80,7 +80,7 @@ fn<fsn f n mono = mono (ℕ.s≤s ℕ.≤-refl)
 
 ```agda
 ⌜n⌝≤fn : ∀ f n → monoSequence f → ⌜ n ⌝ ≤ f n
-⌜n⌝≤fn f zero  mono = z≤
+⌜n⌝≤fn f zero    mono = z≤
 ⌜n⌝≤fn f (suc n) mono rewrite nwf⌜ n ⌝ = begin
   Suc ⌜ n ⌝          ≤⟨ s≤s (⌜n⌝≤fn f n mono) ⟩
   Suc (f n)          ≤⟨ <⇒s≤ (fn<fsn f n mono) ⟩
@@ -105,5 +105,5 @@ fn<fsn f n mono = mono (ℕ.s≤s ℕ.≤-refl)
 ⌜⌝-surjective (wf (suc α)) s<ω with ⌜⌝-surjective (wf α) (<-trans <s s<ω)
 ... | zero  , refl = 1 , refl
 ... | suc n , refl = suc (suc n) , refl
-⌜⌝-surjective (wf (lim f)) l<ω = ⊥-elim (<⇒≱ l<ω (ω≤l (λ n → wf (f n)) (unwrap (proj₂ it))))
-``` 
+⌜⌝-surjective (wf (lim f)) l<ω = ⊥-elim (<⇒≱ l<ω (ω≤l (lift f) lift-mono))
+```

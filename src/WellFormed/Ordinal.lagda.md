@@ -23,12 +23,12 @@ module WellFormed.Ordinal where
 ```agda
 open import NonWellFormed.Ordinal as ord
   using (zero; suc; lim) renaming (Ord to ord) public
-open import NonWellFormed.WellFormed using (WellFormed; wrap) public
+open import NonWellFormed.WellFormed using (MonoSequence; WellFormed; wrap) public
 
 open import Data.Unit using (tt)
 open import Data.Nat as ℕ using (ℕ; zero; suc)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
-open import Function using (_∘_)
+open import Function using (_∘_; it)
 open import Level using (0ℓ)
 open import Relation.Nullary using (¬_)
 open import Relation.Binary using (Monotonic₁)
@@ -110,6 +110,15 @@ monoSequence = Monotonic₁ ℕ._<_ _<_
 Lim : ∀ f → monoSequence f → Ord
 Lim f mf = wf (lim (λ n → nwf (f n))) ⦃ wfl ⦄ where
   wfl = (λ {n} → wellFormed (f n)) , wrap mf
+```
+
+```agda
+lift : ∀ (f : ℕ → ord) → ⦃ ∀ {n} → WellFormed (f n) ⦄ → (ℕ → Ord)
+lift f n = wf (f n)
+
+instance
+  lift-mono : ∀ {f : ℕ → ord} ⦃ wf : WellFormed (lim f) ⦄ → monoSequence (lift f ⦃ proj₁ wf ⦄)
+  lift-mono = MonoSequence.unwrap (proj₂ it)
 ```
 
 ```agda
