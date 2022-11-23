@@ -1,7 +1,7 @@
 ---
 title: Agda大序数(1-9) 二元Veblen函数
 zhihu-tags: Agda, 序数, 大数数学
-zhihu-url: https://zhuanlan.zhihu.com/p/585851679
+zhihu-url: https://zhuanlan.zhihu.com/p/585882648
 ---
 
 # Agda大序数(1-9) 二元Veblen函数
@@ -415,9 +415,9 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
       Ψ F γ δ           ∎
 ```
 
-在经典逻辑中可以强化到有且**仅**有以上三种情况可以推出 `Ψ F α β < Ψ F γ δ`, 只是第三种情况要增加 `α > γ` 条件, 以利用 `<` 的三歧性.
+在经典逻辑中可以强化到有且**仅**有以上三种情况可以推出 `Ψ F α β < Ψ F γ δ`, 只是第三种情况要增加 `α > γ` 条件, 以利用 `_<_` 的三歧性.
 
-### 保良构
+### 保良构性
 
 **引理** 如果 `F` 在零处增长, 那么任意 `Ψ F α` 也在零处增长.
 

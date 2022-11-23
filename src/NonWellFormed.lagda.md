@@ -1,7 +1,6 @@
 ---
 title: Agda大序数(1-0) 第1卷目录
 zhihu-tags: Agda, 序数, 大数数学
-zhihu-url: https://zhuanlan.zhihu.com/p/585851715
 ---
 
 # Agda大序数(1-0) 第1卷目录

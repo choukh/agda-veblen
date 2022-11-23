@@ -179,7 +179,7 @@ postulate
 
 ```agda
 ≤-split {zero}  {zero}  _   = inj₂ ≈-refl
-≤-split {zero}  {suc β} _   = inj₁ (z<s β)
+≤-split {zero}  {suc β} _   = inj₁ z<s
 ≤-split {zero}  {lim f} _   = inj₁ z<l
 ≤-split {suc α} {zero}  s≤z = ⊥-elim (s≰z s≤z)
 ≤-split {lim f} {zero}  l≤β = inj₂ (≤z⇒≈z l≤β)

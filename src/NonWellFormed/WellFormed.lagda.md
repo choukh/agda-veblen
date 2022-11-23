@@ -347,7 +347,7 @@ module _ {f h} (≤-mono : ≤-monoSequence f) (incr : ∀ n → n ℕ.< h n) wh
 ```agda
 ≡z⊎>z : ∀ α → ⦃ WellFormed α ⦄ → α ≡ zero ⊎ α > zero
 ≡z⊎>z zero    = inj₁ refl
-≡z⊎>z (suc α) = inj₂ (z<s α)
+≡z⊎>z (suc α) = inj₂ z<s
 ≡z⊎>z (lim f) = inj₂ (z<l)
 ```
 

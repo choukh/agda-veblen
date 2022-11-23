@@ -412,8 +412,8 @@ _≯_ : Rel Ord 0ℓ
 由 `_<_` 的定义立即可知零小于任意后继, 因为存在 `d = inj₁ tt` 使得 `zero ≤ suc α ∸ d`. 类似可证, 任意序数小于自身的后继.
 
 ```agda
-z<s : ∀ α → zero < suc α
-z<s α = inj₁ tt , z≤
+z<s : ∀ {α} → zero < suc α
+z<s = inj₁ tt , z≤
 
 <s : ∀ {α} → α < suc α
 <s = inj₁ tt , ≤-refl
