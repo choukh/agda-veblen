@@ -1,9 +1,9 @@
 ---
-title: Agda大序数(2-1) 良构序数
+title: Agda大序数(2-1) 序数的定义
 zhihu-tags: Agda, 序数, 大数数学
 ---
 
-# Agda大序数(2-1) 良构序数
+# Agda大序数(2-1) 序数的定义
 
 > 交流Q群: 893531731  
 > 目录: [WellFormed.html](https://choukh.github.io/agda-lvo/WellFormed.html)  
@@ -21,10 +21,8 @@ module WellFormed.Ordinal where
 ## 前置
 
 ```agda
-open import NonWellFormed.Ordinal as ord
-  using (zero; suc; lim) renaming (Ord to ord)
-open import NonWellFormed.WellFormed as ord
-  using (WellFormed; wrap; ⌜_⌝-wellFormed; ⌜⌝-monoSequence)
+open import NonWellFormed.Ordinal as ord using (zero; suc; lim) renaming (Ord to ord)
+open import NonWellFormed.WellFormed as ord using (MonoSequence; WellFormed; wrap)
 
 open import Data.Unit using (tt)
 open import Data.Nat as ℕ using (ℕ; zero; suc)
@@ -130,7 +128,9 @@ Zero = wf zero
 
 Suc : Ord → Ord
 Suc (wf α) = wf (suc α)
+```
 
+```agda
 monoSequence : (ℕ → Ord) → Set
 monoSequence = Monotonic₁ ℕ._<_ _<_
 
