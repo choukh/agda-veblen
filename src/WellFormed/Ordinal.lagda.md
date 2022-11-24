@@ -93,8 +93,7 @@ _≯_ : Rel Ord 0ℓ
 ```
 
 ```agda
-Zero : Ord
-Zero = wf zero
+pattern Zero = wf zero
 
 Suc : Ord → Ord
 Suc (wf α) = wf (suc α)

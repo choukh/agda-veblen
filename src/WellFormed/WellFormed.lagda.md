@@ -102,7 +102,7 @@ fn<fsn f n ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 
 ```agda
 ⌜⌝-surjective : ∀ α → α < ω → ∃[ n ] α ≡ ⌜ n ⌝
-⌜⌝-surjective (wf zero) _ = 0 , refl
+⌜⌝-surjective Zero _ = 0 , refl
 ⌜⌝-surjective (wf (suc α)) s<ω with ⌜⌝-surjective (wf α) (<-trans <s s<ω)
 ... | zero  , refl = 1 , refl
 ... | suc n , refl = suc (suc n) , refl
@@ -118,4 +118,23 @@ fn<fsn f n ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
   ; from-cong = λ{ refl → refl }
   ; inverseˡ   = λ n → ⌜⌝-injective (sym (proj₂ (⌜⌝-surjective ⌜ n ⌝ (n<ω n))))
   }
+```
+
+```agda
+z<l : ∀ f ⦃ mf : MonoSequence f ⦄ → Zero < Lim f
+z<l f = <-≤-trans z<ω (ω≤l f)
+
+f<l : ∀ f n ⦃ mf : MonoSequence f ⦄ → f n < Lim f
+f<l f n = <-≤-trans (fn<fsn f n) f≤l
+```
+
+```agda
+∃[n]<fn : ∀ α f ⦃ mf : MonoSequence f ⦄ → α < Lim f → ∃[ n ] α < f n
+∃[n]<fn Zero  f _ = 1 , (≤-<-trans z≤ (fn<fsn f zero))
+∃[n]<fn (wf (suc α)) f s<l with ∃[n]<fn (wf α) f (<-trans <s s<l)
+... | n , <f = suc n , (begin-strict
+  wf (suc α)            ≤⟨ <⇒s≤ <f ⟩
+  f n                   <⟨ fn<fsn f n ⟩
+  f (suc n)             ∎)
+∃[n]<fn (wf (lim α)) f ((n , d) , l<f) = n , d , l<f
 ```
