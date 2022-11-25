@@ -25,12 +25,11 @@ open import NonWellFormed.WellFormed as ord using (WellFormed; ⌜_⌝-wellForme
 
 open import Data.Unit using (tt)
 open import Data.Empty using (⊥; ⊥-elim)
-open import Data.Nat as ℕ using (ℕ; zero; suc; z≤n)
-open import Data.Nat.Properties as ℕ using (m≤n⇒m<n∨m≡n)
+open import Data.Nat as ℕ using (ℕ; zero; suc)
+import Data.Nat.Properties as ℕ
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _,_; proj₁; proj₂; ∃-syntax)
-open import Function using (_∘_; _↩_; it)
-open import Relation.Binary using (Monotonic₁)
+open import Function using (_∘_; _↩_)
 open import Relation.Binary.PropositionalEquality as Eq
   using (_≡_; _≢_; refl; sym; cong)
 ```
@@ -47,32 +46,19 @@ open import Relation.Binary.PropositionalEquality as Eq
 ```
 
 ```agda
-n≤ω : ∀ {n} → ⌜ n ⌝ ≤ ω
-n≤ω = ord.n≤ω
+_ : ∀ {n} → ⌜ n ⌝ ≤ ω
+_ = ord.n≤ω
 
-z<ω : Zero < ω
-z<ω = ord.z<ω
-
-s<ω : ∀ α → α < ω → Suc α < ω
-s<ω _ = ord.s<ω
-
-n<ω : ∀ {n} → ⌜ n ⌝ < ω
-n<ω = ord.n<ω
+_ : ∀ {f} ⦃ mf : MonoSequence f ⦄ → ω ≤ Lim f
+_ = ord.ω≤l
 ```
 
 ```agda
-fn<fsn : ∀ {f n} → ⦃ MonoSequence f ⦄ → f n < f (suc n)
-fn<fsn = ord.fn<fsn
-```
-
-```agda
-⌜n⌝≤fn : ∀ {f n} → ⦃ MonoSequence f ⦄ → ⌜ n ⌝ ≤ f n
-⌜n⌝≤fn = ord.⌜n⌝≤fn
-```
-
-```agda
-ω≤l : ∀ {f} ⦃ mf : MonoSequence f ⦄ → ω ≤ Lim f
-ω≤l = ord.ω≤l
+open import NonWellFormed.WellFormed using
+  ( n≤ω; z<ω ; s<ω; n<ω; ω≤l; ω≤s⇒ω≤
+  ; z<l; f<l; <l⇒s<l; l≤s⇒l≤
+  ; fn<fsn; ⌜n⌝≤fn; ∃[n]<fn; ∃[m]fn<gm
+  ) public
 ```
 
 ```agda
@@ -101,55 +87,15 @@ fn<fsn = ord.fn<fsn
 ```
 
 ```agda
-z<l : ∀ {f} ⦃ mf : MonoSequence f ⦄ → Zero < Lim f
-z<l = ord.z<l
-
-f<l : ∀ {f n} ⦃ mf : MonoSequence f ⦄ → f n < Lim f
-f<l = ord.f<l
-```
-
-```agda
-∃[n]<fn : ∀ α {f} ⦃ mf : MonoSequence f ⦄ → α < Lim f → ∃[ n ] α < f n
-∃[n]<fn _ = ord.∃[n]<fn
-```
-
-```agda
-module _ {f g} ⦃ mf : MonoSequence f ⦄ ⦃ mg : MonoSequence g ⦄ where
-  ∃[m]fn<gm : Lim f ≤ Lim g → ∀ n → ∃[ m ] f n < g m
-  ∃[m]fn<gm = ord.∃[m]fn<gm
-```
-
-```agda
-<l⇒s<l : ∀ α {f} ⦃ mf : MonoSequence f ⦄ → α < Lim f → Suc α < Lim f
-<l⇒s<l _ = ord.<l⇒s<l
-```
-
-```agda
-l≤s⇒l≤ : ∀ {f} α ⦃ mf : MonoSequence f ⦄ → Lim f ≤ Suc α → Lim f ≤ α
-l≤s⇒l≤ _ = ord.l≤s⇒l≤
-```
-
-```agda
-ω≤s⇒ω≤ : ∀ α → ω ≤ Suc α → ω ≤ α
-ω≤s⇒ω≤ _ = ord.ω≤s⇒ω≤
-```
-
-```agda
 ≢z⇒>z : ∀ {α} → α ≢ Zero → α > Zero
 ≢z⇒>z ≢ = ord.≢z⇒>z (≢ ∘ ≡z⇒≡Z)
-```
 
-```agda
 ≈z⇒≡z : ∀ {α} → α ≈ Zero → α ≡ Zero
 ≈z⇒≡z = ≡z⇒≡Z ∘ ord.≈z⇒≡z
-```
 
-```agda
 ≤z⇒≡z : ∀ {α} → α ≤ Zero → α ≡ Zero
 ≤z⇒≡z = ≡z⇒≡Z ∘ ord.≤z⇒≡z
-```
 
-```agda
 ≡z⊎>z : ∀ α → α ≡ Zero ⊎ α > Zero
 ≡z⊎>z (wf α) with ord.≡z⊎>z α
 ... | inj₁ ≡ = inj₁ (≡z⇒≡Z ≡)
@@ -158,5 +104,5 @@ l≤s⇒l≤ _ = ord.l≤s⇒l≤
 
 ```agda
 <ω⊎≥ω : ∀ α → α < ω ⊎ α ≥ ω
-<ω⊎≥ω (wf α) = ord.<ω⊎≥ω α
+<ω⊎≥ω α = ord.<ω⊎≥ω (inudctive α)
 ```

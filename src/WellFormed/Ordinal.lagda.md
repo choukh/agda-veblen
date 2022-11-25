@@ -147,6 +147,18 @@ Lim f = wf (lim (dip f)) ⦃ wfl ⦄ where
 ```
 
 ```agda
+_ : ∀ {α} → Zero ≤ α
+_ = ord.z≤
+
+_ : ∀ {α β} → α ≤ β → Suc α ≤ Suc β
+_ = ord.s≤s
+
+_ : ∀ {f g} ⦃ mf : MonoSequence f ⦄ ⦃ mg : MonoSequence g ⦄
+  → (∀ n → f n ≤ g n) → Lim f ≤ Lim g
+_ = ord.l≤l
+```
+
+```agda
 open import NonWellFormed.Ordinal using
   ( z≤; l≤; ≤s; s∸≤; s≤s; ≤f⇒≤l; l≤l; f≤l
   ; s≈s; l≈l; l≈ls

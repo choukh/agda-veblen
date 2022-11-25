@@ -20,4 +20,4 @@ open import Function using (it)
 ≰⇒≥ _ _ = ord.≰⇒≥
 
 <l⊎≥l : ∀ α f ⦃ mf : MonoSequence f ⦄ → α < Lim f ⊎ α ≥ Lim f
-<l⊎≥l (wf α) f = ord.<l⊎≥l α (dip f) ⦃ it ⦄ ⦃ wellFormed (f _) , dipMono f ⦄
+<l⊎≥l (wf α) f = ord.<l⊎≥l α (dip f) ⦃ it ⦄ ⦃ wellFormed (f _) , dipMono ⦄
