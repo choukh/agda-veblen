@@ -46,11 +46,11 @@ record Ord : Set where
   field
     inudctive : ord
     ⦃ wellFormed ⦄ : WellFormed inudctive
-
-open Ord public
 ```
 
 ```agda
+open Ord public
+
 lift : ∀ (f : ℕ → ord) → ⦃ ∀ {n} → WellFormed (f n) ⦄ → (ℕ → Ord)
 lift f n = wf (f n)
 
@@ -111,16 +111,16 @@ wf-cong-≈-≈ α β ≈ = ≈
 ```agda
 pattern Zero = wf zero
 
-Suc : Ord → Ord
-Suc (wf α) = wf (suc α)
+≡z⇒≡Z : ∀ {α} ⦃ wfα : WellFormed α ⦄ → α ≡ zero → wf α ≡ Zero
+≡z⇒≡Z refl = refl
+
+≡Z⇒≡z : ∀ α ⦃ wfα : WellFormed α ⦄ → wf α ≡ Zero → α ≡ zero
+≡Z⇒≡z α refl = refl
 ```
 
 ```agda
-wf-cong-zero : ∀ α ⦃ wfα : WellFormed α ⦄ → α ≡ zero → wf α ≡ Zero
-wf-cong-zero α refl = refl
-
-Zero-injective : ∀ α ⦃ wfα : WellFormed α ⦄ → wf α ≡ Zero → α ≡ zero
-Zero-injective α refl = refl
+Suc : Ord → Ord
+Suc (wf α) = wf (suc α)
 
 Suc-injective : ∀ {α β} → Suc α ≡ Suc β → α ≡ β
 Suc-injective refl = refl
@@ -138,12 +138,12 @@ instance
   liftMono : ∀ {f : ℕ → ord} ⦃ wf : WellFormed (lim f) ⦄ → MonoSequence (lift f ⦃ proj₁ wf ⦄)
   liftMono = wrap (ord.MonoSequence.unwrap (proj₂ it))
 
-dipMono : ∀ f → ⦃ MonoSequence f ⦄ → ord.MonoSequence (dip f)
-dipMono f ⦃ wrap mono ⦄ = ord.wrap mono
+  dipMono : ∀ {f} → ⦃ MonoSequence f ⦄ → ord.MonoSequence (dip f)
+  dipMono ⦃ wrap mono ⦄ = ord.wrap mono
 
 Lim : ∀ f → ⦃ MonoSequence f ⦄ → Ord
 Lim f = wf (lim (dip f)) ⦃ wfl ⦄ where
-  wfl = (λ {n} → wellFormed (f n)) , dipMono f
+  wfl = (λ {n} → wellFormed (f n)) , dipMono
 ```
 
 ```agda
