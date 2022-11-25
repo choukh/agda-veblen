@@ -197,8 +197,8 @@ l≤s⇒l≤ f α ⦃ mono ⦄ (l≤ fn≤s) = l≤ λ n → <s⇒≤ (begin-str
 ```agda
 <ω⊎≥ω : ∀ α → α < ω ⊎ α ≥ ω
 <ω⊎≥ω Zero     = inj₁ z<ω
-<ω⊎≥ω (wf (suc α)) with <ω⊎≥ω α
-... | inj₁ <ω  = inj₁ (s<ω <ω)
+<ω⊎≥ω (wf (suc α)) with <ω⊎≥ω (wf α)
+... | inj₁ <ω  = inj₁ (s<ω (wf α) <ω)
 ... | inj₂ ≥ω  = inj₂ (≤⇒≤s ≥ω)
-<ω⊎≥ω (wf (lim f))  = inj₂ ω≤l
+<ω⊎≥ω (wf (lim f))  = inj₂ (ω≤l (lift f))
 ```
