@@ -84,7 +84,7 @@ _ = λ- <s
 
 ```agda
 <⇒≤-incr : <-increasing F → ≤-increasing F
-<⇒≤-incr = λ <-incr α → <⇒≤ (<-incr α)
+<⇒≤-incr <-incr α = <⇒≤ (<-incr α)
 ```
 
 下面是两种特殊的增长性, 分别叫做**零处增长**和**良构后继处增长**. 在 Veblen 不动点理论中要用到它们. 显然, 强增长蕴含这两者.
@@ -130,8 +130,8 @@ _ = λ <-mono _ → <-mono <s
 如果可以交换 `F` 和 `lim` 的顺序, 我们就说 `F` **极限连续**, 简称连续.
 
 ```agda
-lim-continuous : (Ord → Ord) → Set
-lim-continuous F = ∀ f → F (lim f) ≈ lim (F ∘ f)
+continuous : (Ord → Ord) → Set
+continuous F = ∀ f → F (lim f) ≈ lim (F ∘ f)
 ```
 
 ## 序数嵌入
@@ -140,7 +140,7 @@ lim-continuous F = ∀ f → F (lim f) ≈ lim (F ∘ f)
 
 ```agda
 normal : (Ord → Ord) → Set
-normal F = ≤-monotonic F × <-monotonic F × lim-continuous F
+normal F = ≤-monotonic F × <-monotonic F × continuous F
 ```
 
 我们会在下一小节解释序数嵌入的定义, 现在先来看一些结论.
@@ -151,7 +151,7 @@ normal F = ≤-monotonic F × <-monotonic F × lim-continuous F
 - 零的情况显然成立.
 
 ```agda
-module _ (nml@(_ , <-mono , lim-ct) : normal F) where
+module _ ((_ , <-mono , ct) : normal F) where
   normal⇒≤-incr : ≤-increasing F
   normal⇒≤-incr zero = z≤
 ```
@@ -170,7 +170,7 @@ module _ (nml@(_ , <-mono , lim-ct) : normal F) where
 ```agda
   normal⇒≤-incr (lim f) = l≤ λ n → begin
     f n                   ≤⟨ ≤f⇒≤l (normal⇒≤-incr (f n)) ⟩
-    lim (F ∘ f)           ≈˘⟨ lim-ct f ⟩
+    lim (F ∘ f)           ≈˘⟨ ct f ⟩
     F (lim f)             ∎
 ```
 
@@ -183,10 +183,10 @@ F ≈ᶠ G = ∀ {α} → F α ≈ G α
 normal-resp-≈ : normal Respects _≈ᶠ_
 ```
 
-**证明** 我们有 `F` 和 `G` 的外延等价 `ext`, `F` 的 ≤-单调 `≤-mono`, <-单调 `<-mono` 和连续 `lim-ct`, 要证 `G` 是序数嵌入.
+**证明** 我们有 `F` 和 `G` 的外延等价 `ext`, `F` 的 ≤-单调 `≤-mono`, <-单调 `<-mono` 和连续 `ct`, 要证 `G` 是序数嵌入.
 
 ```agda
-normal-resp-≈ {F} {G} ext (≤-mono , <-mono , lim-ct)
+normal-resp-≈ {F} {G} ext (≤-mono , <-mono , ct)
 ```
 
 - 需证 `G` ≤-单调. 对 `α ≤ β`, 由 `≤-mono` 有 `F α ≤ F β`, 两边都用 `ext` 改写即得 `G α ≤ G β`.
@@ -206,7 +206,7 @@ normal-resp-≈ {F} {G} ext (≤-mono , <-mono , lim-ct)
 ```agda
   , (λ f → begin-equality
       G (lim f)   ≈˘⟨ ext ⟩
-      F (lim f)   ≈⟨ lim-ct f ⟩
+      F (lim f)   ≈⟨ ct f ⟩
       lim (F ∘ f) ≈⟨ l≈l ext ⟩
       lim (G ∘ f) ∎)
 ```
@@ -255,13 +255,13 @@ wf-suc-monotonic : (Ord → Ord) → Set
 wf-suc-monotonic F = ∀ α → ⦃ WellFormed α ⦄ → F α < F (suc α)
 
 wf-normal : (Ord → Ord) → Set
-wf-normal F = ≤-monotonic F × wf-suc-monotonic F × lim-continuous F
+wf-normal F = ≤-monotonic F × wf-suc-monotonic F × continuous F
 ```
 
 **事实** 用 `wf-suc-monotonic` 取代 `<-monotonic` 定义的 `wf-normal` 蕴含 `wf-<-monotonic`.
 
 ```agda
-module _ (nml@(≤-mono , suc-mono , lim-ct) : wf-normal F) where
+module _ (nml@(≤-mono , suc-mono , ct) : wf-normal F) where
   wf-nml⇒<-mono : wf-<-monotonic F
 
   wf-nml⇒<-mono {α} {suc β} α<s = begin-strict
@@ -273,7 +273,7 @@ module _ (nml@(≤-mono , suc-mono , lim-ct) : wf-normal F) where
   ... | (n , α<fn) = let instance wfn = wfn in begin-strict
     F α           <⟨ wf-nml⇒<-mono α<fn ⟩
     F (f n)       <⟨ f<l ⦃ wrap λ m<n → wf-nml⇒<-mono (mono m<n) ⦄ ⟩
-    lim (F ∘ f)   ≈˘⟨ lim-ct f ⟩
+    lim (F ∘ f)   ≈˘⟨ ct f ⟩
     F (lim f)     ∎
 ```
 

@@ -135,7 +135,7 @@ _ = λ _ _ → refl
 给定一个序数嵌入 `F`.
 
 ```agda
-module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
+module Properties F (nml@(≤-mono , <-mono , ct) : normal F) where
 ```
 
 ### 嵌入性
@@ -182,8 +182,8 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 **推论** `Ψ F` 对第二个参数满足极限连续.
 
 ```agda
-  Ψ-lim-ct : ∀ α → lim-continuous (Ψ F α)
-  Ψ-lim-ct α = proj₂ (proj₂ (Ψ-normal² α))
+  Ψ-ct : ∀ α → continuous (Ψ F α)
+  Ψ-ct α = proj₂ (proj₂ (Ψ-normal² α))
 ```
 
 **引理** 每个 `Ψ F (suc α) γ` 也是 `Ψ F α` 的不动点.
@@ -227,7 +227,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 
 ```agda
   Ψ-mono¹-≤l {zero} {f} {n} {lim γ} z≤fn = begin
-    F (lim γ)                             ≈⟨ lim-ct γ ⟩
+    F (lim γ)                             ≈⟨ ct γ ⟩
     lim (λ n → F (γ n))                   ≤⟨ l≤l (λ n → Ψ-mono¹-≤l {n = n} z≤) ⟩
     lim (λ n → Ψ F (lim f) (γ n))         ∎
   Ψ-mono¹-≤l {suc α} {f} {n} {lim γ} sα≤fn = l≤l λ m → begin
@@ -342,7 +342,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 ```agda
     Ψ-fp-fn γ =                                       begin-equality
       Ψ F (f n) (lim (λ m → Ψ F (f m) γ))             ≈⟨ Ψ-cong² (f n) (l≈l∘ ≤-seq m<smn) ⟩
-      Ψ F (f n) (lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)) ≈⟨ Ψ-lim-ct (f n) _ ⟩
+      Ψ F (f n) (lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)) ≈⟨ Ψ-ct (f n) _ ⟩
       lim (λ m → Ψ F (f n) (Ψ F (f (suc m ℕ.+ n)) γ)) ≈⟨ l≈l (Ψ-fp fn<fsmn) ⟩
       lim (λ m → Ψ F (f (suc m ℕ.+ n)) γ)             ≈˘⟨ l≈l∘ ≤-seq m<smn ⟩
       lim (λ m → Ψ F (f m) γ)                         ∎ where
@@ -360,7 +360,7 @@ module Properties F (nml@(≤-mono , <-mono , lim-ct) : normal F) where
     Ψ-fp-lim zero = Ψ-fp-fn zero
     Ψ-fp-lim (suc γ) = Ψ-fp-fn (suc (Ψ F (lim f) γ))
     Ψ-fp-lim (lim γ) =                          begin-equality
-      Ψ F (f n) (lim (λ m → Ψ F (lim f) (γ m))) ≈⟨ Ψ-lim-ct (f n) _ ⟩
+      Ψ F (f n) (lim (λ m → Ψ F (lim f) (γ m))) ≈⟨ Ψ-ct (f n) _ ⟩
       lim (λ m → Ψ F (f n) (Ψ F (lim f) (γ m))) ≈⟨ l≈l (Ψ-fp-lim (γ _)) ⟩
       lim (λ m → Ψ F (lim f) (γ m))             ∎
 ```

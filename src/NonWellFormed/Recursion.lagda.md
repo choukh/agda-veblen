@@ -100,7 +100,7 @@ rec-from-mono-≤ (lim f) ≤-mono ≤ = l≤ λ n → ≤f⇒≤l
 由定义立即可知 `rec F from α₀ by_` 极限连续.
 
 ```agda
-rec-ct : ∀ {F α₀} → lim-continuous (rec F from α₀ by_)
+rec-ct : ∀ {F α₀} → continuous (rec F from α₀ by_)
 rec-ct _ = ≈-refl
 ```
 

@@ -106,7 +106,7 @@ F ′ = F ⋱_ ⁺
 给定一个序数嵌入 `F`.
 
 ```agda
-module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
+module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , ct) : normal F) where
   private ≤-incr = normal⇒≤-incr nml
 ```
 
@@ -115,7 +115,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
 ```agda
   ⋱-fp : ∀ α₀ → (F ⋱ α₀) isFixpointOf F
   ⋱-fp α₀ =                                begin-equality
-    F (F ⋱ α₀)                             ≈⟨ lim-ct _ ⟩
+    F (F ⋱ α₀)                             ≈⟨ ct _ ⟩
     lim (λ n → F (rec F from α₀ by ⌜ n ⌝)) ≈˘⟨ l≈ls (≤-incr α₀) ⟩
     F ⋱ α₀                                 ∎
 ```
@@ -265,7 +265,7 @@ module _ {F : Ord → Ord} (nml@(≤-mono , <-mono , lim-ct) : normal F) where
   ′-fp zero    = ⋱₀-fp
   ′-fp (suc α) = ⋱ₛ-fp _
   ′-fp (lim f) =                begin-equality
-    F ((F ′) (lim f))           ≈⟨ lim-ct _ ⟩
+    F ((F ′) (lim f))           ≈⟨ ct _ ⟩
     lim (λ n → F ((F ′) (f n))) ≈⟨ l≈l (′-fp (f _)) ⟩
     (F ′) (lim f)               ∎
 ```
