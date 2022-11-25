@@ -250,7 +250,7 @@ f<l = <-≤-trans fn<fsn f≤l
 **证明** 由 `lim f ≤ lim g` 有 `f n < f (suc n) ≤ lim g`, 套入上一条即得. ∎
 
 ```agda
-module _ {f g} ⦃ f-mono : MonoSequence f ⦄ ⦃ g-mono : MonoSequence g ⦄ where
+module _ {f g} ⦃ mf : MonoSequence f ⦄ ⦃ mg : MonoSequence g ⦄ where
   ∃[m]fn<gm : lim f ≤ lim g → ∀ n → ∃[ m ] f n < g m
   ∃[m]fn<gm (l≤ fn≤l) n = ∃[n]<fn (begin-strict
     f n                            <⟨ fn<fsn ⟩

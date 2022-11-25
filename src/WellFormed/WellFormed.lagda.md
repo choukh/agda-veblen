@@ -22,18 +22,19 @@ module WellFormed.WellFormed where
 open import WellFormed.Ordinal
 open import NonWellFormed.WellFormed as ord using (WellFormed; ⌜_⌝-wellFormed)
 
-open Ord using (nwf)
+open Ord using (inudctive)
 open WellFormed.Ordinal.≤-Reasoning
 
 open import Data.Unit using (tt)
 open import Data.Empty using (⊥; ⊥-elim)
-open import Data.Nat as ℕ using (ℕ; zero; suc)
-import Data.Nat.Properties as ℕ
+open import Data.Nat as ℕ using (ℕ; zero; suc; z≤n)
+open import Data.Nat.Properties as ℕ using (m≤n⇒m<n∨m≡n)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
 open import Function using (_∘_; _↩_; it)
+open import Relation.Binary using (Monotonic₁)
 open import Relation.Binary.PropositionalEquality as Eq
-  using (_≡_; refl; sym; cong)
+  using (_≡_; _≢_; refl; sym; cong)
 ```
 
 ```agda
@@ -41,12 +42,12 @@ open import Relation.Binary.PropositionalEquality as Eq
 ⌜ zero ⌝ = Zero
 ⌜ suc n ⌝ = wf ord.⌜ suc n ⌝ ⦃ ⌜ n ⌝-wellFormed ⦄
 
-ord⌜_⌝ : ∀ n → nwf ⌜ n ⌝ ≡ ord.⌜ n ⌝
+ord⌜_⌝ : ∀ n → inudctive ⌜ n ⌝ ≡ ord.⌜ n ⌝
 ord⌜ zero ⌝ = refl
 ord⌜ suc n ⌝ = refl
 
-nwf⌜_⌝ : ∀ n → ord.⌜ n ⌝ ≡ nwf ⌜ n ⌝
-nwf⌜ n ⌝ = sym ord⌜ n ⌝
+inudctive⌜_⌝ : ∀ n → ord.⌜ n ⌝ ≡ inudctive ⌜ n ⌝
+inudctive⌜ n ⌝ = sym ord⌜ n ⌝
 
 ⌜⌝-monoSequence : MonoSequence ⌜_⌝
 ⌜⌝-monoSequence = wrap mono where
@@ -71,7 +72,7 @@ s<ω α ((n , d) , ≤) rewrite ord⌜ n ⌝ =
 
 n<ω : ∀ n → ⌜ n ⌝ < ω
 n<ω zero = z<ω
-n<ω (suc n) rewrite nwf⌜ n ⌝ = s<ω ⌜ n ⌝ (n<ω n)
+n<ω (suc n) rewrite inudctive⌜ n ⌝ = s<ω ⌜ n ⌝ (n<ω n)
 ```
 
 ```agda
@@ -82,7 +83,7 @@ fn<fsn f n ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 ```agda
 ⌜n⌝≤fn : ∀ f n → ⦃ MonoSequence f ⦄ → ⌜ n ⌝ ≤ f n
 ⌜n⌝≤fn f zero = z≤
-⌜n⌝≤fn f (suc n) rewrite nwf⌜ n ⌝ = begin
+⌜n⌝≤fn f (suc n) rewrite inudctive⌜ n ⌝ = begin
   Suc ⌜ n ⌝         ≤⟨ s≤s (⌜n⌝≤fn f n) ⟩
   Suc (f n)         ≤⟨ <⇒s≤ (fn<fsn f n) ⟩
   f (suc n)         ∎
@@ -97,7 +98,7 @@ fn<fsn f n ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 ⌜⌝-injective : ∀ {m n} → ⌜ m ⌝ ≡ ⌜ n ⌝ → m ≡ n
 ⌜⌝-injective {m} {n} eq = ord.⌜⌝-injective helper where
   helper : ord.⌜ m ⌝ ≡ ord.⌜ n ⌝
-  helper rewrite nwf⌜ m ⌝ | nwf⌜ n ⌝ = cong nwf eq
+  helper rewrite inudctive⌜ m ⌝ | inudctive⌜ n ⌝ = cong inudctive eq
 ```
 
 ```agda
@@ -137,4 +138,67 @@ f<l f n = <-≤-trans (fn<fsn f n) f≤l
   f n                   <⟨ fn<fsn f n ⟩
   f (suc n)             ∎)
 ∃[n]<fn (wf (lim α)) f ((n , d) , l<f) = n , d , l<f
+```
+
+```agda
+module _ f g ⦃ mf : MonoSequence f ⦄ ⦃ mg : MonoSequence g ⦄ where
+  ∃[m]fn<gm : Lim f ≤ Lim g → ∀ n → ∃[ m ] f n < g m
+  ∃[m]fn<gm (l≤ fn≤l) n = ∃[n]<fn (f n) g (begin-strict
+    f n                            <⟨ fn<fsn f n ⟩
+    f (suc n)                      ≤⟨ fn≤l (suc n) ⟩
+    Lim g                          ∎)
+```
+
+```agda
+<l⇒s<l : ∀ α f ⦃ mf : MonoSequence f ⦄ → α < Lim f → Suc α < Lim f
+<l⇒s<l α f ⦃ mono ⦄ < with ∃[n]<fn α f <
+... | n , <f = begin-strict Suc α ≤⟨ <⇒s≤ <f ⟩ f n <⟨ f<l f n ⟩ Lim f ∎
+```
+
+```agda
+l≤s⇒l≤ : ∀ f α ⦃ mf : MonoSequence f ⦄ → Lim f ≤ Suc α → Lim f ≤ α
+l≤s⇒l≤ f α ⦃ mono ⦄ (l≤ fn≤s) = l≤ λ n → <s⇒≤ (begin-strict
+  f n       <⟨ fn<fsn f n ⟩
+  f (suc n) ≤⟨ fn≤s (suc n) ⟩
+  Suc α     ∎)
+```
+
+```agda
+ω≤s⇒ω≤ : ∀ α → ω ≤ Suc α → ω ≤ α
+ω≤s⇒ω≤ α ω≤s = l≤s⇒l≤ ⌜_⌝ α ⦃ ⌜⌝-monoSequence ⦄ ω≤s
+```
+
+```agda
+≢z⇒>z : ∀ α → α ≢ Zero → α > Zero
+≢z⇒>z Zero       z≢z = ⊥-elim (z≢z refl)
+≢z⇒>z (wf (suc α)) _ = inj₁ tt , z≤
+≢z⇒>z (wf (lim f)) _ = z<l (lift f)
+```
+
+```agda
+≈z⇒≡z : ∀ α → α ≈ Zero → α ≡ Zero
+≈z⇒≡z Zero  _         = refl
+≈z⇒≡z (wf (suc α)) (s≤z , _) = ⊥-elim (s≰z s≤z)
+≈z⇒≡z (wf (lim f)) (l≤z , _) = ⊥-elim (<⇒≱ (z<l (lift f)) l≤z)
+```
+
+```agda
+≤z⇒≡z : ∀ α → α ≤ Zero → α ≡ Zero
+≤z⇒≡z α ≤z = ≈z⇒≡z α (≤z , z≤)
+```
+
+```agda
+≡z⊎>z : ∀ α → α ≡ Zero ⊎ α > Zero
+≡z⊎>z Zero         = inj₁ refl
+≡z⊎>z (wf (suc α)) = inj₂ z<s
+≡z⊎>z (wf (lim f)) = inj₂ (z<l (lift f))
+```
+
+```agda
+<ω⊎≥ω : ∀ α → α < ω ⊎ α ≥ ω
+<ω⊎≥ω Zero     = inj₁ z<ω
+<ω⊎≥ω (wf (suc α)) with <ω⊎≥ω α
+... | inj₁ <ω  = inj₁ (s<ω <ω)
+... | inj₂ ≥ω  = inj₂ (≤⇒≤s ≥ω)
+<ω⊎≥ω (wf (lim f))  = inj₂ ω≤l
 ```

@@ -44,8 +44,8 @@ open import Relation.Binary.PropositionalEquality as Eq using (_≡_; refl)
 record Ord : Set where
   constructor wf
   field
-    nwf : ord
-    ⦃ wellFormed ⦄ : WellFormed nwf
+    inudctive : ord
+    ⦃ wellFormed ⦄ : WellFormed inudctive
 
 open Ord
 ```
@@ -93,6 +93,14 @@ _≯_ : Rel Ord 0ℓ
 ```
 
 ```agda
+wf-cong-≡-≈ : ∀ α β ⦃ wfα : WellFormed α ⦄ ⦃ wfβ : WellFormed β ⦄ → α ≡ β → wf α ≈ wf β
+wf-cong-≡-≈ α β refl = ord.≈-refl
+
+wf-cong-≈-≈ : ∀ α β ⦃ wfα : WellFormed α ⦄ ⦃ wfβ : WellFormed β ⦄ → α ord.≈ β → wf α ≈ wf β
+wf-cong-≈-≈ α β ≈ = ≈
+```
+
+```agda
 pattern Zero = wf zero
 
 Suc : Ord → Ord
@@ -111,7 +119,7 @@ record MonoSequence (f : ℕ → Ord) : Set where
   field unwrap : monoSequence f
 
 Lim : ∀ f → ⦃ MonoSequence f ⦄ → Ord
-Lim f ⦃ wrap mono ⦄ = wf (lim (λ n → nwf (f n))) ⦃ wfl ⦄ where
+Lim f ⦃ wrap mono ⦄ = wf (lim (λ n → inudctive (f n))) ⦃ wfl ⦄ where
   wfl = (λ {n} → wellFormed (f n)) , ord.wrap mono
 ```
 
@@ -128,9 +136,10 @@ instance
 open import NonWellFormed.Ordinal using
   ( z≤; l≤; ≤s; s∸≤; s≤s; ≤f⇒≤l; l≤l; f≤l
   ; s≈s; l≈l; l≈ls
+  ; s≰z
   ; z<s; <s; s<s; <f⇒<l
   ; <⇒≤; <⇒≱
-  ; <⇒s≤; s≤⇒<; ≤⇒<s; <s⇒≤
+  ; ≤⇒≤s; <⇒s≤; s≤⇒<; ≤⇒<s; <s⇒≤
   ) public
 ```
 
