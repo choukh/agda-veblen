@@ -27,7 +27,7 @@ open import NonWellFormed.WellFormed as ord using (WellFormed) public
 
 open import Data.Unit using (tt)
 open import Data.Nat as ℕ using (ℕ; zero; suc)
-open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂)
+open import Data.Product using (Σ; _,_; proj₁; proj₂)
 open import Function using (_∘_; it)
 open import Level using (0ℓ)
 open import Relation.Nullary using (¬_)
@@ -47,7 +47,15 @@ record Ord : Set where
     inudctive : ord
     ⦃ wellFormed ⦄ : WellFormed inudctive
 
-open Ord
+open Ord public
+```
+
+```agda
+lift : ∀ (f : ℕ → ord) → ⦃ ∀ {n} → WellFormed (f n) ⦄ → (ℕ → Ord)
+lift f n = wf (f n)
+
+dip : (ℕ → Ord) → (ℕ → ord)
+dip f = inudctive ∘ f
 ```
 
 ```agda
@@ -105,6 +113,14 @@ pattern Zero = wf zero
 
 Suc : Ord → Ord
 Suc (wf α) = wf (suc α)
+```
+
+```agda
+wf-cong-zero : ∀ α ⦃ wfα : WellFormed α ⦄ → α ≡ zero → wf α ≡ Zero
+wf-cong-zero α refl = refl
+
+Zero-injective : ∀ α ⦃ wfα : WellFormed α ⦄ → wf α ≡ Zero → α ≡ zero
+Zero-injective α refl = refl
 
 Suc-injective : ∀ {α β} → Suc α ≡ Suc β → α ≡ β
 Suc-injective refl = refl
@@ -118,18 +134,16 @@ record MonoSequence (f : ℕ → Ord) : Set where
   constructor wrap
   field unwrap : monoSequence f
 
-Lim : ∀ f → ⦃ MonoSequence f ⦄ → Ord
-Lim f ⦃ wrap mono ⦄ = wf (lim (λ n → inudctive (f n))) ⦃ wfl ⦄ where
-  wfl = (λ {n} → wellFormed (f n)) , ord.wrap mono
-```
-
-```agda
-lift : ∀ (f : ℕ → ord) → ⦃ ∀ {n} → WellFormed (f n) ⦄ → (ℕ → Ord)
-lift f n = wf (f n)
-
 instance
-  lift-mono : ∀ {f : ℕ → ord} ⦃ wf : WellFormed (lim f) ⦄ → MonoSequence (lift f ⦃ proj₁ wf ⦄)
-  lift-mono = wrap (ord.MonoSequence.unwrap (proj₂ it))
+  liftMono : ∀ {f : ℕ → ord} ⦃ wf : WellFormed (lim f) ⦄ → MonoSequence (lift f ⦃ proj₁ wf ⦄)
+  liftMono = wrap (ord.MonoSequence.unwrap (proj₂ it))
+
+dipMono : ∀ f → ⦃ MonoSequence f ⦄ → ord.MonoSequence (dip f)
+dipMono f ⦃ wrap mono ⦄ = ord.wrap mono
+
+Lim : ∀ f → ⦃ MonoSequence f ⦄ → Ord
+Lim f = wf (lim (dip f)) ⦃ wfl ⦄ where
+  wfl = (λ {n} → wellFormed (f n)) , dipMono f
 ```
 
 ```agda

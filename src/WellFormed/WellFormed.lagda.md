@@ -20,17 +20,15 @@ module WellFormed.WellFormed where
 
 ```agda
 open import WellFormed.Ordinal
-open import NonWellFormed.WellFormed as ord using (WellFormed; ⌜_⌝-wellFormed)
-
-open Ord using (inudctive)
 open WellFormed.Ordinal.≤-Reasoning
+open import NonWellFormed.WellFormed as ord using (WellFormed; ⌜_⌝-wellFormed)
 
 open import Data.Unit using (tt)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Nat as ℕ using (ℕ; zero; suc; z≤n)
 open import Data.Nat.Properties as ℕ using (m≤n⇒m<n∨m≡n)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
+open import Data.Product using (Σ; _,_; proj₁; proj₂; ∃-syntax)
 open import Function using (_∘_; _↩_; it)
 open import Relation.Binary using (Monotonic₁)
 open import Relation.Binary.PropositionalEquality as Eq
@@ -76,22 +74,22 @@ n<ω (suc n) rewrite inudctive⌜ n ⌝ = s<ω ⌜ n ⌝ (n<ω n)
 ```
 
 ```agda
-fn<fsn : ∀ f n → ⦃ MonoSequence f ⦄ → f n < f (suc n)
-fn<fsn f n ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
+fn<fsn : ∀ {f n} → ⦃ MonoSequence f ⦄ → f n < f (suc n)
+fn<fsn ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 ```
 
 ```agda
-⌜n⌝≤fn : ∀ f n → ⦃ MonoSequence f ⦄ → ⌜ n ⌝ ≤ f n
-⌜n⌝≤fn f zero = z≤
-⌜n⌝≤fn f (suc n) rewrite inudctive⌜ n ⌝ = begin
-  Suc ⌜ n ⌝         ≤⟨ s≤s (⌜n⌝≤fn f n) ⟩
-  Suc (f n)         ≤⟨ <⇒s≤ (fn<fsn f n) ⟩
+⌜n⌝≤fn : ∀ {f} n → ⦃ MonoSequence f ⦄ → ⌜ n ⌝ ≤ f n
+⌜n⌝≤fn zero = z≤
+⌜n⌝≤fn {f} (suc n) rewrite inudctive⌜ n ⌝ = begin
+  Suc ⌜ n ⌝         ≤⟨ s≤s (⌜n⌝≤fn n) ⟩
+  Suc (f n)         ≤⟨ <⇒s≤ fn<fsn ⟩
   f (suc n)         ∎
 ```
 
 ```agda
-ω≤l : ∀ f ⦃ mf : MonoSequence f ⦄ → ω ≤ Lim f
-ω≤l f = l≤ (λ n → ≤f⇒≤l (⌜n⌝≤fn f n))
+ω≤l : ∀ {f} ⦃ mf : MonoSequence f ⦄ → ω ≤ Lim f
+ω≤l = l≤ (λ n → ≤f⇒≤l (⌜n⌝≤fn n))
 ```
 
 ```agda
@@ -107,7 +105,7 @@ fn<fsn f n ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 ⌜⌝-surjective (wf (suc α)) s<ω with ⌜⌝-surjective (wf α) (<-trans <s s<ω)
 ... | zero  , refl = 1 , refl
 ... | suc n , refl = suc (suc n) , refl
-⌜⌝-surjective (wf (lim f)) l<ω = ⊥-elim (<⇒≱ l<ω (ω≤l (lift f)))
+⌜⌝-surjective (wf (lim f)) l<ω = ⊥-elim (<⇒≱ l<ω ω≤l)
 ```
 
 ```agda
@@ -122,83 +120,83 @@ fn<fsn f n ⦃ wrap mono ⦄ = mono (ℕ.s≤s ℕ.≤-refl)
 ```
 
 ```agda
-z<l : ∀ f ⦃ mf : MonoSequence f ⦄ → Zero < Lim f
-z<l f = <-≤-trans z<ω (ω≤l f)
+z<l : ∀ {f} ⦃ mf : MonoSequence f ⦄ → Zero < Lim f
+z<l {f} = <-≤-trans z<ω ω≤l
 
-f<l : ∀ f n ⦃ mf : MonoSequence f ⦄ → f n < Lim f
-f<l f n = <-≤-trans (fn<fsn f n) f≤l
+f<l : ∀ {f n} ⦃ mf : MonoSequence f ⦄ → f n < Lim f
+f<l = <-≤-trans fn<fsn f≤l
 ```
 
 ```agda
-∃[n]<fn : ∀ α f ⦃ mf : MonoSequence f ⦄ → α < Lim f → ∃[ n ] α < f n
-∃[n]<fn Zero  f _ = 1 , (≤-<-trans z≤ (fn<fsn f zero))
-∃[n]<fn (wf (suc α)) f s<l with ∃[n]<fn (wf α) f (<-trans <s s<l)
+∃[n]<fn : ∀ α {f} ⦃ mf : MonoSequence f ⦄ → α < Lim f → ∃[ n ] α < f n
+∃[n]<fn Zero  {f} _ = 1 , (≤-<-trans z≤ fn<fsn)
+∃[n]<fn (wf (suc α)) {f} s<l with ∃[n]<fn (wf α) (<-trans <s s<l)
 ... | n , <f = suc n , (begin-strict
   wf (suc α)            ≤⟨ <⇒s≤ <f ⟩
-  f n                   <⟨ fn<fsn f n ⟩
+  f n                   <⟨ fn<fsn ⟩
   f (suc n)             ∎)
-∃[n]<fn (wf (lim α)) f ((n , d) , l<f) = n , d , l<f
+∃[n]<fn (wf (lim α)) ((n , d) , l<f) = n , d , l<f
 ```
 
 ```agda
-module _ f g ⦃ mf : MonoSequence f ⦄ ⦃ mg : MonoSequence g ⦄ where
+module _ {f g} ⦃ mf : MonoSequence f ⦄ ⦃ mg : MonoSequence g ⦄ where
   ∃[m]fn<gm : Lim f ≤ Lim g → ∀ n → ∃[ m ] f n < g m
-  ∃[m]fn<gm (l≤ fn≤l) n = ∃[n]<fn (f n) g (begin-strict
-    f n                            <⟨ fn<fsn f n ⟩
+  ∃[m]fn<gm (l≤ fn≤l) n = ∃[n]<fn (f n) (begin-strict
+    f n                            <⟨ fn<fsn ⟩
     f (suc n)                      ≤⟨ fn≤l (suc n) ⟩
     Lim g                          ∎)
 ```
 
 ```agda
-<l⇒s<l : ∀ α f ⦃ mf : MonoSequence f ⦄ → α < Lim f → Suc α < Lim f
-<l⇒s<l α f ⦃ mono ⦄ < with ∃[n]<fn α f <
-... | n , <f = begin-strict Suc α ≤⟨ <⇒s≤ <f ⟩ f n <⟨ f<l f n ⟩ Lim f ∎
+<l⇒s<l : ∀ α {f} ⦃ mf : MonoSequence f ⦄ → α < Lim f → Suc α < Lim f
+<l⇒s<l α {f} ⦃ mono ⦄ < with ∃[n]<fn α <
+... | n , <f = begin-strict Suc α ≤⟨ <⇒s≤ <f ⟩ f n <⟨ f<l ⟩ Lim f ∎
 ```
 
 ```agda
-l≤s⇒l≤ : ∀ f α ⦃ mf : MonoSequence f ⦄ → Lim f ≤ Suc α → Lim f ≤ α
-l≤s⇒l≤ f α ⦃ mono ⦄ (l≤ fn≤s) = l≤ λ n → <s⇒≤ (begin-strict
-  f n       <⟨ fn<fsn f n ⟩
+l≤s⇒l≤ : ∀ {f} α ⦃ mf : MonoSequence f ⦄ → Lim f ≤ Suc α → Lim f ≤ α
+l≤s⇒l≤ {f} α ⦃ mono ⦄ (l≤ fn≤s) = l≤ λ n → <s⇒≤ (begin-strict
+  f n       <⟨ fn<fsn ⟩
   f (suc n) ≤⟨ fn≤s (suc n) ⟩
   Suc α     ∎)
 ```
 
 ```agda
 ω≤s⇒ω≤ : ∀ α → ω ≤ Suc α → ω ≤ α
-ω≤s⇒ω≤ α ω≤s = l≤s⇒l≤ ⌜_⌝ α ⦃ ⌜⌝-monoSequence ⦄ ω≤s
+ω≤s⇒ω≤ α ω≤s = l≤s⇒l≤ α ⦃ ⌜⌝-monoSequence ⦄ ω≤s
 ```
 
 ```agda
-≢z⇒>z : ∀ α → α ≢ Zero → α > Zero
-≢z⇒>z Zero       z≢z = ⊥-elim (z≢z refl)
-≢z⇒>z (wf (suc α)) _ = inj₁ tt , z≤
-≢z⇒>z (wf (lim f)) _ = z<l (lift f)
+≢z⇒>z : ∀ {α} → α ≢ Zero → α > Zero
+≢z⇒>z {Zero}     z≢z = ⊥-elim (z≢z refl)
+≢z⇒>z {wf (suc α)} _ = inj₁ tt , z≤
+≢z⇒>z {wf (lim f)} _ = z<l
 ```
 
 ```agda
-≈z⇒≡z : ∀ α → α ≈ Zero → α ≡ Zero
-≈z⇒≡z Zero  _         = refl
-≈z⇒≡z (wf (suc α)) (s≤z , _) = ⊥-elim (s≰z s≤z)
-≈z⇒≡z (wf (lim f)) (l≤z , _) = ⊥-elim (<⇒≱ (z<l (lift f)) l≤z)
+≈z⇒≡z : ∀ {α} → α ≈ Zero → α ≡ Zero
+≈z⇒≡z {Zero} _ = refl
+≈z⇒≡z {wf (suc α)} (s≤z , _) = ⊥-elim (s≰z s≤z)
+≈z⇒≡z {wf (lim f)} (l≤z , _) = ⊥-elim (<⇒≱ z<l l≤z)
 ```
 
 ```agda
-≤z⇒≡z : ∀ α → α ≤ Zero → α ≡ Zero
-≤z⇒≡z α ≤z = ≈z⇒≡z α (≤z , z≤)
+≤z⇒≡z : ∀ {α} → α ≤ Zero → α ≡ Zero
+≤z⇒≡z ≤z = ≈z⇒≡z (≤z , z≤)
 ```
 
 ```agda
 ≡z⊎>z : ∀ α → α ≡ Zero ⊎ α > Zero
 ≡z⊎>z Zero         = inj₁ refl
 ≡z⊎>z (wf (suc α)) = inj₂ z<s
-≡z⊎>z (wf (lim f)) = inj₂ (z<l (lift f))
+≡z⊎>z (wf (lim f)) = inj₂ z<l
 ```
 
 ```agda
 <ω⊎≥ω : ∀ α → α < ω ⊎ α ≥ ω
-<ω⊎≥ω Zero     = inj₁ z<ω
+<ω⊎≥ω Zero = inj₁ z<ω
 <ω⊎≥ω (wf (suc α)) with <ω⊎≥ω (wf α)
-... | inj₁ <ω  = inj₁ (s<ω (wf α) <ω)
-... | inj₂ ≥ω  = inj₂ (≤⇒≤s ≥ω)
-<ω⊎≥ω (wf (lim f))  = inj₂ (ω≤l (lift f))
+... | inj₁ <ω = inj₁ (s<ω (wf α) <ω)
+... | inj₂ ≥ω = inj₂ (≤⇒≤s ≥ω)
+<ω⊎≥ω (wf (lim f)) = inj₂ ω≤l
 ```
