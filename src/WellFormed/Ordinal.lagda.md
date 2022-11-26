@@ -131,12 +131,9 @@ Suc-injective refl = refl
 ```
 
 ```agda
-monoSequence : (ℕ → Ord) → Set
-monoSequence = Monotonic₁ ℕ._<_ _<_
-
 record MonoSequence (f : ℕ → Ord) : Set where
   constructor wrap
-  field unwrap : monoSequence f
+  field unwrap : Monotonic₁ ℕ._<_ _<_ f
 open MonoSequence public
 
 instance
