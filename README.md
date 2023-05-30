@@ -4,7 +4,6 @@
 
 - Solely relies on agda-stdlib 1.7.1
 - --without-K and --safe
-- Up to large veblen ordinal
 - Ready for googology function such as fast growing hierarchy
 - Literate agda script (but in Chinese) and [html5 rendering](https://choukh.github.io/agda-lvo/NonWellFormed.html)
 
