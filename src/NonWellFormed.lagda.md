@@ -1,15 +1,13 @@
 ---
-title: Agda大序数(1-0) 第1卷目录
+title: Agda大序数(1-0) 目录
 zhihu-tags: Agda, 序数, 大数数学
 ---
 
-# Agda大序数(1-0) 第1卷目录
+# Agda大序数(1-0) 目录
 
 > 交流Q群: 893531731  
 > 本文源码: [NonWellFormed.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed.lagda.md)  
 > 高亮渲染: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
-
-[前往第2卷](https://choukh.github.io/agda-lvo/WellFormed.html)
 
 ```agda
 {-# OPTIONS --without-K --safe #-}
@@ -97,5 +95,3 @@ open import NonWellFormed.VeblenFunction public
 - 定义了二元 Veblen 函数 `φ α β`
 - 证明了 `φ` 的嵌入性, 单调性, 合同性, 不动点性和保良构性
 - Γ₀ 定义为 `(λ α → φ α zero) ⋱ zero`
-
-[前往第2卷](https://choukh.github.io/agda-lvo/WellFormed.html)
