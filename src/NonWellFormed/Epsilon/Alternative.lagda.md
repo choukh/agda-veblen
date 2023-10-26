@@ -10,7 +10,6 @@ zhihu-url: https://zhuanlan.zhihu.com/p/582936614
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
 > 本文源码: [Epsilon/Alternative.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Epsilon/Alternative.lagda.md)  
 > 高亮渲染: [Epsilon.Alternative.html](https://choukh.github.io/agda-lvo/NonWellFormed.Epsilon.Alternative.html)  
-> 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}

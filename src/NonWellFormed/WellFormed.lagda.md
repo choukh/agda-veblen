@@ -10,7 +10,6 @@ zhihu-url: https://zhuanlan.zhihu.com/p/573846653
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
 > 本文源码: [WellFormed.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/WellFormed.lagda.md)  
 > 高亮渲染: [WellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.WellFormed.html)  
-> 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
 {-# OPTIONS --without-K --safe #-}
@@ -38,7 +37,7 @@ open import Data.Nat.Properties as ℕ using (m≤n⇒m<n∨m≡n)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (Σ; _×_; _,_; proj₁; proj₂; ∃-syntax)
 open import Function using (_∘_; _↩_; it)
-open import Relation.Binary using (Monotonic₁)
+open import Relation.Binary.Definitions using (Monotonic₁)
 open import Relation.Binary.PropositionalEquality as Eq
   using (_≡_; _≢_; refl; sym; cong; subst)
 ```

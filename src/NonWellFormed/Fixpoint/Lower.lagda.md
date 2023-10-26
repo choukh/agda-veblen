@@ -10,7 +10,6 @@ zhihu-url: https://zhuanlan.zhihu.com/p/582065361
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
 > 本文源码: [Fixpoint/Lower.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Fixpoint/Lower.lagda.md)  
 > 高亮渲染: [Fixpoint.Lower.html](https://choukh.github.io/agda-lvo/NonWellFormed.Fixpoint.Lower.html)  
-> 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 本章是关于不动点的一些平凡的例子, 与主线无关, 可以跳过.
 

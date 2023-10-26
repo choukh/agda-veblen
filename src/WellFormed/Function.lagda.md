@@ -9,7 +9,6 @@ zhihu-tags: Agda, 序数, 大数数学
 > 目录: [WellFormed.html](https://choukh.github.io/agda-lvo/WellFormed.html)  
 > 本文源码: [Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/WellFormed/Function.lagda.md)  
 > 高亮渲染: [Function.html](https://choukh.github.io/agda-lvo/WellFormed.Function.html)  
-> 如果你在知乎看到本文: 知乎对Agda语法高亮的支持非常有限, 建议跳转到以上网站阅读  
 
 ```agda
 {-# OPTIONS --without-K --safe #-}
