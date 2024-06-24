@@ -13,7 +13,7 @@ zhihu-url: https://zhuanlan.zhihu.com/p/572691308
 
 ## 前言
 
-本系列文章介绍一种基于类型论的序数理论, 并以实现大 Veblen 序数, 即 [LVO](https://en.wikipedia.org/wiki/Large_Veblen_ordinal) 的形式化为最终目标. 我们采用标准 Agda 作为基础, 仅依赖于标准库 [agda-stdlib](https://agda.github.io/agda-stdlib/index), 并且打开了社区公认安全 (可期待一致性) 的 flag
+本系列文章介绍一种基于类型论的序数理论, 并以实现 [Veblen 函数](https://en.wikipedia.org/wiki/Veblen_function) 的形式化为最终目标. 我们采用标准 Agda 作为基础, 仅依赖于标准库 [agda-stdlib](https://agda.github.io/agda-stdlib/index), 并且打开了社区公认安全 (可期待一致性) 的 flag
 
 ```agda
 {-# OPTIONS --without-K --safe #-}
@@ -21,7 +21,7 @@ zhihu-url: https://zhuanlan.zhihu.com/p/572691308
 
 以实现无公理且构造主义的直谓可计算序数.
 
-具体地, 我们实现了超限归纳法的类型论对应, 以及序数算术和 Veblen 不动点理论, 并以此定义了二元 Veblen 函数, n元 Veblen 函数乃至序数元 Veblen 函数. 得益于其可计算特性, 我们的序数可用于快速增长层级等大数函数,并得到可计算的大数, 如 $f_{LVO}(3)$. 虽然现实中计算不出来, 但其停机性由 Agda 的 [Termination Checking](https://agda.readthedocs.io/en/v2.6.2.2/language/termination-checking.html) 保证.
+具体地, 我们实现了超限归纳法的类型论对应, 以及序数算术和 Veblen 不动点理论, 并以此定义了二元 Veblen 函数. 得益于其可计算特性, 我们的序数可用于快速增长层级等大数函数,并得到可计算的大数, 如 $f_{\Gamma_0}(3)$. 虽然现实中计算不出来, 但其停机性由 Agda 的 [Termination Checking](https://agda.readthedocs.io/en/v2.6.2.2/language/termination-checking.html) 保证.
 
 本文为文学Agda脚本, 既是 markdown 文件, 也是可通过类型检查的 Agda 源码. 原文件托管于本项目的 Github 仓库 [agda-veblen](https://github.com/choukh/agda-veblen).
 
