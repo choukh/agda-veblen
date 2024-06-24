@@ -1,10 +1,10 @@
 ---
-title: Agda大序数(1-8*) ε的另一种表示
+title: Agda大序数(8*) ε的另一种表示
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/582936614
 ---
 
-# Agda大序数(1-8*) ε的另一种表示
+# Agda大序数(8*) ε的另一种表示
 
 > 交流Q群: 893531731  
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  

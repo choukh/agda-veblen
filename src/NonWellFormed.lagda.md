@@ -1,9 +1,9 @@
 ---
-title: Agda大序数(1-0) 目录
+title: Agda大序数(0) 目录
 zhihu-tags: Agda, 序数, 大数数学
 ---
 
-# Agda大序数(1-0) 目录
+# Agda大序数(0) 目录
 
 > 交流Q群: 893531731  
 > 本文源码: [NonWellFormed.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed.lagda.md)  

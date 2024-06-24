@@ -1,10 +1,10 @@
 ---
-title: Agda大序数(1-8) ε层级, ζ层级, η层级
+title: Agda大序数(8) ε层级, ζ层级, η层级
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/582661842
 ---
 
-# Agda大序数(1-8) ε层级, ζ层级, η层级
+# Agda大序数(8) ε层级, ζ层级, η层级
 
 > 交流Q群: 893531731  
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  

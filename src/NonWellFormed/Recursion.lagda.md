@@ -1,10 +1,10 @@
 ---
-title: Agda大序数(1-4) 超限递归
+title: Agda大序数(4) 超限递归
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/576854750
 ---
 
-# Agda大序数(1-4) 超限递归
+# Agda大序数(4) 超限递归
 
 > 交流Q群: 893531731  
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  

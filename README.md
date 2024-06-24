@@ -1,8 +1,7 @@
-# Large veblen ordinal in Agda
+# Veblen Function in Agda
 
 ## Features
 
-- Solely relies on agda-stdlib 1.7.1
 - --without-K and --safe
 - Ready for googology function such as fast growing hierarchy
 - Literate agda script (but in Chinese) and [html5 rendering](https://choukh.github.io/agda-lvo/NonWellFormed.html)
@@ -69,18 +68,6 @@
 - Γ₀ is defined as `(λ α → φ α zero) ⋱ zero`
 
 There is also a well formed version of most of the above in [src/WellFormed](https://github.com/choukh/agda-lvo/blob/main/src/WellFormed). From Γ₀ on, there will be only the well formed version.
-
-### VeblenFunction.Extended.lagda.md
-
-(TODO)
-
-### VeblenFunction.OmegaAry.lagda.md
-
-(TODO)
-
-### VeblenFunction.Transfinite.lagda.md
-
-(TODO)
 
 ## License
 

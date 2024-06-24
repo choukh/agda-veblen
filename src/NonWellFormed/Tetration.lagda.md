@@ -1,10 +1,10 @@
 ---
-title: Agda大序数(1-6) 迭代幂次
+title: Agda大序数(6) 迭代幂次
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/580526275
 ---
 
-# Agda大序数(1-6) 迭代幂次
+# Agda大序数(6) 迭代幂次
 
 > 交流Q群: 893531731  
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  

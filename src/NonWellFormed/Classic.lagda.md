@@ -1,10 +1,10 @@
 ---
-title: Agda大序数(1-2*) 经典序数
+title: Agda大序数(2*) 经典序数
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/575362583
 ---
 
-# Agda大序数(1-2*) 经典序数
+# Agda大序数(2*) 经典序数
 
 > 交流Q群: 893531731  
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  

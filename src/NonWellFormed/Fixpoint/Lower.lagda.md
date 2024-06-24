@@ -1,10 +1,10 @@
 ---
-title: Agda大序数(1-7*) 低阶不动点
+title: Agda大序数(7*) 低阶不动点
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/582065361
 ---
 
-# Agda大序数(1-7*) 低阶不动点
+# Agda大序数(7*) 低阶不动点
 
 > 交流Q群: 893531731  
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  

@@ -1,10 +1,10 @@
 ---
-title: Agda大序数(1-1) 序数的定义
+title: Agda大序数(1) 序数的定义
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/572691308
 ---
 
-# Agda大序数(1-1) 序数的定义
+# Agda大序数(1) 序数的定义
 
 > 交流Q群: 893531731  
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  

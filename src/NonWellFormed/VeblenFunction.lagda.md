@@ -1,10 +1,10 @@
 ---
-title: Agda大序数(1-9) 二元Veblen函数
+title: Agda大序数(9) 二元Veblen函数
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/585882648
 ---
 
-# Agda大序数(1-9) 二元Veblen函数
+# Agda大序数(9) 二元Veblen函数
 
 > 交流Q群: 893531731  
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
@@ -550,4 +550,4 @@ _ : Γ zero ≡ (λ α → φ α zero) ⋱ zero
 _ = refl
 ```
 
-`Γ` 确实是对 `λ α → φ α zero` 的不动点的枚举, 因为 `λ α → φ α zero` 对任意良构 `α` 是序数嵌入. 这可以从 `Ψ-mono¹-≤` 和 `Ψ-<⇒<` 看出. 这些引理都要求良构序数. 可见, 从 `Γ` 开始, 必须完全限定到良构序数才能继续理论的构筑. 我们就此结束本系列文章的第1卷. 第2卷会从良构序数的 record 类型的定义开始, 然后把第1卷的结果都迁移过去, 再继续向 LVO 进发.
+`Γ` 确实是对 `λ α → φ α zero` 的不动点的枚举, 因为 `λ α → φ α zero` 对任意良构 `α` 是序数嵌入. 这可以从 `Ψ-mono¹-≤` 和 `Ψ-<⇒<` 看出.

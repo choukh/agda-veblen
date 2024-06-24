@@ -1,10 +1,10 @@
 ---
-title: Agda大序数(1-5) 序数算术
+title: Agda大序数(5) 序数算术
 zhihu-tags: Agda, 序数, 大数数学
 zhihu-url: https://zhuanlan.zhihu.com/p/578641323
 ---
 
-# Agda大序数(1-5) 序数算术
+# Agda大序数(5) 序数算术
 
 > 交流Q群: 893531731  
 > 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
