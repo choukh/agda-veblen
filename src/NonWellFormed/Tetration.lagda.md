@@ -7,9 +7,9 @@ zhihu-url: https://zhuanlan.zhihu.com/p/580526275
 # Agda大序数(6) 迭代幂次
 
 > 交流Q群: 893531731  
-> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
-> 本文源码: [Tetration.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Tetration.lagda.md)  
-> 高亮渲染: [Tetration.html](https://choukh.github.io/agda-lvo/NonWellFormed.Tetration.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.html)  
+> 本文源码: [Tetration.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/NonWellFormed/Tetration.lagda.md)  
+> 高亮渲染: [Tetration.html](https://choukh.github.io/agda-veblen/NonWellFormed.Tetration.html)  
 
 本章打开了 [*实验性有损合一化*](https://agda.readthedocs.io/en/v2.6.2.2/language/lossy-unification.html) 特性, 它可以减少显式标记隐式参数的需要, 而且跟 `--safe` 是兼容的. 当然它也有一些缺点, 具体这里不会展开.
 

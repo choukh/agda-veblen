@@ -7,9 +7,9 @@ zhihu-url: https://zhuanlan.zhihu.com/p/572691308
 # Agda大序数(1) 序数的定义
 
 > 交流Q群: 893531731  
-> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
-> 本文源码: [Ordinal.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Ordinal.lagda.md)  
-> 高亮渲染: [Ordinal.html](https://choukh.github.io/agda-lvo/NonWellFormed.Ordinal.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.html)  
+> 本文源码: [Ordinal.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/NonWellFormed/Ordinal.lagda.md)  
+> 高亮渲染: [Ordinal.html](https://choukh.github.io/agda-veblen/NonWellFormed.Ordinal.html)  
 
 ## 前言
 
@@ -23,7 +23,7 @@ zhihu-url: https://zhuanlan.zhihu.com/p/572691308
 
 具体地, 我们实现了超限归纳法的类型论对应, 以及序数算术和 Veblen 不动点理论, 并以此定义了二元 Veblen 函数, n元 Veblen 函数乃至序数元 Veblen 函数. 得益于其可计算特性, 我们的序数可用于快速增长层级等大数函数,并得到可计算的大数, 如 $f_{LVO}(3)$. 虽然现实中计算不出来, 但其停机性由 Agda 的 [Termination Checking](https://agda.readthedocs.io/en/v2.6.2.2/language/termination-checking.html) 保证.
 
-本文为文学Agda脚本, 既是 markdown 文件, 也是可通过类型检查的 Agda 源码. 原文件托管于本项目的 Github 仓库 [agda-lvo](https://github.com/choukh/agda-lvo).
+本文为文学Agda脚本, 既是 markdown 文件, 也是可通过类型检查的 Agda 源码. 原文件托管于本项目的 Github 仓库 [agda-veblen](https://github.com/choukh/agda-veblen).
 
 ```agda
 module NonWellFormed.Ordinal where
@@ -128,7 +128,7 @@ lim f ∸ (n , d) = f n ∸ d
 
 ## 非严格序
 
-序数上的非严格序 `_≤_` 归纳定义为三种情况. 第一种 `zero ≤ β` 是无条件成立的, 这与 `ℕ` 的 [`z≤n`](https://choukh.github.io/agda-lvo/Data.Nat.Base.html#1547) 一样. 第二种 `suc α ≤ β` 要求存在 `β` 的某个前驱 `β ∸ d` 使得 `α ≤ β ∸ d`. 这类似于自然数的 [`s≤s`](https://choukh.github.io/agda-lvo/Data.Nat.Base.html#1589), 只是右边还包括了极限的情况. 第三种 `lim f ≤ β` 要求 `β` 大于等于基本序列 `f` 的每一个取值.
+序数上的非严格序 `_≤_` 归纳定义为三种情况. 第一种 `zero ≤ β` 是无条件成立的, 这与 `ℕ` 的 [`z≤n`](https://choukh.github.io/agda-veblen/Data.Nat.Base.html#1547) 一样. 第二种 `suc α ≤ β` 要求存在 `β` 的某个前驱 `β ∸ d` 使得 `α ≤ β ∸ d`. 这类似于自然数的 [`s≤s`](https://choukh.github.io/agda-veblen/Data.Nat.Base.html#1589), 只是右边还包括了极限的情况. 第三种 `lim f ≤ β` 要求 `β` 大于等于基本序列 `f` 的每一个取值.
 
 ```agda
 infix 4 _≤_ _≥_ _≰_ _≱_

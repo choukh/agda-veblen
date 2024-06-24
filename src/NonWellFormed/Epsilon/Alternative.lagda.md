@@ -7,9 +7,9 @@ zhihu-url: https://zhuanlan.zhihu.com/p/582936614
 # Agda大序数(8*) ε的另一种表示
 
 > 交流Q群: 893531731  
-> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
-> 本文源码: [Epsilon/Alternative.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Epsilon/Alternative.lagda.md)  
-> 高亮渲染: [Epsilon.Alternative.html](https://choukh.github.io/agda-lvo/NonWellFormed.Epsilon.Alternative.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.html)  
+> 本文源码: [Epsilon/Alternative.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/NonWellFormed/Epsilon/Alternative.lagda.md)  
+> 高亮渲染: [Epsilon.Alternative.html](https://choukh.github.io/agda-veblen/NonWellFormed.Epsilon.Alternative.html)  
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}

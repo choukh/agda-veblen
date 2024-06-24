@@ -6,9 +6,9 @@ zhihu-tags: Agda, 序数, 大数数学
 # Agda大序数(2-1) 序数record类型
 
 > 交流Q群: 893531731  
-> 目录: [WellFormed.html](https://choukh.github.io/agda-lvo/WellFormed.html)  
-> 本文源码: [Ordinal.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/WellFormed/Ordinal.lagda.md)  
-> 高亮渲染: [Ordinal.html](https://choukh.github.io/agda-lvo/WellFormed.Ordinal.html)  
+> 目录: [WellFormed.html](https://choukh.github.io/agda-veblen/WellFormed.html)  
+> 本文源码: [Ordinal.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/WellFormed/Ordinal.lagda.md)  
+> 高亮渲染: [Ordinal.html](https://choukh.github.io/agda-veblen/WellFormed.Ordinal.html)  
 
 ```agda
 {-# OPTIONS --without-K --safe #-}

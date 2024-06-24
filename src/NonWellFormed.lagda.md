@@ -6,8 +6,8 @@ zhihu-tags: Agda, 序数, 大数数学
 # Agda大序数(0) 目录
 
 > 交流Q群: 893531731  
-> 本文源码: [NonWellFormed.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed.lagda.md)  
-> 高亮渲染: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
+> 本文源码: [NonWellFormed.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/NonWellFormed.lagda.md)  
+> 高亮渲染: [NonWellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.html)  
 
 ```agda
 {-# OPTIONS --without-K --safe #-}

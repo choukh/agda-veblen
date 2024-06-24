@@ -7,9 +7,9 @@ zhihu-url: https://zhuanlan.zhihu.com/p/575362583
 # Agda大序数(2*) 经典序数
 
 > 交流Q群: 893531731  
-> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
-> 本文源码: [Classic.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Classic.lagda.md)  
-> 高亮渲染: [Classic.html](https://choukh.github.io/agda-lvo/NonWellFormed.Classic.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.html)  
+> 本文源码: [Classic.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/NonWellFormed/Classic.lagda.md)  
+> 高亮渲染: [Classic.html](https://choukh.github.io/agda-veblen/NonWellFormed.Classic.html)  
 
 本章假设排中律并证明良构序数上的 `_≤_` 是线序, 该内容与主线无关, 仅作为学习上的参考. 因为有排中律, 所以非 `--safe`.
 

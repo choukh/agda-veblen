@@ -7,9 +7,9 @@ zhihu-url: https://zhuanlan.zhihu.com/p/573846653
 # Agda大序数(2) 良构序数
 
 > 交流Q群: 893531731  
-> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
-> 本文源码: [WellFormed.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/WellFormed.lagda.md)  
-> 高亮渲染: [WellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.WellFormed.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.html)  
+> 本文源码: [WellFormed.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/NonWellFormed/WellFormed.lagda.md)  
+> 高亮渲染: [WellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.WellFormed.html)  
 
 ```agda
 {-# OPTIONS --without-K --safe #-}

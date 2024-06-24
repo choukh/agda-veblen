@@ -7,9 +7,9 @@ zhihu-url: https://zhuanlan.zhihu.com/p/582065361
 # Agda大序数(7*) 低阶不动点
 
 > 交流Q群: 893531731  
-> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
-> 本文源码: [Fixpoint/Lower.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Fixpoint/Lower.lagda.md)  
-> 高亮渲染: [Fixpoint.Lower.html](https://choukh.github.io/agda-lvo/NonWellFormed.Fixpoint.Lower.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.html)  
+> 本文源码: [Fixpoint/Lower.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/NonWellFormed/Fixpoint/Lower.lagda.md)  
+> 高亮渲染: [Fixpoint.Lower.html](https://choukh.github.io/agda-veblen/NonWellFormed.Fixpoint.Lower.html)  
 
 本章是关于不动点的一些平凡的例子, 与主线无关, 可以跳过.
 

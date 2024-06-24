@@ -7,9 +7,9 @@ zhihu-url: https://zhuanlan.zhihu.com/p/575766146
 # Agda大序数(3) 序数函数
 
 > 交流Q群: 893531731  
-> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
-> 本文源码: [Function.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Function.lagda.md)  
-> 高亮渲染: [Function.html](https://choukh.github.io/agda-lvo/NonWellFormed.Function.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.html)  
+> 本文源码: [Function.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/NonWellFormed/Function.lagda.md)  
+> 高亮渲染: [Function.html](https://choukh.github.io/agda-veblen/NonWellFormed.Function.html)  
 
 ```agda
 {-# OPTIONS --without-K --safe #-}

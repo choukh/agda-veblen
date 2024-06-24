@@ -7,9 +7,9 @@ zhihu-url: https://zhuanlan.zhihu.com/p/585882648
 # Agda大序数(9) 二元Veblen函数
 
 > 交流Q群: 893531731  
-> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
-> 本文源码: [VeblenFunction.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/VeblenFunction.lagda.md)  
-> 高亮渲染: [VeblenFunction.html](https://choukh.github.io/agda-lvo/NonWellFormed.VeblenFunction.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.html)  
+> 本文源码: [VeblenFunction.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/NonWellFormed/VeblenFunction.lagda.md)  
+> 高亮渲染: [VeblenFunction.html](https://choukh.github.io/agda-veblen/NonWellFormed.VeblenFunction.html)  
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}

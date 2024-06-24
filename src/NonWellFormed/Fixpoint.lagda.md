@@ -7,9 +7,9 @@ zhihu-url: https://zhuanlan.zhihu.com/p/581675452
 # Agda大序数(7) 序数嵌入的不动点
 
 > 交流Q群: 893531731  
-> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
-> 本文源码: [Fixpoint.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Fixpoint.lagda.md)  
-> 高亮渲染: [Fixpoint.html](https://choukh.github.io/agda-lvo/NonWellFormed.Fixpoint.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.html)  
+> 本文源码: [Fixpoint.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/NonWellFormed/Fixpoint.lagda.md)  
+> 高亮渲染: [Fixpoint.html](https://choukh.github.io/agda-veblen/NonWellFormed.Fixpoint.html)  
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}

@@ -7,9 +7,9 @@ zhihu-url: https://zhuanlan.zhihu.com/p/582661842
 # Agda大序数(8) ε层级, ζ层级, η层级
 
 > 交流Q群: 893531731  
-> 目录: [NonWellFormed.html](https://choukh.github.io/agda-lvo/NonWellFormed.html)  
-> 本文源码: [Epsilon.lagda.md](https://github.com/choukh/agda-lvo/blob/main/src/NonWellFormed/Epsilon.lagda.md)  
-> 高亮渲染: [Epsilon.html](https://choukh.github.io/agda-lvo/NonWellFormed.Epsilon.html)  
+> 目录: [NonWellFormed.html](https://choukh.github.io/agda-veblen/NonWellFormed.html)  
+> 本文源码: [Epsilon.lagda.md](https://github.com/choukh/agda-veblen/blob/main/src/NonWellFormed/Epsilon.lagda.md)  
+> 高亮渲染: [Epsilon.html](https://choukh.github.io/agda-veblen/NonWellFormed.Epsilon.html)  
 
 ```agda
 {-# OPTIONS --without-K --safe --experimental-lossy-unification #-}
